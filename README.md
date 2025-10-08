@@ -60,7 +60,7 @@ dbs.defineDatasource({
 
 *i. MongoDB адаптер устанавливается отдельно (см. [js-repository-mongodb-adapter](https://www.npmjs.com/package/@e22m4u/js-repository-mongodb-adapter)).*
 
-### Интеграция AuthService
+### Настройка AuthService
 
 Для интеграции сервиса `AuthService` выполняется инъекция класса сервиса
 в сервис-контейнер приложения и вызов некоторых методов предварительной
