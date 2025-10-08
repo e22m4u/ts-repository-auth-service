@@ -122,6 +122,7 @@ authService.registerModels({
 для работы пользовательской сессии и декораторов контроля доступа к маршрутам.
 
 ```ts
+// регистрация перехватчиков запроса
 authService.registerRequestHooks();
 ```
 
