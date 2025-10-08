@@ -70,7 +70,7 @@ dbs.defineDatasource({
 ```ts
 const authService = app.get(AuthService); // см. 1
 authService.registerModels({datasource: 'myMongo'}); // см. 2
-authService.registerRequestHooks(); // регистрация перехватчиков запроса
+authService.registerRequestHooks(); // см. 3
 ```
 
 1\. На первой строке примера выше выполняется инъекция сервиса авторизации
