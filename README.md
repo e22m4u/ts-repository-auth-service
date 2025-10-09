@@ -374,18 +374,18 @@ IoC-контейнере приложения.
 и привязывает их к указанному источнику данных. Этот метод необходимо
 вызвать один раз при инициализации приложения.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 registerModels(options?: {datasource?: string}): void
 ```
 
-**Параметры**
+Параметры:
 
 - `options.datasource`  
   Строка, содержащая имя источника данных, в котором будут созданы и сохранены коллекции/таблицы для моделей.
 
-**Пример**
+Пример:
 
 ```ts
 // определение источника данных
@@ -406,13 +406,13 @@ authService.registerModels({datasource: 'myDb'});
 запроса. Вызов этого метода является обязательным для корректной работы сессий
 и декораторов защиты маршрутов.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 registerRequestHooks(): void
 ```
 
-**Пример**
+Пример:
 
 ```ts
 // этот вызов активирует систему сессий для всех маршрутов
@@ -424,14 +424,14 @@ authService.registerRequestHooks();
 Создает нового пользователя, выполняя все необходимые проверки и преобразования
 данных.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 createUser<T extends BaseUserModel, V extends WithoutId<T>>(
   inputData: V
 ): Promise<T>
 ```
-**Процесс выполнения**
+Процесс выполнения:
 
 - **Валидация формата**  
   Проверяет формат `username`, `email`, `phone` и `password` с помощью
@@ -447,7 +447,7 @@ createUser<T extends BaseUserModel, V extends WithoutId<T>>(
 Метод возвращает `Promise`, который разрешается объектом созданного
 пользователя.
 
-**Пример**
+Пример:
 
 ```ts
 const newUser = await authService.createUser({
@@ -463,7 +463,7 @@ const newUser = await authService.createUser({
 `email` или `phone`. Поиск по `username` и `email` по умолчанию
 регистронезависимый.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 findUserByLoginIds<T extends BaseUserModel>(
@@ -473,7 +473,7 @@ findUserByLoginIds<T extends BaseUserModel>(
 ): Promise<T | undefined>
 ```
 
-**Параметры**
+Параметры:
 
 - `lookup`  
   *объект полем `username`, `email` или `phone`;*
@@ -482,7 +482,7 @@ findUserByLoginIds<T extends BaseUserModel>(
   *если `true` и пользователь не найден, метод вернет `undefined`;*  
   *если `false`, будет выброшена ошибка `400 Bad Request`;*
 
-**Пример**
+Пример:
 
 ```ts
 // используется при логине, выбрасывает ошибку если пользователь не найден
@@ -500,7 +500,7 @@ const maybeUser = await authService.findUserByLoginIds(
 
 Сравнивает предоставленный пароль с хэшем, хранящимся в базе данных.
 
-**Сигнатура**
+Сигнатура:
 ```ts
 verifyPassword(
   password: string,
@@ -509,7 +509,7 @@ verifyPassword(
 ): Promise<boolean | true>
 ```
 
-**Параметры**
+Параметры:
 
 - `password`  
   *пароль в открытом виде, введенный пользователем;*
@@ -521,7 +521,7 @@ verifyPassword(
   *если `true` и пароли не совпадают, метод вернет `false`;*  
   *если `false`, будет выброшена ошибка `400 Bad Request`;*
 
-**Пример**
+Пример:
 
 ```ts
 // выбросит ошибку, если пароль неверный
@@ -534,7 +534,7 @@ await authService.verifyPassword('Password123', user.password);
 сессиями и реализации механизма выхода из системы. ID созданной записи
 используется как `tid` (Token ID) в полезной нагрузке JWT.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 createAccessToken<T extends BaseAccessTokenModel>(
@@ -542,12 +542,12 @@ createAccessToken<T extends BaseAccessTokenModel>(
 ): Promise<T>
 ```
 
-**Параметры**
+Параметры:
 
 - `ownerId`  
   *ID пользователя, для которого создается токен;*
 
-**Пример**
+Пример:
 
 ```ts
 const accessToken = await authService.createAccessToken(user.id);
@@ -557,7 +557,7 @@ const accessToken = await authService.createAccessToken(user.id);
 
 Генерирует JWT на основе ранее созданного `AccessToken`.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 issueJwt(
@@ -565,18 +565,18 @@ issueJwt(
 ): Promise<{token: string, expiresAt: string}>
 ```
 
-**Параметры**
+Параметры:
 
 - `accessToken`  
   *объект токена доступа, полученный из метода `createAccessToken`*
 
-**Процесс выполнения**
+Процесс выполнения:
 
 1. Формирует полезную нагрузку с полями `uid` (User ID) и `tid` (Token ID).
 2. Подписывает токен с помощью `jwtSecret`.
 3. Устанавливает время жизни (`exp`) на основе опции `jwtTtl`.
 
-**Пример**
+Пример:
 
 ```ts
 const {token, expiresAt} = await authService.issueJwt(accessToken);
@@ -588,7 +588,7 @@ const {token, expiresAt} = await authService.issueJwt(accessToken);
 формата и уникальности, что и `createUser`, для всех полей, которые переданы
 в `inputData`.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 updateUser<T extends BaseUserModel>(
@@ -597,13 +597,13 @@ updateUser<T extends BaseUserModel>(
 ): Promise<T>
 ```
 
-**Параметры**
+Параметры:
 
 - `userId`  
   *ID пользователя, которого нужно обновить;*
   *`inputData`: Объект с полями для обновления;*
 
-**Пример**
+Пример:
 
 ```ts
 const updatedUser = await authService.updateUser(
@@ -617,19 +617,19 @@ const updatedUser = await authService.updateUser(
 Удаление записи `AccessToken` из базы данных. Это основной механизм
 для реализации выхода из системы.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 removeAccessTokenById(accessTokenId: string): Promise<boolean>
 ```
 
-**Параметры**
+Параметры:
 
 - `accessTokenId`  
   *ID токена доступа, который необходимо удалить,*  
   *этот ID можно получить из сессии (`session.getAccessTokenId()`);*
 
-**Пример**
+Пример:
 
 ```ts
 const accessTokenId = session.getAccessTokenId();
@@ -643,13 +643,13 @@ const result = await authService.removeAccessTokenById(accessTokenId);
 объекте хотя бы одного из полей для входа (`username`, `email` или `phone`).
 Если ни одно из полей не найдено или их значения пустые, выбрасывается ошибка.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 requireAnyLoginId(data: object, partial = false): void
 ```
 
-**Параметры**
+Параметры:
 
 - `data`  
   *объект для проверки (обычно `request.body`);*
