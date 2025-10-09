@@ -546,6 +546,7 @@ createAccessToken<T extends BaseAccessTokenModel>(
 **Пример**
 
 ```ts
+// создание новой записи о токене и сохранение в базу данных
 const accessToken = await authService.createAccessToken(user.id);
 ```
 
