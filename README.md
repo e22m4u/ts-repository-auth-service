@@ -13,15 +13,15 @@
 
 ## Оглавление
 
--  [Установка](#установка)
--  [Использование](#использование)
+- [Установка](#установка)
+- [Использование](#использование)
   - [Настройка AuthService](#настройка-authservice)
   - [Регистрация пользователя](#регистрация-пользователя)
   - [Аутентификация (вход в систему)](#аутентификация-вход-в-систему)
   - [Получение данных текущего пользователя](#получение-данных-текущего-пользователя)
   - [Обновление профиля](#обновление-профиля)
   - [Выход из системы (деавторизация)](#выход-из-системы-деавторизация)
--  [AuthService](#authservice)
+- [AuthService](#authservice)
   - [registerModels](#registermodels)
   - [registerRequestHooks](#registerrequesthooks)
   - [createUser](#createuser)
@@ -32,12 +32,12 @@
   - [updateUser](#updateuser)
   - [removeAccessTokenById](#removeaccesstokenbyid)
   - [requireAnyLoginId](#requireanyloginid)
--  [Модели](#модели)
+- [Модели](#модели)
   - [BaseRoleModel и RoleModel](#baserolemodel-и-rolemodel)
   - [BaseUserModel и UserModel](#baseusermodel-и-usermodel)
   - [BaseAccessTokenModel и AccessTokenModel](#baseaccesstokenmodel-и-accesstokenmodel)
--  [Тесты](#тесты)
--  [Лицензия](#лицензия)
+- [Тесты](#тесты)
+- [Лицензия](#лицензия)
 
 ## Установка
 
