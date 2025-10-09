@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": "../",
     "target": "es2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
@@ -11,9 +10,5 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noEmit": true
-  },
-  "include": [
-    "../src/**/*",
-    "../examples/**/*"
-  ]
+  }
 }

@@ -39,7 +39,7 @@
     "test": "npm run lint && c8 --reporter=text-summary mocha --bail",
     "test:coverage": "npm run lint && c8 --reporter=text mocha --bail",
     "prepare": "husky",
-    "example:basic": "npm run build && DEBUG=tsRestRouterAuth* tsx --tsconfig ./examples/tsconfig.json ./examples/basic-example.ts"
+    "example:basic": "DEBUG=tsRestRouterAuth* tsx --tsconfig ./examples/tsconfig.json ./examples/basic-example.ts"
   },
   "dependencies": {
     "@e22m4u/js-format": "~0.2.0",

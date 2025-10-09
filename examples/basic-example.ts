@@ -113,36 +113,38 @@ const host = '0.0.0.0';
 server.listen(port, host, function () {
   const cyan = '\x1b[36m%s\x1b[0m';
   console.log(cyan, 'Server listening on port:', port);
-  console.log(cyan, 'List users:', `curl http://${host}:${port}/users | jq`);
-  console.log(cyan, 'Register a new user:',
-    `curl -X POST http://${host}:${port}/users/register `
-      + `-H "content-type: application/json" `
-      + `-d '{"username": "andrew", "password": "andrewPass123"}' `
-      + `| jq`,
-  );
-  console.log(cyan, 'Login with password:',
-    `curl -X POST http://${host}:${port}/users/login `
-      + `-H "content-type: application/json" `
-      + `-d '{"username": "andrew", "password": "andrewPass123"}' `
-      + `| jq`,
-  );
-  console.log(cyan, 'Get current user:',
-    `curl http://${host}:${port}/users/whoAmI `
-      + `-H "content-type: application/json" `
-      + `-H "authorization: JWT_TOKEN_FROM_LOGIN" `
-      + `| jq`,
-  );
-  console.log(cyan, 'Update current user:',
-    `curl -X PATCH http://${host}:${port}/users/profile `
-      + `-H "content-type: application/json" `
-      + `-H "authorization: JWT_TOKEN_FROM_LOGIN" `
-      + `-d '{"firstName": "Andrew", "age": 27}' `
-      + `| jq`,
-  );
-  console.log(cyan, 'Logout:',
-    `curl http://${host}:${port}/users/logout `
-      + `-H "content-type: application/json" `
-      + `-H "authorization: JWT_TOKEN_FROM_LOGIN" `
-      + `| jq`,
-  );
+  // List users
+  console.log(cyan, 'List users:');
+  console.log(`  curl http://${host}:${port}/users | jq`);
+  // Register user
+  console.log(cyan, 'Register user:');
+  console.log(`  curl -X POST http://${host}:${port}/users/register \\`);
+  console.log(`    -H "content-type: application/json" \\`);
+  console.log(`    -d '{"username": "andrew", "password": "andrewPass123"}' \\`);
+  console.log(`    | jq;`);
+  // Login
+  console.log(cyan, 'Login:');
+  console.log(`  curl -X POST http://${host}:${port}/users/login \\`);
+  console.log(`    -H "content-type: application/json" \\`);
+  console.log(`    -d '{"username": "andrew", "password": "andrewPass123"}' \\`);
+  console.log(`    | jq;`);
+  // Current user
+  console.log(cyan, 'Current user:');
+  console.log(`  curl http://${host}:${port}/users/whoAmI \\`);
+  console.log(`    -H "content-type: application/json" \\`);
+  console.log(`    -H "authorization: JWT_TOKEN_FROM_LOGIN" \\`);
+  console.log(`    | jq;`);
+  // Update current user
+  console.log(cyan, 'Update current user:');
+  console.log(`  curl -X PATCH http://${host}:${port}/users/profile \\`);
+  console.log(`    -H "content-type: application/json" \\`);
+  console.log(`    -H "authorization: JWT_TOKEN_FROM_LOGIN" \\`);
+  console.log(`    -d '{"firstName": "Andrew", "age": 27}' \\`);
+  console.log(`    | jq;`);
+  // Logout
+  console.log(cyan, 'Logout:');
+  console.log(`  curl http://${host}:${port}/users/logout \\`);
+  console.log(`    -H "content-type: application/json" \\`);
+  console.log(`    -H "authorization: JWT_TOKEN_FROM_LOGIN" \\`);
+  console.log(`    | jq`);
 });
