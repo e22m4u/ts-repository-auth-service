@@ -6,10 +6,7 @@ import {
   RelationType,
 } from '@e22m4u/ts-repository';
 
-import {
-  UserModel,
-  BaseUserModel,
-} from './user-model.js';
+import {UserModel, BaseUserModel} from './user-model.js';
 
 /**
  * Base access token model.

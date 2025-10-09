@@ -5,7 +5,7 @@ import {DebuggableService as BaseDebuggableService} from '@e22m4u/js-service';
 /**
  * Module debugger namespace.
  */
-export const MODULE_DEBUGGER_NAMESPACE = 'jsTrieRouterAuth';
+export const MODULE_DEBUGGER_NAMESPACE = 'tsRestRouterAuth';
 
 /**
  * Debuggable service.

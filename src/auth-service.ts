@@ -14,7 +14,7 @@ import {removeEmptyKeys} from './utils/index.js';
 import {authLocalizer} from './auth-localizer.js';
 import {AuthLocalizer} from './auth-localizer.js';
 import {WhereClause} from '@e22m4u/ts-repository';
-import {TrieRouter} from '@e22m4u/ts-rest-router';
+import {RestRouter} from '@e22m4u/ts-rest-router';
 import {AccessTokenModel} from './models/index.js';
 import {FilterClause} from '@e22m4u/ts-repository';
 import {IncludeClause} from '@e22m4u/ts-repository';
@@ -255,7 +255,7 @@ export class AuthService extends DebuggableService {
   registerRequestHooks() {
     const debug = this.getDebuggerFor(this.registerRequestHooks);
     debug('Registering request hooks.');
-    this.getRegisteredService(TrieRouter).addHook('preHandler', preHandlerHook);
+    this.getRegisteredService(RestRouter).addHook('preHandler', preHandlerHook);
     debug('Hooks registered.');
   }
 
@@ -684,15 +684,31 @@ export class AuthService extends DebuggableService {
    * Require any login id.
    *
    * @param inputData
+   * @param partial
    */
-  requireAnyLoginId(data: Record<string, unknown>) {
+  requireAnyLoginId(data: Record<string, unknown>, partial = false) {
     const debug = this.getDebuggerFor(this.requireAnyLoginId);
     debug('Require any login identifier.');
     const localizer = this.getLocalizer();
     const errorKeyPrefix = 'authService.requireAnyLoginId';
+    if (partial) {
+      debug('Partial mode was enabled.');
+    }
+    // если метод запущен в режиме "partial", то для проверки наличия
+    // идентификаторов используются только те идентификаторы, ключи
+    // которых определены в полученном объекте, а если объект
+    // не содержит ключей, то проверка завершается
+    const loginIds = partial
+      ? LOGIN_ID_NAMES.filter(idName => idName in data)
+      : LOGIN_ID_NAMES;
+    if (partial && !loginIds.length) {
+      debug('No login identifier was given.');
+      return;
+    }
+    debug('Looking for any value in %l.', loginIds);
     // если ни один идентификатор не определен,
     // то выбрасывается ошибка
-    if (LOGIN_ID_NAMES.every(idName => !data[idName])) {
+    if (loginIds.every(idName => !data[idName])) {
       debug('No login identifier was given.');
       const idFields = LOGIN_ID_NAMES.filter(id => id in data);
       const singleIdField = idFields.length === 1 ? idFields[0] : undefined;
@@ -717,7 +733,7 @@ export class AuthService extends DebuggableService {
    * @param data
    * @param filter
    */
-  async createUser<T extends BaseUserModel, V extends WithoutId<'id', T>>(
+  async createUser<T extends BaseUserModel, V extends WithoutId<T>>(
     inputData: V,
     filter?: FilterClause,
   ): Promise<T> {

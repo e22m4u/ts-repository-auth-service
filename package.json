@@ -39,7 +39,7 @@
     "test": "npm run lint && c8 --reporter=text-summary mocha --bail",
     "test:coverage": "npm run lint && c8 --reporter=text mocha --bail",
     "prepare": "husky",
-    "example:basic": "npm run build:esm && DEBUG=jsTrieRouterAuth* node ./examples/basic-example.js"
+    "example:basic": "npm run build && DEBUG=tsRestRouterAuth* tsx --tsconfig ./examples/tsconfig.json ./examples/basic-example.ts"
   },
   "dependencies": {
     "@e22m4u/js-format": "~0.2.0",
@@ -59,6 +59,7 @@
   "devDependencies": {
     "@commitlint/cli": "~20.1.0",
     "@commitlint/config-conventional": "~20.0.0",
+    "@e22m4u/ts-rest-router-repository": "^0.3.3",
     "@eslint/js": "~9.37.0",
     "@types/bcrypt": "~6.0.0",
     "@types/chai": "~5.2.2",

@@ -7,15 +7,9 @@ import {
   PropertyUniqueness,
 } from '@e22m4u/ts-repository';
 
-import {
-  noInput,
-  noOutput,
-} from '@e22m4u/ts-projection';
+import {noInput, noOutput} from '@e22m4u/ts-projection';
 
-import {
-  RoleModel,
-  BaseRoleModel,
-} from './role-model.js';
+import {RoleModel, BaseRoleModel} from './role-model.js';
 
 /**
  * Base user model.
