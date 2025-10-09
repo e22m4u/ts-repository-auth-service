@@ -368,7 +368,7 @@ class UserController extends Service {
 токенов и управления сессиями. Этот сервис регистрируется в корневом
 IoC-контейнере приложения. Ниже приводится список методов его экземпляра.
 
-### AuthService.registerModels
+### authService.registerModels
 
 Регистрирует встроенные [модели](#модели) данных в `DatabaseSchema`
 и привязывает их к указанному источнику данных. Этот метод необходимо
@@ -398,7 +398,7 @@ dbs.defineDatasource({
 authService.registerModels({datasource: 'myDb'});
 ```
 
-### AuthService.registerRequestHooks
+### authService.registerRequestHooks
 
 Регистрирует глобальный перехватчик запроса `preHandler` в `RestRouter`. Этот
 перехватчик выполняется перед каждым запросом и отвечает за создание и внедрение
@@ -419,7 +419,7 @@ registerRequestHooks(): void
 authService.registerRequestHooks();
 ```
 
-### AuthService.createUser
+### authService.createUser
 
 Создает нового пользователя, выполняя все необходимые проверки и преобразования
 данных.
@@ -457,7 +457,7 @@ const newUser = await authService.createUser({
 });
 ```
 
-### AuthService.findUserByLoginIds
+### authService.findUserByLoginIds
 
 Осуществляет поиск пользователя по одному из его идентификаторов: `username`,
 `email` или `phone`. Поиск по `username` и `email` по умолчанию
@@ -496,7 +496,7 @@ const maybeUser = await authService.findUserByLoginIds(
 );
 ```
 
-### AuthService.verifyPassword
+### authService.verifyPassword
 
 Сравнивает предоставленный пароль с хэшем, хранящимся в базе данных.
 
@@ -528,7 +528,7 @@ verifyPassword(
 await authService.verifyPassword('Password123', user.password);
 ```
 
-### AuthService.createAccessToken
+### authService.createAccessToken
 
 Создает запись о токене доступа в базе данных. Это необходимо для управления
 сессиями и реализации механизма выхода из системы. ID созданной записи
@@ -553,7 +553,7 @@ createAccessToken<T extends BaseAccessTokenModel>(
 const accessToken = await authService.createAccessToken(user.id);
 ```
 
-### AuthService.issueJwt
+### authService.issueJwt
 
 Генерирует JWT на основе ранее созданного `AccessToken`.
 
@@ -582,7 +582,7 @@ issueJwt(
 const {token, expiresAt} = await authService.issueJwt(accessToken);
 ```
 
-### AuthService.updateUser
+### authService.updateUser
 
 Обновляет данные существующего пользователя. Метод выполняет те же валидации
 формата и уникальности, что и `createUser`, для всех полей, которые переданы
@@ -612,7 +612,7 @@ const updatedUser = await authService.updateUser(
 );
 ```
 
-### AuthService.removeAccessTokenById
+### authService.removeAccessTokenById
 
 Удаление записи `AccessToken` из базы данных. Это основной механизм
 для реализации выхода из системы.
@@ -637,7 +637,7 @@ const result = await authService.removeAccessTokenById(accessTokenId);
 // result === true, если токен был успешно удален
 ```
 
-### AuthService.requireAnyLoginId
+### authService.requireAnyLoginId
 
 Вспомогательный метод валидации, который проверяет наличие в переданном
 объекте хотя бы одного из полей для входа (`username`, `email` или `phone`).
