@@ -1,4 +1,12 @@
 import {
+  UserModel,
+  AuthService,
+  AuthSession,
+  UserLookupWithPassword,
+  USER_LOOKUP_WITH_PASSWORD_SCHEMA,
+} from '../src/index.js'; // @e22m4u/ts-rest-router-auth
+
+import {
   getAction,
   patchAction,
   postAction,
@@ -6,14 +14,6 @@ import {
   restController,
   RestRouter
 } from '@e22m4u/ts-rest-router';
-
-import {
-  UserModel,
-  AuthService,
-  AuthSession,
-  UserLookupWithPassword,
-  USER_LOOKUP_WITH_PASSWORD_SCHEMA,
-} from '@e22m4u/ts-rest-router-auth';
 
 import http from 'http';
 import {Service, ServiceContainer} from '@e22m4u/js-service';
