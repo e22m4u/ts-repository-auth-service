@@ -436,7 +436,7 @@ createUser<T extends BaseUserModel, V extends WithoutId<T>>(
 - Проверка формата  
   *проверяет формат `username`, `email`, `phone` и `password`;*
 - Проверка уникальности  
-  *проверяет дубликаты `username`, `email` и `phone`;*
+  *проверяет дубликаты `username`, `email` и `phone` других пользователей;*
 - Хеширование пароля  
   *безопасно хеширует пароль с использованием `bcrypt`;*
 - Сохранение  
