@@ -22,10 +22,6 @@ export declare class AuthSession<UserType extends BaseUserModel = UserModel, Tok
      */
     get isLoggedIn(): boolean;
     /**
-     * Get localizer.
-     */
-    getLocalizer(): import("./auth-localizer.js").AuthLocalizer;
-    /**
      * Constructor.
      *
      * @param user

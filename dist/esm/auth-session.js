@@ -1,6 +1,6 @@
 import HttpErrors from 'http-errors';
 import { createError } from './utils/index.js';
-import { AuthService } from './auth-service.js';
+import { AuthLocalizer } from './auth-localizer.js';
 import { DebuggableService } from './debuggable-service.js';
 /**
  * Auth session.
@@ -21,12 +21,6 @@ export class AuthSession extends DebuggableService {
         return Boolean(this.accessToken) && Boolean(this.user);
     }
     /**
-     * Get localizer.
-     */
-    getLocalizer() {
-        return this.getService(AuthService).getLocalizer();
-    }
-    /**
      * Constructor.
      *
      * @param user
@@ -41,7 +35,7 @@ export class AuthSession extends DebuggableService {
      */
     getUser() {
         if (!this.user) {
-            const localizer = this.getLocalizer();
+            const localizer = this.getService(AuthLocalizer);
             throw createError(HttpErrors.Unauthorized, 'AUTHENTICATION_REQUIRED', localizer.t('authSession.getUser.authenticationRequired'));
         }
         return this.user;
@@ -71,7 +65,7 @@ export class AuthSession extends DebuggableService {
      */
     getAccessToken() {
         if (!this.accessToken) {
-            const localizer = this.getLocalizer();
+            const localizer = this.getService(AuthLocalizer);
             throw createError(HttpErrors.Unauthorized, 'AUTHENTICATION_REQUIRED', localizer.t('authSession.getAccessTokenId.authenticationRequired'));
         }
         return this.accessToken;

@@ -1211,14 +1211,13 @@ __export(index_exports, {
   RoleModel: () => RoleModel,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA: () => USER_LOOKUP_WITH_PASSWORD_SCHEMA,
   UserModel: () => UserModel,
-  authLocalizer: () => authLocalizer,
   requireRole: () => requireRole,
   roleGuard: () => roleGuard
 });
 module.exports = __toCommonJS(index_exports);
 
 // dist/esm/hooks/role-guard.js
-var import_http_errors7 = __toESM(require("http-errors"), 1);
+var import_http_errors2 = __toESM(require("http-errors"), 1);
 
 // dist/esm/utils/create-error.js
 var import_js_format = require("@e22m4u/js-format");
@@ -1237,231 +1236,7 @@ function removeEmptyKeys(plainObject, removeWhen = (v) => v == null) {
 __name(removeEmptyKeys, "removeEmptyKeys");
 
 // dist/esm/auth-session.js
-var import_http_errors6 = __toESM(require("http-errors"), 1);
-
-// dist/esm/auth-service.js
-var import_bcrypt = __toESM(require("bcrypt"), 1);
-var import_jsonwebtoken = __toESM(require("jsonwebtoken"), 1);
-var import_uuid = require("uuid");
-var import_http_errors5 = __toESM(require("http-errors"), 1);
-
-// dist/esm/models/role-model.js
-var import_ts_repository = require("@e22m4u/ts-repository");
-var __decorate = function(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = function(k, v) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-var BaseRoleModel = (_a = class {
-  id;
-  name;
-  createdAt;
-}, __name(_a, "BaseRoleModel"), _a);
-__decorate([
-  (0, import_ts_repository.property)({
-    type: import_ts_repository.DataType.ANY,
-    primaryKey: true
-  }),
-  __metadata("design:type", Object)
-], BaseRoleModel.prototype, "id", void 0);
-__decorate([
-  (0, import_ts_repository.property)({
-    type: import_ts_repository.DataType.STRING,
-    required: true,
-    unique: import_ts_repository.PropertyUniqueness.STRICT
-  }),
-  __metadata("design:type", String)
-], BaseRoleModel.prototype, "name", void 0);
-__decorate([
-  (0, import_ts_repository.property)({
-    type: import_ts_repository.DataType.STRING,
-    default: /* @__PURE__ */ __name(() => (/* @__PURE__ */ new Date()).toISOString(), "default")
-  }),
-  __metadata("design:type", String)
-], BaseRoleModel.prototype, "createdAt", void 0);
-BaseRoleModel = __decorate([
-  (0, import_ts_repository.model)()
-], BaseRoleModel);
-var _a2;
-var RoleModel = (_a2 = class extends BaseRoleModel {
-}, __name(_a2, "RoleModel"), _a2);
-RoleModel = __decorate([
-  (0, import_ts_repository.model)()
-], RoleModel);
-
-// dist/esm/models/user-model.js
-var import_ts_repository2 = require("@e22m4u/ts-repository");
-var import_ts_projection = require("@e22m4u/ts-projection");
-var __decorate2 = function(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata2 = function(k, v) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a3;
-var BaseUserModel = (_a3 = class {
-  id;
-  username;
-  email;
-  phone;
-  password;
-  createdAt;
-  updatedAt;
-  roleIds;
-  roles;
-}, __name(_a3, "BaseUserModel"), _a3);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.ANY,
-    primaryKey: true
-  }),
-  __metadata2("design:type", Object)
-], BaseUserModel.prototype, "id", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.STRING,
-    unique: import_ts_repository2.PropertyUniqueness.SPARSE,
-    default: ""
-  }),
-  __metadata2("design:type", String)
-], BaseUserModel.prototype, "username", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.STRING,
-    unique: import_ts_repository2.PropertyUniqueness.SPARSE,
-    default: ""
-  }),
-  __metadata2("design:type", String)
-], BaseUserModel.prototype, "email", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.STRING,
-    unique: import_ts_repository2.PropertyUniqueness.SPARSE,
-    default: ""
-  }),
-  __metadata2("design:type", String)
-], BaseUserModel.prototype, "phone", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.STRING,
-    default: ""
-  }),
-  (0, import_ts_projection.noOutput)(),
-  __metadata2("design:type", String)
-], BaseUserModel.prototype, "password", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.STRING,
-    default: /* @__PURE__ */ __name(() => (/* @__PURE__ */ new Date()).toISOString(), "default")
-  }),
-  (0, import_ts_projection.noInput)(),
-  __metadata2("design:type", String)
-], BaseUserModel.prototype, "createdAt", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.STRING,
-    default: /* @__PURE__ */ __name(() => (/* @__PURE__ */ new Date()).toISOString(), "default")
-  }),
-  __metadata2("design:type", String)
-], BaseUserModel.prototype, "updatedAt", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.ARRAY,
-    itemType: import_ts_repository2.DataType.ANY,
-    default: /* @__PURE__ */ __name(() => [], "default")
-  }),
-  __metadata2("design:type", Array)
-], BaseUserModel.prototype, "roleIds", void 0);
-__decorate2([
-  (0, import_ts_repository2.relation)({
-    type: import_ts_repository2.RelationType.REFERENCES_MANY,
-    model: RoleModel.name,
-    foreignKey: "roleIds"
-  }),
-  __metadata2("design:type", Array)
-], BaseUserModel.prototype, "roles", void 0);
-BaseUserModel = __decorate2([
-  (0, import_ts_repository2.model)()
-], BaseUserModel);
-var _a4;
-var UserModel = (_a4 = class extends BaseUserModel {
-}, __name(_a4, "UserModel"), _a4);
-UserModel = __decorate2([
-  (0, import_ts_repository2.model)()
-], UserModel);
-
-// dist/esm/models/access-token-model.js
-var import_ts_repository3 = require("@e22m4u/ts-repository");
-var __decorate3 = function(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata3 = function(k, v) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a5;
-var BaseAccessTokenModel = (_a5 = class {
-  id;
-  userAgent;
-  createdAt;
-  ownerId;
-  owner;
-}, __name(_a5, "BaseAccessTokenModel"), _a5);
-__decorate3([
-  (0, import_ts_repository3.property)({
-    type: import_ts_repository3.DataType.ANY,
-    primaryKey: true
-  }),
-  __metadata3("design:type", Object)
-], BaseAccessTokenModel.prototype, "id", void 0);
-__decorate3([
-  (0, import_ts_repository3.property)({
-    type: import_ts_repository3.DataType.STRING,
-    default: ""
-  }),
-  __metadata3("design:type", String)
-], BaseAccessTokenModel.prototype, "userAgent", void 0);
-__decorate3([
-  (0, import_ts_repository3.property)({
-    type: import_ts_repository3.DataType.STRING,
-    default: /* @__PURE__ */ __name(() => (/* @__PURE__ */ new Date()).toISOString(), "default")
-  }),
-  __metadata3("design:type", String)
-], BaseAccessTokenModel.prototype, "createdAt", void 0);
-__decorate3([
-  (0, import_ts_repository3.property)({
-    type: import_ts_repository3.DataType.ANY,
-    required: true
-  }),
-  __metadata3("design:type", Object)
-], BaseAccessTokenModel.prototype, "ownerId", void 0);
-__decorate3([
-  (0, import_ts_repository3.relation)({
-    type: import_ts_repository3.RelationType.BELONGS_TO,
-    model: UserModel.name,
-    foreignKey: "ownerId"
-  }),
-  __metadata3("design:type", Object)
-], BaseAccessTokenModel.prototype, "owner", void 0);
-BaseAccessTokenModel = __decorate3([
-  (0, import_ts_repository3.model)()
-], BaseAccessTokenModel);
-var _a6;
-var AccessTokenModel = (_a6 = class extends BaseAccessTokenModel {
-}, __name(_a6, "AccessTokenModel"), _a6);
-AccessTokenModel = __decorate3([
-  (0, import_ts_repository3.model)()
-], AccessTokenModel);
+var import_http_errors = __toESM(require("http-errors"), 1);
 
 // dist/esm/auth-localizer.js
 var import_js_localizer = require("@e22m4u/js-localizer");
@@ -1522,17 +1297,15 @@ var ru_default = {
 
 // dist/esm/auth-localizer.js
 var _AuthLocalizer = class _AuthLocalizer extends import_js_localizer.Localizer {
+  constructor(container, options) {
+    super(container, {
+      dictionaries: { en: en_default, ru: ru_default },
+      ...options
+    });
+  }
 };
 __name(_AuthLocalizer, "AuthLocalizer");
 var AuthLocalizer = _AuthLocalizer;
-var authLocalizer = new AuthLocalizer({
-  dictionaries: { en: en_default, ru: ru_default }
-});
-
-// dist/esm/auth-service.js
-var import_ts_rest_router = require("@e22m4u/ts-rest-router");
-var import_ts_repository4 = require("@e22m4u/ts-repository");
-var import_ts_repository5 = require("@e22m4u/ts-repository");
 
 // node_modules/@e22m4u/js-debug/src/utils/is-non-array-object.js
 function isNonArrayObject(input) {
@@ -1855,52 +1628,386 @@ __name(_DebuggableService, "DebuggableService");
 var DebuggableService = _DebuggableService;
 var debugFn = createDebugger(MODULE_DEBUGGER_NAMESPACE).withoutEnvNs();
 
+// dist/esm/auth-session.js
+var _AuthSession = class _AuthSession extends DebuggableService {
+  /**
+   * Access token.
+   */
+  accessToken;
+  /**
+   * User.
+   */
+  user;
+  /**
+   * Is logged in.
+   */
+  get isLoggedIn() {
+    return Boolean(this.accessToken) && Boolean(this.user);
+  }
+  /**
+   * Constructor.
+   *
+   * @param user
+   */
+  constructor(container, accessToken, user) {
+    super(container);
+    this.accessToken = accessToken;
+    this.user = user;
+  }
+  /**
+   * Get user.
+   */
+  getUser() {
+    if (!this.user) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors.default.Unauthorized, "AUTHENTICATION_REQUIRED", localizer.t("authSession.getUser.authenticationRequired"));
+    }
+    return this.user;
+  }
+  /**
+   * User id.
+   */
+  getUserId() {
+    return this.getUser().id;
+  }
+  /**
+   * Get user roles.
+   */
+  getUserRoles() {
+    return this.getUser().roles || [];
+  }
+  /**
+   * Get role names.
+   */
+  getRoleNames() {
+    return this.getUserRoles().map((v) => v.name).filter((v) => typeof v === "string");
+  }
+  /**
+   * Get access token.
+   */
+  getAccessToken() {
+    if (!this.accessToken) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors.default.Unauthorized, "AUTHENTICATION_REQUIRED", localizer.t("authSession.getAccessTokenId.authenticationRequired"));
+    }
+    return this.accessToken;
+  }
+  /**
+   * Access token id.
+   */
+  getAccessTokenId() {
+    return this.getAccessToken().id;
+  }
+};
+__name(_AuthSession, "AuthSession");
+var AuthSession = _AuthSession;
+
+// dist/esm/hooks/role-guard.js
+var AccessRule = {
+  AUTHENTICATED: "$authenticated"
+};
+function roleGuard(roleName) {
+  return function(ctx) {
+    const debug = debugFn.withNs(roleGuard.name).withHash();
+    debug("Role checking for %s %v.", ctx.method, ctx.path);
+    const localizer = ctx.container.getRegistered(AuthLocalizer);
+    const session = ctx.container.getRegistered(AuthSession);
+    if (!session.isLoggedIn)
+      throw createError(import_http_errors2.default.Unauthorized, "AUTHORIZATION_REQUIRED", localizer.t("roleGuard.authenticationRequired"));
+    debug("User id was %v.", session.getUserId());
+    const roleNames = [roleName].flat().filter(Boolean);
+    if (!roleNames.length || roleNames.includes(AccessRule.AUTHENTICATED)) {
+      debug("No required role given.");
+      return;
+    } else if (roleNames.length === 1) {
+      debug("Required role was %v.", roleNames[0]);
+    } else if (roleNames.length > 1) {
+      debug("Required roles was %l.", roleNames);
+    }
+    const userRoles = session.getRoleNames();
+    const isAllowed = userRoles.some((v) => roleNames.includes(v));
+    if (!isAllowed)
+      throw createError(import_http_errors2.default.Forbidden, "ROLE_NOT_ALLOWED", localizer.t("roleGuard.roleNotAllowed"));
+    debug("Access allowed.");
+  };
+}
+__name(roleGuard, "roleGuard");
+
+// dist/esm/auth-service.js
+var import_bcrypt = __toESM(require("bcrypt"), 1);
+var import_jsonwebtoken = __toESM(require("jsonwebtoken"), 1);
+var import_uuid = require("uuid");
+var import_http_errors7 = __toESM(require("http-errors"), 1);
+
+// dist/esm/models/role-model.js
+var import_ts_repository = require("@e22m4u/ts-repository");
+var __decorate = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = function(k, v) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+var BaseRoleModel = (_a = class {
+  id;
+  name;
+  createdAt;
+}, __name(_a, "BaseRoleModel"), _a);
+__decorate([
+  (0, import_ts_repository.property)({
+    type: import_ts_repository.DataType.ANY,
+    primaryKey: true
+  }),
+  __metadata("design:type", Object)
+], BaseRoleModel.prototype, "id", void 0);
+__decorate([
+  (0, import_ts_repository.property)({
+    type: import_ts_repository.DataType.STRING,
+    required: true,
+    unique: import_ts_repository.PropertyUniqueness.STRICT
+  }),
+  __metadata("design:type", String)
+], BaseRoleModel.prototype, "name", void 0);
+__decorate([
+  (0, import_ts_repository.property)({
+    type: import_ts_repository.DataType.STRING,
+    default: /* @__PURE__ */ __name(() => (/* @__PURE__ */ new Date()).toISOString(), "default")
+  }),
+  __metadata("design:type", String)
+], BaseRoleModel.prototype, "createdAt", void 0);
+BaseRoleModel = __decorate([
+  (0, import_ts_repository.model)()
+], BaseRoleModel);
+var _a2;
+var RoleModel = (_a2 = class extends BaseRoleModel {
+}, __name(_a2, "RoleModel"), _a2);
+RoleModel = __decorate([
+  (0, import_ts_repository.model)()
+], RoleModel);
+
+// dist/esm/models/user-model.js
+var import_ts_repository2 = require("@e22m4u/ts-repository");
+var import_ts_projection = require("@e22m4u/ts-projection");
+var __decorate2 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata2 = function(k, v) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a3;
+var BaseUserModel = (_a3 = class {
+  id;
+  username;
+  email;
+  phone;
+  password;
+  createdAt;
+  updatedAt;
+  roleIds;
+  roles;
+}, __name(_a3, "BaseUserModel"), _a3);
+__decorate2([
+  (0, import_ts_repository2.property)({
+    type: import_ts_repository2.DataType.ANY,
+    primaryKey: true
+  }),
+  __metadata2("design:type", Object)
+], BaseUserModel.prototype, "id", void 0);
+__decorate2([
+  (0, import_ts_repository2.property)({
+    type: import_ts_repository2.DataType.STRING,
+    unique: import_ts_repository2.PropertyUniqueness.SPARSE,
+    default: ""
+  }),
+  __metadata2("design:type", String)
+], BaseUserModel.prototype, "username", void 0);
+__decorate2([
+  (0, import_ts_repository2.property)({
+    type: import_ts_repository2.DataType.STRING,
+    unique: import_ts_repository2.PropertyUniqueness.SPARSE,
+    default: ""
+  }),
+  __metadata2("design:type", String)
+], BaseUserModel.prototype, "email", void 0);
+__decorate2([
+  (0, import_ts_repository2.property)({
+    type: import_ts_repository2.DataType.STRING,
+    unique: import_ts_repository2.PropertyUniqueness.SPARSE,
+    default: ""
+  }),
+  __metadata2("design:type", String)
+], BaseUserModel.prototype, "phone", void 0);
+__decorate2([
+  (0, import_ts_repository2.property)({
+    type: import_ts_repository2.DataType.STRING,
+    default: ""
+  }),
+  (0, import_ts_projection.noOutput)(),
+  __metadata2("design:type", String)
+], BaseUserModel.prototype, "password", void 0);
+__decorate2([
+  (0, import_ts_repository2.property)({
+    type: import_ts_repository2.DataType.STRING,
+    default: /* @__PURE__ */ __name(() => (/* @__PURE__ */ new Date()).toISOString(), "default")
+  }),
+  (0, import_ts_projection.noInput)(),
+  __metadata2("design:type", String)
+], BaseUserModel.prototype, "createdAt", void 0);
+__decorate2([
+  (0, import_ts_repository2.property)({
+    type: import_ts_repository2.DataType.STRING,
+    default: /* @__PURE__ */ __name(() => (/* @__PURE__ */ new Date()).toISOString(), "default")
+  }),
+  __metadata2("design:type", String)
+], BaseUserModel.prototype, "updatedAt", void 0);
+__decorate2([
+  (0, import_ts_repository2.property)({
+    type: import_ts_repository2.DataType.ARRAY,
+    itemType: import_ts_repository2.DataType.ANY,
+    default: /* @__PURE__ */ __name(() => [], "default")
+  }),
+  __metadata2("design:type", Array)
+], BaseUserModel.prototype, "roleIds", void 0);
+__decorate2([
+  (0, import_ts_repository2.relation)({
+    type: import_ts_repository2.RelationType.REFERENCES_MANY,
+    model: RoleModel.name,
+    foreignKey: "roleIds"
+  }),
+  __metadata2("design:type", Array)
+], BaseUserModel.prototype, "roles", void 0);
+BaseUserModel = __decorate2([
+  (0, import_ts_repository2.model)()
+], BaseUserModel);
+var _a4;
+var UserModel = (_a4 = class extends BaseUserModel {
+}, __name(_a4, "UserModel"), _a4);
+UserModel = __decorate2([
+  (0, import_ts_repository2.model)()
+], UserModel);
+
+// dist/esm/models/access-token-model.js
+var import_ts_repository3 = require("@e22m4u/ts-repository");
+var __decorate3 = function(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata3 = function(k, v) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a5;
+var BaseAccessTokenModel = (_a5 = class {
+  id;
+  userAgent;
+  createdAt;
+  ownerId;
+  owner;
+}, __name(_a5, "BaseAccessTokenModel"), _a5);
+__decorate3([
+  (0, import_ts_repository3.property)({
+    type: import_ts_repository3.DataType.ANY,
+    primaryKey: true
+  }),
+  __metadata3("design:type", Object)
+], BaseAccessTokenModel.prototype, "id", void 0);
+__decorate3([
+  (0, import_ts_repository3.property)({
+    type: import_ts_repository3.DataType.STRING,
+    default: ""
+  }),
+  __metadata3("design:type", String)
+], BaseAccessTokenModel.prototype, "userAgent", void 0);
+__decorate3([
+  (0, import_ts_repository3.property)({
+    type: import_ts_repository3.DataType.STRING,
+    default: /* @__PURE__ */ __name(() => (/* @__PURE__ */ new Date()).toISOString(), "default")
+  }),
+  __metadata3("design:type", String)
+], BaseAccessTokenModel.prototype, "createdAt", void 0);
+__decorate3([
+  (0, import_ts_repository3.property)({
+    type: import_ts_repository3.DataType.ANY,
+    required: true
+  }),
+  __metadata3("design:type", Object)
+], BaseAccessTokenModel.prototype, "ownerId", void 0);
+__decorate3([
+  (0, import_ts_repository3.relation)({
+    type: import_ts_repository3.RelationType.BELONGS_TO,
+    model: UserModel.name,
+    foreignKey: "ownerId"
+  }),
+  __metadata3("design:type", Object)
+], BaseAccessTokenModel.prototype, "owner", void 0);
+BaseAccessTokenModel = __decorate3([
+  (0, import_ts_repository3.model)()
+], BaseAccessTokenModel);
+var _a6;
+var AccessTokenModel = (_a6 = class extends BaseAccessTokenModel {
+}, __name(_a6, "AccessTokenModel"), _a6);
+AccessTokenModel = __decorate3([
+  (0, import_ts_repository3.model)()
+], AccessTokenModel);
+
+// dist/esm/auth-service.js
+var import_ts_rest_router = require("@e22m4u/ts-rest-router");
+var import_ts_repository4 = require("@e22m4u/ts-repository");
+var import_ts_repository5 = require("@e22m4u/ts-repository");
+
 // dist/esm/validators/email-format-validator.js
-var import_http_errors = __toESM(require("http-errors"), 1);
+var import_http_errors3 = __toESM(require("http-errors"), 1);
 var EMAIL_FORMAT_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 var emailFormatValidator = /* @__PURE__ */ __name(function(value, localizer) {
   if (!value || typeof value !== "string" || !EMAIL_FORMAT_REGEX.test(value))
-    throw createError(import_http_errors.default.BadRequest, "INVALID_EMAIL_FORMAT", localizer.t("validators.dataFormatValidator.invalidEmailFormatError"), { email: value });
+    throw createError(import_http_errors3.default.BadRequest, "INVALID_EMAIL_FORMAT", localizer.t("validators.dataFormatValidator.invalidEmailFormatError"), { email: value });
 }, "emailFormatValidator");
 
 // dist/esm/validators/phone-format-validator.js
-var import_http_errors2 = __toESM(require("http-errors"), 1);
+var import_http_errors4 = __toESM(require("http-errors"), 1);
 var PHONE_FORMAT_REGEX = /^[+]?[0-9]{0,3}\W*[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
 var phoneFormatValidator = /* @__PURE__ */ __name(function(value, localizer) {
   if (!value || typeof value !== "string" || !PHONE_FORMAT_REGEX.test(value))
-    throw createError(import_http_errors2.default.BadRequest, "INVALID_PHONE_FORMAT", localizer.t("validators.dataFormatValidator.invalidPhoneFormatError"), { phone: value });
+    throw createError(import_http_errors4.default.BadRequest, "INVALID_PHONE_FORMAT", localizer.t("validators.dataFormatValidator.invalidPhoneFormatError"), { phone: value });
 }, "phoneFormatValidator");
 
 // dist/esm/validators/username-format-validator.js
-var import_http_errors3 = __toESM(require("http-errors"), 1);
+var import_http_errors5 = __toESM(require("http-errors"), 1);
 var MIN_USERNAME_LENGTH = 4;
 var MAX_USERNAME_LENGTH = 30;
 var usernameFormatValidator = /* @__PURE__ */ __name(function(value, localizer) {
   if (typeof value !== "string")
-    throw createError(import_http_errors3.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.invalidUsernameFormatError"), { username: value });
+    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.invalidUsernameFormatError"), { username: value });
   if (value.length < MIN_USERNAME_LENGTH)
-    throw createError(import_http_errors3.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.minUsernameLengthError"), { username: value }, MIN_USERNAME_LENGTH);
+    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.minUsernameLengthError"), { username: value }, MIN_USERNAME_LENGTH);
   if (value.length > MAX_USERNAME_LENGTH)
-    throw createError(import_http_errors3.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.maxUsernameLengthError"), { username: value }, MAX_USERNAME_LENGTH);
+    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.maxUsernameLengthError"), { username: value }, MAX_USERNAME_LENGTH);
   if (!/^[a-zA-Z]/.test(value))
-    throw createError(import_http_errors3.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.usernameStartLetterError"), { username: value });
+    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.usernameStartLetterError"), { username: value });
   if (!/^[a-zA-Z0-9]+$/.test(value))
-    throw createError(import_http_errors3.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.invalidUsernameFormatError"), { username: value });
+    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.invalidUsernameFormatError"), { username: value });
 }, "usernameFormatValidator");
 
 // dist/esm/validators/password-format-validator.js
-var import_http_errors4 = __toESM(require("http-errors"), 1);
+var import_http_errors6 = __toESM(require("http-errors"), 1);
 var MIN_PASSWORD_LENGTH = 8;
 var MAX_PASSWORD_LENGTH = 80;
 var passwordFormatValidator = /* @__PURE__ */ __name(function(value, localizer) {
   if (typeof value !== "string")
-    throw createError(import_http_errors4.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.invalidPasswordFormatError"), { password: value });
+    throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.invalidPasswordFormatError"), { password: value });
   if (value.length < MIN_PASSWORD_LENGTH)
-    throw createError(import_http_errors4.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.minPasswordLengthError"), { password: value }, MIN_PASSWORD_LENGTH);
+    throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.minPasswordLengthError"), { password: value }, MIN_PASSWORD_LENGTH);
   if (value.length > MAX_PASSWORD_LENGTH)
-    throw createError(import_http_errors4.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.maxPasswordLengthError"), { password: value }, MAX_PASSWORD_LENGTH);
+    throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.maxPasswordLengthError"), { password: value }, MAX_PASSWORD_LENGTH);
   if (!new RegExp("\\p{L}", "u").test(value) || !new RegExp("\\p{N}", "u").test(value))
-    throw createError(import_http_errors4.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.invalidPasswordFormatError"), { password: value });
+    throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.invalidPasswordFormatError"), { password: value });
 }, "passwordFormatValidator");
 
 // dist/esm/auth-service.js
@@ -1934,8 +2041,7 @@ var DEFAULT_AUTH_OPTIONS = {
   sessionUserInclusion: "roles"
 };
 async function preHandlerHook(ctx) {
-  const localizer = authLocalizer.cloneWithLocaleFromRequest(ctx.req);
-  ctx.container.set(AuthLocalizer, localizer);
+  ctx.container.use(AuthLocalizer, { httpRequest: ctx.req });
   const rootAuthService = ctx.container.getRegistered(AuthService);
   const authService = rootAuthService.cloneWithRequestContext(ctx);
   ctx.container.set(AuthService, authService);
@@ -1965,15 +2071,6 @@ var _AuthService = class _AuthService extends DebuggableService {
     if (process.env.NODE_ENV === "production" && this.options.jwtSecret === "REPLACE_ME!") {
       throw new Error("JWT secret is not set for the production environment!");
     }
-  }
-  /**
-   * Get localizer
-   */
-  getLocalizer() {
-    if (!this.requestContext || !this.requestContext.container.has(AuthLocalizer)) {
-      return authLocalizer;
-    }
-    return this.requestContext.container.getRegistered(AuthLocalizer);
   }
   /**
    * Clone with request context.
@@ -2072,7 +2169,7 @@ var _AuthService = class _AuthService extends DebuggableService {
       import_jsonwebtoken.default.sign(payload, this.options.jwtSecret, { algorithm: "HS256", expiresIn: this.options.jwtTtl }, (err, token) => {
         if (err || !token) {
           console.error(err);
-          return rej(createError(import_http_errors5.default.InternalServerError, "TOKEN_ENCODING_FAILED", "Unable to encode JSON web token", payload));
+          return rej(createError(import_http_errors7.default.InternalServerError, "TOKEN_ENCODING_FAILED", "Unable to encode JSON web token", payload));
         }
         debug("Token was %v.", token);
         debug("Token created.");
@@ -2103,7 +2200,7 @@ var _AuthService = class _AuthService extends DebuggableService {
     }
     if (error || !payload || typeof payload !== "object" || !("uid" in payload) || !("tid" in payload) || !payload.uid || !payload.tid) {
       console.error(error);
-      throw createError(import_http_errors5.default.InternalServerError, "TOKEN_VERIFYING_FAILED", "Unable to verify JSON web token", { token: jwToken, payload });
+      throw createError(import_http_errors7.default.InternalServerError, "TOKEN_VERIFYING_FAILED", "Unable to verify JSON web token", { token: jwToken, payload });
     }
     debug.inspect("Payload:", payload);
     debug("Token decoded successfully.");
@@ -2123,10 +2220,10 @@ var _AuthService = class _AuthService extends DebuggableService {
     const rep = dbs.getRepository(AccessTokenModel.name);
     const accessToken = await rep.findOne({ where: { id: tokenId }, include });
     if (!accessToken)
-      throw createError(import_http_errors5.default.InternalServerError, "ACCESS_TOKEN_NOT_FOUND", "Access token is not found in the database", { tokenId });
+      throw createError(import_http_errors7.default.InternalServerError, "ACCESS_TOKEN_NOT_FOUND", "Access token is not found in the database", { tokenId });
     debug("Owner id was %v.", accessToken.ownerId);
     if (!accessToken.ownerId)
-      throw createError(import_http_errors5.default.Unauthorized, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token has no owner", { tokenId });
+      throw createError(import_http_errors7.default.Unauthorized, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token has no owner", { tokenId });
     debug("Access token found.");
     return accessToken;
   }
@@ -2142,7 +2239,7 @@ var _AuthService = class _AuthService extends DebuggableService {
       return import_bcrypt.default.hash(password, this.options.passwordHashRounds);
     } catch (error) {
       console.error(error);
-      throw createError(import_http_errors5.default.InternalServerError, "PASSWORD_HASHING_ERROR", "Unable to hash the given password");
+      throw createError(import_http_errors7.default.InternalServerError, "PASSWORD_HASHING_ERROR", "Unable to hash the given password");
     }
   }
   /**
@@ -2154,7 +2251,7 @@ var _AuthService = class _AuthService extends DebuggableService {
    */
   async verifyPassword(password, hash, silent = false) {
     const debug = this.getDebuggerFor(this.verifyPassword);
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = "authService.verifyPassword";
     debug("Verifying password");
     let isValid = false;
@@ -2162,12 +2259,12 @@ var _AuthService = class _AuthService extends DebuggableService {
       isValid = await import_bcrypt.default.compare(password, hash);
     } catch (error) {
       console.error(error);
-      throw createError(import_http_errors5.default.InternalServerError, "PASSWORD_VERIFYING_ERROR", "Unable to verify the given password");
+      throw createError(import_http_errors7.default.InternalServerError, "PASSWORD_VERIFYING_ERROR", "Unable to verify the given password");
     }
     if (!isValid) {
       if (silent)
         return false;
-      throw createError(import_http_errors5.default.BadRequest, "PASSWORD_VERIFYING_ERROR", localizer.t(`${errorKeyPrefix}.invalidPasswordError`));
+      throw createError(import_http_errors7.default.BadRequest, "PASSWORD_VERIFYING_ERROR", localizer.t(`${errorKeyPrefix}.invalidPasswordError`));
     }
     debug("Password verified.");
     return true;
@@ -2182,7 +2279,7 @@ var _AuthService = class _AuthService extends DebuggableService {
   async findUserByLoginIds(inputData, include, silent = false) {
     const debug = this.getDebuggerFor(this.findUserByLoginIds);
     debug("Finding user by login identifiers.");
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = "authService.findUserByLoginIds";
     const where = {};
     let hasAnyLoginId = false;
@@ -2207,7 +2304,7 @@ var _AuthService = class _AuthService extends DebuggableService {
       debug("User not found.");
       if (silent)
         return;
-      throw createError(import_http_errors5.default.BadRequest, "USER_NOT_FOUND", localizer.t(`${errorKeyPrefix}.loginFailedError`));
+      throw createError(import_http_errors7.default.BadRequest, "USER_NOT_FOUND", localizer.t(`${errorKeyPrefix}.loginFailedError`));
     }
     debug("User found with id %v.", user.id);
     return user;
@@ -2222,7 +2319,7 @@ var _AuthService = class _AuthService extends DebuggableService {
   async validateLoginId(idName, idValue, ownerId) {
     const debug = this.getDebuggerFor(this.validateLoginId);
     debug("Validating login identifier in the user data input.");
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const titledIdName = idName.charAt(0).toUpperCase() + idName.slice(1);
     const errorKeyPrefix = "authService.validateLoginId";
     debug("Given id name was %v.", idName);
@@ -2235,7 +2332,7 @@ var _AuthService = class _AuthService extends DebuggableService {
       const duplicate = await this.findUserByLoginIds({ [idName]: idValue }, void 0, true);
       if (duplicate && duplicate.id !== ownerId) {
         const errorKey = `${errorKeyPrefix}.duplicate${titledIdName}Error`;
-        throw createError(import_http_errors5.default.BadRequest, "DUPLICATE_LOGIN_IDENTIFIER", localizer.t(errorKey));
+        throw createError(import_http_errors7.default.BadRequest, "DUPLICATE_LOGIN_IDENTIFIER", localizer.t(errorKey));
       }
       debug("No duplicates found.");
     }
@@ -2250,7 +2347,7 @@ var _AuthService = class _AuthService extends DebuggableService {
   requireAnyLoginId(data, partial = false) {
     const debug = this.getDebuggerFor(this.requireAnyLoginId);
     debug("Require any login identifier.");
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = "authService.requireAnyLoginId";
     if (partial) {
       debug("Partial mode was enabled.");
@@ -2266,8 +2363,8 @@ var _AuthService = class _AuthService extends DebuggableService {
       const idFields = LOGIN_ID_NAMES.filter((id) => id in data);
       const singleIdField = idFields.length === 1 ? idFields[0] : void 0;
       if (singleIdField && data[singleIdField] === "")
-        throw createError(import_http_errors5.default.BadRequest, singleIdField.toUpperCase() + "_REQUIRED", localizer.t(`${errorKeyPrefix}.${singleIdField}RequiredError`));
-      throw createError(import_http_errors5.default.BadRequest, "LOGIN_IDENTIFIER_REQUIRED", localizer.t(`${errorKeyPrefix}.identifierRequiredError`));
+        throw createError(import_http_errors7.default.BadRequest, singleIdField.toUpperCase() + "_REQUIRED", localizer.t(`${errorKeyPrefix}.${singleIdField}RequiredError`));
+      throw createError(import_http_errors7.default.BadRequest, "LOGIN_IDENTIFIER_REQUIRED", localizer.t(`${errorKeyPrefix}.identifierRequiredError`));
     }
   }
   /**
@@ -2280,7 +2377,7 @@ var _AuthService = class _AuthService extends DebuggableService {
   async createUser(inputData, filter) {
     const debug = this.getDebuggerFor(this.createUser);
     debug("Creating user.");
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     inputData = JSON.parse(JSON.stringify(inputData));
     LOGIN_ID_NAMES.forEach((idName) => {
       if (typeof inputData[idName] === "string")
@@ -2315,13 +2412,13 @@ var _AuthService = class _AuthService extends DebuggableService {
     debug("Updating user.");
     debug("User id was %v.", userId);
     inputData = JSON.parse(JSON.stringify(inputData));
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = "authService.updateUser";
     const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
     const userRep = dbs.getRepository(UserModel.name);
     const existingUser = await userRep.findOne({ where: { id: userId } });
     if (!existingUser)
-      throw createError(import_http_errors5.default.BadRequest, "USER_NOT_FOUND", localizer.t(`${errorKeyPrefix}.userNotFoundError`));
+      throw createError(import_http_errors7.default.BadRequest, "USER_NOT_FOUND", localizer.t(`${errorKeyPrefix}.userNotFoundError`));
     LOGIN_ID_NAMES.forEach((idName) => {
       if (typeof inputData[idName] === "string")
         inputData[idName] = inputData[idName].trim();
@@ -2364,7 +2461,7 @@ var _AuthService = class _AuthService extends DebuggableService {
     const payload = await this.decodeJwt(jwToken);
     const accessToken = await this.findAccessTokenById(payload.tid, include);
     if (accessToken.ownerId !== payload.uid)
-      throw createError(import_http_errors5.default.BadRequest, "INVALID_ACCESS_TOKEN_OWNER", "Your access token not match its owner", payload);
+      throw createError(import_http_errors7.default.BadRequest, "INVALID_ACCESS_TOKEN_OWNER", "Your access token not match its owner", payload);
     debug("Access token found.");
     debug("Token id was %v.", accessToken.id);
     debug("Owner id was %v.", accessToken.ownerId);
@@ -2379,7 +2476,7 @@ var _AuthService = class _AuthService extends DebuggableService {
     const debug = this.getDebuggerFor(this.findAccessTokenOwner);
     debug("Finding access token owner.");
     if (!accessToken.ownerId)
-      throw createError(import_http_errors5.default.BadRequest, "NO_ACCESS_TOKEN_OWNER", "Your access token does not have an owner", accessToken);
+      throw createError(import_http_errors7.default.BadRequest, "NO_ACCESS_TOKEN_OWNER", "Your access token does not have an owner", accessToken);
     const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
     const rep = dbs.getRepository(UserModel.name);
     const owner = await rep.findOne({
@@ -2387,7 +2484,7 @@ var _AuthService = class _AuthService extends DebuggableService {
       include
     });
     if (!owner)
-      throw createError(import_http_errors5.default.BadRequest, "NO_ACCESS_TOKEN_OWNER", "Your access token does not have an owner", accessToken);
+      throw createError(import_http_errors7.default.BadRequest, "NO_ACCESS_TOKEN_OWNER", "Your access token does not have an owner", accessToken);
     debug("Owner found with id %v.", owner.id);
     return owner;
   }
@@ -2408,117 +2505,6 @@ var _AuthService = class _AuthService extends DebuggableService {
 };
 __name(_AuthService, "AuthService");
 var AuthService = _AuthService;
-
-// dist/esm/auth-session.js
-var _AuthSession = class _AuthSession extends DebuggableService {
-  /**
-   * Access token.
-   */
-  accessToken;
-  /**
-   * User.
-   */
-  user;
-  /**
-   * Is logged in.
-   */
-  get isLoggedIn() {
-    return Boolean(this.accessToken) && Boolean(this.user);
-  }
-  /**
-   * Get localizer.
-   */
-  getLocalizer() {
-    return this.getService(AuthService).getLocalizer();
-  }
-  /**
-   * Constructor.
-   *
-   * @param user
-   */
-  constructor(container, accessToken, user) {
-    super(container);
-    this.accessToken = accessToken;
-    this.user = user;
-  }
-  /**
-   * Get user.
-   */
-  getUser() {
-    if (!this.user) {
-      const localizer = this.getLocalizer();
-      throw createError(import_http_errors6.default.Unauthorized, "AUTHENTICATION_REQUIRED", localizer.t("authSession.getUser.authenticationRequired"));
-    }
-    return this.user;
-  }
-  /**
-   * User id.
-   */
-  getUserId() {
-    return this.getUser().id;
-  }
-  /**
-   * Get user roles.
-   */
-  getUserRoles() {
-    return this.getUser().roles || [];
-  }
-  /**
-   * Get role names.
-   */
-  getRoleNames() {
-    return this.getUserRoles().map((v) => v.name).filter((v) => typeof v === "string");
-  }
-  /**
-   * Get access token.
-   */
-  getAccessToken() {
-    if (!this.accessToken) {
-      const localizer = this.getLocalizer();
-      throw createError(import_http_errors6.default.Unauthorized, "AUTHENTICATION_REQUIRED", localizer.t("authSession.getAccessTokenId.authenticationRequired"));
-    }
-    return this.accessToken;
-  }
-  /**
-   * Access token id.
-   */
-  getAccessTokenId() {
-    return this.getAccessToken().id;
-  }
-};
-__name(_AuthSession, "AuthSession");
-var AuthSession = _AuthSession;
-
-// dist/esm/hooks/role-guard.js
-var AccessRule = {
-  AUTHENTICATED: "$authenticated"
-};
-function roleGuard(roleName) {
-  return function(ctx) {
-    const debug = debugFn.withNs(roleGuard.name).withHash();
-    debug("Role checking for %s %v.", ctx.method, ctx.path);
-    const localizer = ctx.container.getRegistered(AuthLocalizer);
-    const session = ctx.container.getRegistered(AuthSession);
-    if (!session.isLoggedIn)
-      throw createError(import_http_errors7.default.Unauthorized, "AUTHORIZATION_REQUIRED", localizer.t("roleGuard.authenticationRequired"));
-    debug("User id was %v.", session.getUserId());
-    const roleNames = [roleName].flat().filter(Boolean);
-    if (!roleNames.length || roleNames.includes(AccessRule.AUTHENTICATED)) {
-      debug("No required role given.");
-      return;
-    } else if (roleNames.length === 1) {
-      debug("Required role was %v.", roleNames[0]);
-    } else if (roleNames.length > 1) {
-      debug("Required roles was %l.", roleNames);
-    }
-    const userRoles = session.getRoleNames();
-    const isAllowed = userRoles.some((v) => roleNames.includes(v));
-    if (!isAllowed)
-      throw createError(import_http_errors7.default.Forbidden, "ROLE_NOT_ALLOWED", localizer.t("roleGuard.roleNotAllowed"));
-    debug("Access allowed.");
-  };
-}
-__name(roleGuard, "roleGuard");
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/data-schema.js
 var DataType4 = {
@@ -2854,7 +2840,6 @@ __name(requireRole, "requireRole");
   RoleModel,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA,
   UserModel,
-  authLocalizer,
   requireRole,
   roleGuard
 });

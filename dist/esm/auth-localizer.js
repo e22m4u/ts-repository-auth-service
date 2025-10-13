@@ -5,10 +5,10 @@ import ru from './locales/ru.json' with { type: 'json' };
  * Auth localizer.
  */
 export class AuthLocalizer extends Localizer {
+    constructor(container, options) {
+        super(container, {
+            dictionaries: { en, ru },
+            ...options,
+        });
+    }
 }
-/**
- * Instance of AuthLocalizer.
- */
-export const authLocalizer = new AuthLocalizer({
-    dictionaries: { en, ru },
-});

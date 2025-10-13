@@ -11,7 +11,6 @@ import {WithoutId} from '@e22m4u/ts-repository';
 import {BaseRoleModel} from './models/index.js';
 import {BaseUserModel} from './models/index.js';
 import {removeEmptyKeys} from './utils/index.js';
-import {authLocalizer} from './auth-localizer.js';
 import {AuthLocalizer} from './auth-localizer.js';
 import {WhereClause} from '@e22m4u/ts-repository';
 import {RestRouter} from '@e22m4u/ts-rest-router';
@@ -149,8 +148,7 @@ export type JwtIssueResult = {
  */
 async function preHandlerHook(ctx: RequestContext) {
   // инъекция экземпляра переводчика в контейнер контекста запроса
-  const localizer = authLocalizer.cloneWithLocaleFromRequest(ctx.req);
-  ctx.container.set(AuthLocalizer, localizer);
+  ctx.container.use(AuthLocalizer, {httpRequest: ctx.req});
   // в контейнере запроса нет AuthService, но сервис есть в контейнере
   // приложения, который является родителем для контейнера запроса,
   // поэтому извлечение AuthService из контейнера запроса возвращает
@@ -202,19 +200,6 @@ export class AuthService extends DebuggableService {
     ) {
       throw new Error('JWT secret is not set for the production environment!');
     }
-  }
-
-  /**
-   * Get localizer
-   */
-  getLocalizer() {
-    if (
-      !this.requestContext ||
-      !this.requestContext.container.has(AuthLocalizer)
-    ) {
-      return authLocalizer;
-    }
-    return this.requestContext.container.getRegistered(AuthLocalizer);
   }
 
   /**
@@ -506,7 +491,7 @@ export class AuthService extends DebuggableService {
     silent = false,
   ): Promise<boolean> {
     const debug = this.getDebuggerFor(this.verifyPassword);
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = 'authService.verifyPassword';
     debug('Verifying password');
     let isValid = false;
@@ -597,7 +582,7 @@ export class AuthService extends DebuggableService {
   ): Promise<T | undefined> {
     const debug = this.getDebuggerFor(this.findUserByLoginIds);
     debug('Finding user by login identifiers.');
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = 'authService.findUserByLoginIds';
     // формирование условий выборки
     const where: WhereClause = {};
@@ -649,7 +634,7 @@ export class AuthService extends DebuggableService {
   ): Promise<void> {
     const debug = this.getDebuggerFor(this.validateLoginId);
     debug('Validating login identifier in the user data input.');
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const titledIdName = idName.charAt(0).toUpperCase() + idName.slice(1);
     const errorKeyPrefix = 'authService.validateLoginId';
     debug('Given id name was %v.', idName);
@@ -689,7 +674,7 @@ export class AuthService extends DebuggableService {
   requireAnyLoginId(data: Record<string, unknown>, partial = false) {
     const debug = this.getDebuggerFor(this.requireAnyLoginId);
     debug('Require any login identifier.');
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = 'authService.requireAnyLoginId';
     if (partial) {
       debug('Partial mode was enabled.');
@@ -739,7 +724,7 @@ export class AuthService extends DebuggableService {
   ): Promise<T> {
     const debug = this.getDebuggerFor(this.createUser);
     debug('Creating user.');
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     inputData = JSON.parse(JSON.stringify(inputData));
     // обрезка пробелов в идентификаторах
     LOGIN_ID_NAMES.forEach(idName => {
@@ -784,7 +769,7 @@ export class AuthService extends DebuggableService {
     debug('Updating user.');
     debug('User id was %v.', userId);
     inputData = JSON.parse(JSON.stringify(inputData));
-    const localizer = this.getLocalizer();
+    const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = 'authService.updateUser';
     const dbs = this.getRegisteredService(DatabaseSchema);
     const userRep = dbs.getRepository<BaseUserModel>(UserModel.name);

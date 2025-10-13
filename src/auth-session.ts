@@ -1,7 +1,7 @@
 import HttpErrors from 'http-errors';
 import {createError} from './utils/index.js';
-import {AuthService} from './auth-service.js';
 import {UserModel} from './models/user-model.js';
+import {AuthLocalizer} from './auth-localizer.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {BaseUserModel} from './models/user-model.js';
 import {BaseRoleModel} from './models/role-model.js';
@@ -34,13 +34,6 @@ export class AuthSession<
   }
 
   /**
-   * Get localizer.
-   */
-  getLocalizer() {
-    return this.getService(AuthService).getLocalizer();
-  }
-
-  /**
    * Constructor.
    *
    * @param user
@@ -60,7 +53,7 @@ export class AuthSession<
    */
   getUser(): UserType {
     if (!this.user) {
-      const localizer = this.getLocalizer();
+      const localizer = this.getService(AuthLocalizer);
       throw createError(
         HttpErrors.Unauthorized,
         'AUTHENTICATION_REQUIRED',
@@ -98,7 +91,7 @@ export class AuthSession<
    */
   getAccessToken(): TokenType {
     if (!this.accessToken) {
-      const localizer = this.getLocalizer();
+      const localizer = this.getService(AuthLocalizer);
       throw createError(
         HttpErrors.Unauthorized,
         'AUTHENTICATION_REQUIRED',

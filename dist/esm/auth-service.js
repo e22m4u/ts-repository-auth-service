@@ -9,7 +9,6 @@ import { AuthSession } from './auth-session.js';
 import { BaseRoleModel } from './models/index.js';
 import { BaseUserModel } from './models/index.js';
 import { removeEmptyKeys } from './utils/index.js';
-import { authLocalizer } from './auth-localizer.js';
 import { AuthLocalizer } from './auth-localizer.js';
 import { RestRouter } from '@e22m4u/ts-rest-router';
 import { AccessTokenModel } from './models/index.js';
@@ -68,8 +67,7 @@ export const DEFAULT_AUTH_OPTIONS = {
  */
 async function preHandlerHook(ctx) {
     // инъекция экземпляра переводчика в контейнер контекста запроса
-    const localizer = authLocalizer.cloneWithLocaleFromRequest(ctx.req);
-    ctx.container.set(AuthLocalizer, localizer);
+    ctx.container.use(AuthLocalizer, { httpRequest: ctx.req });
     // в контейнере запроса нет AuthService, но сервис есть в контейнере
     // приложения, который является родителем для контейнера запроса,
     // поэтому извлечение AuthService из контейнера запроса возвращает
@@ -112,16 +110,6 @@ export class AuthService extends DebuggableService {
             this.options.jwtSecret === 'REPLACE_ME!') {
             throw new Error('JWT secret is not set for the production environment!');
         }
-    }
-    /**
-     * Get localizer
-     */
-    getLocalizer() {
-        if (!this.requestContext ||
-            !this.requestContext.container.has(AuthLocalizer)) {
-            return authLocalizer;
-        }
-        return this.requestContext.container.getRegistered(AuthLocalizer);
     }
     /**
      * Clone with request context.
@@ -312,7 +300,7 @@ export class AuthService extends DebuggableService {
      */
     async verifyPassword(password, hash, silent = false) {
         const debug = this.getDebuggerFor(this.verifyPassword);
-        const localizer = this.getLocalizer();
+        const localizer = this.getService(AuthLocalizer);
         const errorKeyPrefix = 'authService.verifyPassword';
         debug('Verifying password');
         let isValid = false;
@@ -341,7 +329,7 @@ export class AuthService extends DebuggableService {
     async findUserByLoginIds(inputData, include, silent = false) {
         const debug = this.getDebuggerFor(this.findUserByLoginIds);
         debug('Finding user by login identifiers.');
-        const localizer = this.getLocalizer();
+        const localizer = this.getService(AuthLocalizer);
         const errorKeyPrefix = 'authService.findUserByLoginIds';
         // формирование условий выборки
         const where = {};
@@ -386,7 +374,7 @@ export class AuthService extends DebuggableService {
     async validateLoginId(idName, idValue, ownerId) {
         const debug = this.getDebuggerFor(this.validateLoginId);
         debug('Validating login identifier in the user data input.');
-        const localizer = this.getLocalizer();
+        const localizer = this.getService(AuthLocalizer);
         const titledIdName = idName.charAt(0).toUpperCase() + idName.slice(1);
         const errorKeyPrefix = 'authService.validateLoginId';
         debug('Given id name was %v.', idName);
@@ -417,7 +405,7 @@ export class AuthService extends DebuggableService {
     requireAnyLoginId(data, partial = false) {
         const debug = this.getDebuggerFor(this.requireAnyLoginId);
         debug('Require any login identifier.');
-        const localizer = this.getLocalizer();
+        const localizer = this.getService(AuthLocalizer);
         const errorKeyPrefix = 'authService.requireAnyLoginId';
         if (partial) {
             debug('Partial mode was enabled.');
@@ -455,7 +443,7 @@ export class AuthService extends DebuggableService {
     async createUser(inputData, filter) {
         const debug = this.getDebuggerFor(this.createUser);
         debug('Creating user.');
-        const localizer = this.getLocalizer();
+        const localizer = this.getService(AuthLocalizer);
         inputData = JSON.parse(JSON.stringify(inputData));
         // обрезка пробелов в идентификаторах
         LOGIN_ID_NAMES.forEach(idName => {
@@ -495,7 +483,7 @@ export class AuthService extends DebuggableService {
         debug('Updating user.');
         debug('User id was %v.', userId);
         inputData = JSON.parse(JSON.stringify(inputData));
-        const localizer = this.getLocalizer();
+        const localizer = this.getService(AuthLocalizer);
         const errorKeyPrefix = 'authService.updateUser';
         const dbs = this.getRegisteredService(DatabaseSchema);
         const userRep = dbs.getRepository(UserModel.name);
