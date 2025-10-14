@@ -54,7 +54,7 @@
   },
   "peerDependencies": {
     "@e22m4u/ts-repository": "~0.1.0",
-    "@e22m4u/ts-rest-router": "~0.6.0"
+    "@e22m4u/ts-rest-router": "~0.6.4"
   },
   "devDependencies": {
     "@commitlint/cli": "~20.1.0",

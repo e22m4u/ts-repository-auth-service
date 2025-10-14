@@ -2506,7 +2506,7 @@ var _AuthService = class _AuthService extends DebuggableService {
 __name(_AuthService, "AuthService");
 var AuthService = _AuthService;
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/data-schema.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/data-schema.js
 var DataType4 = {
   ANY: "any",
   STRING: "string",
@@ -2516,10 +2516,10 @@ var DataType4 = {
   OBJECT: "object"
 };
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/errors/type-cast-error.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/errors/type-cast-error.js
 var import_js_format6 = require("@e22m4u/js-format");
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/utils/get-data-schema-from-class.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/utils/get-data-schema-from-class.js
 var import_js_format5 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/ts-reflector/dist/esm/reflector.js
@@ -2669,11 +2669,11 @@ var _MetadataKey = class _MetadataKey {
 __name(_MetadataKey, "MetadataKey");
 var MetadataKey = _MetadataKey;
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/decorators/data-schema-metadata.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/decorators/data-schema-metadata.js
 var DATA_SCHEMA_CLASS_METADATA_KEY = new MetadataKey("dataSchemaClassMetadataKey");
 var DATA_SCHEMA_PROPERTIES_METADATA_KEY = new MetadataKey("dataSchemaPropertiesMetadataKey");
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/decorators/data-schema-reflector.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/decorators/data-schema-reflector.js
 var _DataSchemaReflector = class _DataSchemaReflector {
   /**
    * Set metadata.
@@ -2713,7 +2713,7 @@ var _DataSchemaReflector = class _DataSchemaReflector {
 __name(_DataSchemaReflector, "DataSchemaReflector");
 var DataSchemaReflector = _DataSchemaReflector;
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/decorators/data-schema-decorators.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/decorators/data-schema-decorators.js
 var import_js_format4 = require("@e22m4u/js-format");
 var DECORATOR_PROPERTY_TARGET_ERROR_MESSAGE = "@%s decorator is only supported on an instance property.";
 var REDUNDANT_TYPE_OPTION_ERROR_MESSAGE = 'The option "type" is not supported in the @%s decorator.';
@@ -2760,17 +2760,17 @@ var dsString = createDataSchemaPropertyDecoratorWithDataType("dsString", DataTyp
 var dsNumber = createDataSchemaPropertyDecoratorWithDataType("dsNumber", DataType4.NUMBER);
 var dsBoolean = createDataSchemaPropertyDecoratorWithDataType("dsBoolean", DataType4.BOOLEAN);
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/errors/validation-error.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/errors/validation-error.js
 var import_js_format7 = require("@e22m4u/js-format");
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/errors/decorator-target-error.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/errors/decorator-target-error.js
 var import_js_format8 = require("@e22m4u/js-format");
 var _DecoratorTargetError = class _DecoratorTargetError extends import_js_format8.Errorf {
 };
 __name(_DecoratorTargetError, "DecoratorTargetError");
 var DecoratorTargetError = _DecoratorTargetError;
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/data-validator.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/data-validator.js
 var import_js_format10 = require("@e22m4u/js-format");
 var import_js_format11 = require("@e22m4u/js-format");
 
@@ -2778,10 +2778,10 @@ var import_js_format11 = require("@e22m4u/js-format");
 var import_js_format9 = require("@e22m4u/js-format");
 var import_js_service2 = require("@e22m4u/js-service");
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/debuggable-service.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/debuggable-service.js
 var import_js_service3 = require("@e22m4u/js-service");
 
-// node_modules/@e22m4u/ts-data-schema/dist/esm/data-type-caster.js
+// node_modules/@e22m4u/js-data-schema/dist/esm/data-type-caster.js
 var import_js_format12 = require("@e22m4u/js-format");
 
 // dist/esm/schemas/jwt-issue-result-schema.js
