@@ -7,7 +7,6 @@ import {UserModel} from './models/index.js';
 import {createError} from './utils/index.js';
 import {AuthSession} from './auth-session.js';
 import {Localizer} from '@e22m4u/js-localizer';
-import {WithoutId} from '@e22m4u/ts-repository';
 import {BaseRoleModel} from './models/index.js';
 import {BaseUserModel} from './models/index.js';
 import {removeEmptyKeys} from './utils/index.js';
@@ -18,6 +17,7 @@ import {AccessTokenModel} from './models/index.js';
 import {FilterClause} from '@e22m4u/ts-repository';
 import {IncludeClause} from '@e22m4u/ts-repository';
 import {ServiceContainer} from '@e22m4u/js-service';
+import {WithOptionalId} from '@e22m4u/ts-repository';
 import {DatabaseSchema} from '@e22m4u/ts-repository';
 import {RequestContext} from '@e22m4u/ts-rest-router';
 import {BaseAccessTokenModel} from './models/index.js';
@@ -384,13 +384,13 @@ export class AuthService extends DebuggableService {
    */
   async findAccessTokenById<T extends BaseAccessTokenModel>(
     tokenId: string,
-    include?: IncludeClause,
+    include?: IncludeClause<T>,
   ): Promise<T> {
     const debug = this.getDebuggerFor(this.findAccessTokenById);
     debug('Finding access token by id.');
     debug('Token id was %v.', tokenId);
     const dbs = this.getRegisteredService(DatabaseSchema);
-    const rep = dbs.getRepository<BaseAccessTokenModel>(AccessTokenModel.name);
+    const rep = dbs.getRepository<T>(AccessTokenModel.name);
     const accessToken = await rep.findOne({where: {id: tokenId}, include});
     if (!accessToken)
       throw createError(
@@ -577,7 +577,7 @@ export class AuthService extends DebuggableService {
    */
   async findUserByLoginIds<T extends BaseUserModel>(
     inputData: LoginIdsFilter,
-    include?: IncludeClause,
+    include?: IncludeClause<T>,
     silent = false,
   ): Promise<T | undefined> {
     const debug = this.getDebuggerFor(this.findUserByLoginIds);
@@ -605,7 +605,7 @@ export class AuthService extends DebuggableService {
       this.requireAnyLoginId(inputData);
     }
     const dbs = this.getRegisteredService(DatabaseSchema);
-    const userRep = dbs.getRepository<BaseUserModel>(UserModel.name);
+    const userRep = dbs.getRepository<T>(UserModel.name);
     const user = await userRep.findOne({where, include});
     if (!user) {
       debug('User not found.');
@@ -718,9 +718,9 @@ export class AuthService extends DebuggableService {
    * @param data
    * @param filter
    */
-  async createUser<T extends BaseUserModel, V extends WithoutId<T>>(
-    inputData: V,
-    filter?: FilterClause,
+  async createUser<T extends BaseUserModel>(
+    inputData: WithOptionalId<T>,
+    filter?: FilterClause<T>,
   ): Promise<T> {
     const debug = this.getDebuggerFor(this.createUser);
     debug('Creating user.');
@@ -745,7 +745,7 @@ export class AuthService extends DebuggableService {
     inputData.createdAt = new Date().toISOString();
     // создание пользователя
     const dbs = this.getRegisteredService(DatabaseSchema);
-    const userRep = dbs.getRepository<BaseUserModel>(UserModel.name);
+    const userRep = dbs.getRepository<T>(UserModel.name);
     const res = await userRep.create(inputData, filter);
     debug('User created.');
     debug('User id was %v.', res.id);
@@ -763,7 +763,7 @@ export class AuthService extends DebuggableService {
   async updateUser<T extends BaseUserModel>(
     userId: T['id'],
     inputData: Partial<T>,
-    filter?: FilterClause,
+    filter?: FilterClause<T>,
   ): Promise<T> {
     const debug = this.getDebuggerFor(this.updateUser);
     debug('Updating user.');
@@ -772,7 +772,7 @@ export class AuthService extends DebuggableService {
     const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = 'authService.updateUser';
     const dbs = this.getRegisteredService(DatabaseSchema);
-    const userRep = dbs.getRepository<BaseUserModel>(UserModel.name);
+    const userRep = dbs.getRepository<T>(UserModel.name);
     const existingUser = await userRep.findOne({where: {id: userId}});
     if (!existingUser)
       throw createError(
@@ -817,7 +817,7 @@ export class AuthService extends DebuggableService {
    */
   async findAccessTokenByRequestContext<T extends BaseAccessTokenModel>(
     ctx: RequestContext,
-    include?: IncludeClause,
+    include?: IncludeClause<T>,
   ): Promise<T | undefined> {
     const debug = this.getDebuggerFor(this.findAccessTokenByRequestContext);
     debug('Finding access token by request context.');
@@ -854,7 +854,7 @@ export class AuthService extends DebuggableService {
    */
   async findAccessTokenOwner<T extends BaseUserModel>(
     accessToken: BaseAccessTokenModel,
-    include?: IncludeClause,
+    include?: IncludeClause<T>,
   ): Promise<T> {
     const debug = this.getDebuggerFor(this.findAccessTokenOwner);
     debug('Finding access token owner.');
@@ -866,7 +866,7 @@ export class AuthService extends DebuggableService {
         accessToken,
       );
     const dbs = this.getRegisteredService(DatabaseSchema);
-    const rep = dbs.getRepository<BaseUserModel>(UserModel.name);
+    const rep = dbs.getRepository<T>(UserModel.name);
     const owner = await rep.findOne({
       where: {id: accessToken.ownerId},
       include,
@@ -892,7 +892,7 @@ export class AuthService extends DebuggableService {
     if (accessToken) {
       const user = await this.findAccessTokenOwner(
         accessToken,
-        this.options.sessionUserInclusion,
+        this.options.sessionUserInclusion as IncludeClause<BaseUserModel>,
       );
       return new AuthSession(ctx.container, accessToken, user);
     } else {
