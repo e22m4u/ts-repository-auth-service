@@ -526,7 +526,7 @@ export class AuthService extends DebuggableService {
    */
   async findUserByLoginIds<T extends BaseUserModel>(
     lookup: LoginIdsFilter,
-    include?: IncludeClause,
+    include?: IncludeClause<T>,
   ): Promise<T>;
 
   /**
@@ -538,7 +538,7 @@ export class AuthService extends DebuggableService {
    */
   async findUserByLoginIds<T extends BaseUserModel>(
     lookup: LoginIdsFilter,
-    include: IncludeClause | undefined,
+    include: IncludeClause<T> | undefined,
     silent: false,
   ): Promise<T>;
 
@@ -551,7 +551,7 @@ export class AuthService extends DebuggableService {
    */
   async findUserByLoginIds<T extends BaseUserModel>(
     lookup: LoginIdsFilter,
-    include: IncludeClause | undefined,
+    include: IncludeClause<T> | undefined,
     silent: true,
   ): Promise<T | undefined>;
 
@@ -564,7 +564,7 @@ export class AuthService extends DebuggableService {
    */
   async findUserByLoginIds<T extends BaseUserModel>(
     lookup: LoginIdsFilter,
-    include?: IncludeClause,
+    include?: IncludeClause<T>,
     silent?: boolean,
   ): Promise<T | undefined>;
 

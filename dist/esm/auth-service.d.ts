@@ -185,7 +185,7 @@ export declare class AuthService extends DebuggableService {
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include?: IncludeClause): Promise<T>;
+    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include?: IncludeClause<T>): Promise<T>;
     /**
      * Find user by login ids.
      *
@@ -193,7 +193,7 @@ export declare class AuthService extends DebuggableService {
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include: IncludeClause | undefined, silent: false): Promise<T>;
+    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include: IncludeClause<T> | undefined, silent: false): Promise<T>;
     /**
      * Find user by login ids.
      *
@@ -201,7 +201,7 @@ export declare class AuthService extends DebuggableService {
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include: IncludeClause | undefined, silent: true): Promise<T | undefined>;
+    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include: IncludeClause<T> | undefined, silent: true): Promise<T | undefined>;
     /**
      * Find user by login ids.
      *
@@ -209,7 +209,7 @@ export declare class AuthService extends DebuggableService {
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include?: IncludeClause, silent?: boolean): Promise<T | undefined>;
+    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include?: IncludeClause<T>, silent?: boolean): Promise<T | undefined>;
     /**
      * Validate login id.
      *
