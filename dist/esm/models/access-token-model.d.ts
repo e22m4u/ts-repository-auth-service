@@ -14,3 +14,7 @@ export declare class BaseAccessTokenModel<IdType = number | string, UserType ext
  */
 export declare class AccessTokenModel<IdType = number | string, UserType extends BaseUserModel = BaseUserModel> extends BaseAccessTokenModel<IdType, UserType> {
 }
+/**
+ * Access token model definition.
+ */
+export declare const ACCESS_TOKEN_MODEL_DEF: import("@e22m4u/ts-repository").ModelDefinition;

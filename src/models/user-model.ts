@@ -1,3 +1,6 @@
+import {noInput, noOutput} from '@e22m4u/ts-projection';
+import {RoleModel, BaseRoleModel} from './role-model.js';
+
 import {
   model,
   property,
@@ -5,11 +8,8 @@ import {
   DataType,
   RelationType,
   PropertyUniqueness,
+  getModelDefinitionFromClass,
 } from '@e22m4u/ts-repository';
-
-import {noInput, noOutput} from '@e22m4u/ts-projection';
-
-import {RoleModel, BaseRoleModel} from './role-model.js';
 
 /**
  * Base user model.
@@ -89,3 +89,8 @@ export class UserModel<
   IdType = number | string,
   RoleModel extends BaseRoleModel = BaseRoleModel,
 > extends BaseUserModel<IdType, RoleModel> {}
+
+/**
+ * User model definition.
+ */
+export const USER_MODE_DEF = getModelDefinitionFromClass(UserModel);

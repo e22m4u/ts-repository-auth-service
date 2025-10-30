@@ -12,9 +12,7 @@ import {createError, removeEmptyKeys} from './utils/index.js';
 
 import {
   DatabaseSchema,
-  DefinitionRegistry,
   FilterClause,
-  getModelDefinitionFromClass,
   IncludeClause,
   WhereClause,
   WithOptionalId,
@@ -23,9 +21,7 @@ import {
 import {
   AccessTokenModel,
   BaseAccessTokenModel,
-  BaseRoleModel,
   BaseUserModel,
-  RoleModel,
   UserModel,
 } from './models/index.js';
 
@@ -35,25 +31,6 @@ import {
   phoneFormatValidator,
   usernameFormatValidator,
 } from './validators/index.js';
-
-/**
- * Auth model list.
- */
-const AUTH_MODEL_LIST = [
-  BaseRoleModel,
-  BaseUserModel,
-  BaseAccessTokenModel,
-  RoleModel,
-  UserModel,
-  AccessTokenModel,
-];
-
-/**
- * Register models options.
- */
-type RegisterModelsOptions = {
-  datasource?: string;
-};
 
 /**
  * Login id names.
@@ -175,29 +152,6 @@ export class AuthService extends DebuggableService {
     ) {
       throw new Error('JWT secret is not set for the production environment!');
     }
-  }
-
-  /**
-   * Register models.
-   */
-  registerModels(options?: RegisterModelsOptions) {
-    const debug = this.getDebuggerFor(this.registerModels);
-    debug('Registering models.');
-    const dbs = this.getRegisteredService(DatabaseSchema);
-    const defReg = dbs.getService(DefinitionRegistry);
-    AUTH_MODEL_LIST.forEach(modelCtor => {
-      if (defReg.hasModel(modelCtor.name)) {
-        debug('%s skipped, already registered.', modelCtor.name);
-      } else {
-        const modelDef = getModelDefinitionFromClass(modelCtor);
-        dbs.defineModel({
-          ...modelDef,
-          datasource: options?.datasource,
-        });
-        debug('%s registered.', modelCtor.name);
-      }
-    });
-    debug('Models registered.');
   }
 
   /**

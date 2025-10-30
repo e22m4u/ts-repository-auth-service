@@ -1,9 +1,18 @@
+import http from 'http';
+import {Service, ServiceContainer} from '@e22m4u/js-service';
+import {DatabaseSchema, WithoutId} from '@e22m4u/ts-repository';
+import {requestBodyWithModel} from '@e22m4u/ts-rest-router-repository';
+
 import {
   UserModel,
   AuthService,
   AuthSession,
   UserLookupWithPassword,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA,
+  ACCESS_TOKEN_MODEL_DEF,
+  ROLE_MODEL_DEF,
+  USER_MODE_DEF,
+  AuthLocalizer,
 } from '../src/index.js'; // @e22m4u/ts-rest-router-auth
 
 import {
@@ -12,26 +21,29 @@ import {
   postAction,
   requestBody,
   restController,
-  RestRouter
+  RestRouter,
+  RouterHookType,
 } from '@e22m4u/ts-rest-router';
-
-import http from 'http';
-import {Service, ServiceContainer} from '@e22m4u/js-service';
-import {DatabaseSchema, WithoutId} from '@e22m4u/ts-repository';
-import {requestBodyWithModel} from '@e22m4u/ts-rest-router-repository';
 
 const app = new ServiceContainer();
 const router = app.get(RestRouter);
 const dbs = app.get(DatabaseSchema);
 
 dbs.defineDatasource({
-  name: 'memory',
+  name: 'main',
   adapter: 'memory',
 });
 
-const authService = app.get(AuthService);
-authService.registerModels({datasource: 'memory'});
-authService.registerRequestHooks();
+dbs.defineModel({...ACCESS_TOKEN_MODEL_DEF, datasource: 'main'});
+dbs.defineModel({...ROLE_MODEL_DEF, datasource: 'main'});
+dbs.defineModel({...USER_MODE_DEF, datasource: 'main'});
+
+router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
+  const authService = ctx.container.get(AuthService);
+  const authSession = await authService.createAuthSession(ctx);
+  const authLocalizer = authService.getService(AuthLocalizer);
+  ctx.container.set(AuthSession, authSession);
+});
 
 @restController('users')
 class UserController extends Service {
@@ -75,7 +87,7 @@ class UserController extends Service {
     const session = this.getRegisteredService(AuthSession);
     return session.getUser();
   }
-  
+
   // PATCH /users/profile
   @patchAction('profile')
   patchProfile(
@@ -120,13 +132,17 @@ server.listen(port, host, function () {
   console.log(cyan, 'Register user:');
   console.log(`  curl -X POST http://${host}:${port}/users/register \\`);
   console.log(`    -H "content-type: application/json" \\`);
-  console.log(`    -d '{"username": "andrew", "password": "andrewPass123"}' \\`);
+  console.log(
+    `    -d '{"username": "andrew", "password": "andrewPass123"}' \\`,
+  );
   console.log(`    | jq;`);
   // Login
   console.log(cyan, 'Login:');
   console.log(`  curl -X POST http://${host}:${port}/users/login \\`);
   console.log(`    -H "content-type: application/json" \\`);
-  console.log(`    -d '{"username": "andrew", "password": "andrewPass123"}' \\`);
+  console.log(
+    `    -d '{"username": "andrew", "password": "andrewPass123"}' \\`,
+  );
   console.log(`    | jq;`);
   // Current user
   console.log(cyan, 'Current user:');

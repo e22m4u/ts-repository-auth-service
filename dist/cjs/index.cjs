@@ -1196,6 +1196,7 @@ var require_Reflect = __commonJS({
 // dist/esm/index.js
 var index_exports = {};
 __export(index_exports, {
+  ACCESS_TOKEN_MODEL_DEF: () => ACCESS_TOKEN_MODEL_DEF,
   AccessRule: () => AccessRule,
   AccessTokenModel: () => AccessTokenModel,
   AuthLocalizer: () => AuthLocalizer,
@@ -1208,8 +1209,11 @@ __export(index_exports, {
   CASE_INSENSITIVE_LOGIN_IDS: () => CASE_INSENSITIVE_LOGIN_IDS,
   JWT_ISSUE_RESULT_SCHEMA: () => JWT_ISSUE_RESULT_SCHEMA,
   LOGIN_ID_NAMES: () => LOGIN_ID_NAMES,
+  ROLE_MODEL_DEF: () => ROLE_MODEL_DEF,
   RoleModel: () => RoleModel,
+  USER_LOOKUP_SCHEMA: () => USER_LOOKUP_SCHEMA,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA: () => USER_LOOKUP_WITH_PASSWORD_SCHEMA,
+  USER_MODE_DEF: () => USER_MODE_DEF,
   UserModel: () => UserModel,
   requireRole: () => requireRole,
   roleGuard: () => roleGuard
@@ -1788,10 +1792,11 @@ var RoleModel = (_a2 = class extends BaseRoleModel {
 RoleModel = __decorate([
   (0, import_ts_repository.model)()
 ], RoleModel);
+var ROLE_MODEL_DEF = (0, import_ts_repository.getModelDefinitionFromClass)(RoleModel);
 
 // dist/esm/models/user-model.js
-var import_ts_repository2 = require("@e22m4u/ts-repository");
 var import_ts_projection = require("@e22m4u/ts-projection");
+var import_ts_repository2 = require("@e22m4u/ts-repository");
 var __decorate2 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1892,6 +1897,7 @@ var UserModel = (_a4 = class extends BaseUserModel {
 UserModel = __decorate2([
   (0, import_ts_repository2.model)()
 ], UserModel);
+var USER_MODE_DEF = (0, import_ts_repository2.getModelDefinitionFromClass)(UserModel);
 
 // dist/esm/models/access-token-model.js
 var import_ts_repository3 = require("@e22m4u/ts-repository");
@@ -1957,6 +1963,7 @@ var AccessTokenModel = (_a6 = class extends BaseAccessTokenModel {
 AccessTokenModel = __decorate3([
   (0, import_ts_repository3.model)()
 ], AccessTokenModel);
+var ACCESS_TOKEN_MODEL_DEF = (0, import_ts_repository3.getModelDefinitionFromClass)(AccessTokenModel);
 
 // dist/esm/validators/email-format-validator.js
 var import_http_errors3 = __toESM(require("http-errors"), 1);
@@ -2007,14 +2014,6 @@ var passwordFormatValidator = /* @__PURE__ */ __name(function(value, localizer) 
 }, "passwordFormatValidator");
 
 // dist/esm/auth-service.js
-var AUTH_MODEL_LIST = [
-  BaseRoleModel,
-  BaseUserModel,
-  BaseAccessTokenModel,
-  RoleModel,
-  UserModel,
-  AccessTokenModel
-];
 var LOGIN_ID_NAMES = ["username", "email", "phone"];
 var CASE_INSENSITIVE_LOGIN_IDS = [
   "username",
@@ -2071,28 +2070,6 @@ var _AuthService = class _AuthService extends DebuggableService {
     if (process.env.NODE_ENV === "production" && this.options.jwtSecret === "REPLACE_ME!") {
       throw new Error("JWT secret is not set for the production environment!");
     }
-  }
-  /**
-   * Register models.
-   */
-  registerModels(options) {
-    const debug = this.getDebuggerFor(this.registerModels);
-    debug("Registering models.");
-    const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
-    const defReg = dbs.getService(import_ts_repository4.DefinitionRegistry);
-    AUTH_MODEL_LIST.forEach((modelCtor) => {
-      if (defReg.hasModel(modelCtor.name)) {
-        debug("%s skipped, already registered.", modelCtor.name);
-      } else {
-        const modelDef = (0, import_ts_repository4.getModelDefinitionFromClass)(modelCtor);
-        dbs.defineModel({
-          ...modelDef,
-          datasource: options == null ? void 0 : options.datasource
-        });
-        debug("%s registered.", modelCtor.name);
-      }
-    });
-    debug("Models registered.");
   }
   /**
    * Create access token.
@@ -2768,6 +2745,23 @@ var import_js_service3 = require("@e22m4u/js-service");
 // node_modules/@e22m4u/js-data-schema/dist/esm/data-type-caster.js
 var import_js_format12 = require("@e22m4u/js-format");
 
+// dist/esm/schemas/user-lookup-schema.js
+var USER_LOOKUP_SCHEMA = {
+  type: DataType4.OBJECT,
+  properties: {
+    username: {
+      type: DataType4.STRING
+    },
+    email: {
+      type: DataType4.STRING
+    },
+    phone: {
+      type: DataType4.STRING
+    }
+  },
+  required: true
+};
+
 // dist/esm/schemas/jwt-issue-result-schema.js
 var JWT_ISSUE_RESULT_SCHEMA = {
   type: DataType4.OBJECT,
@@ -2809,6 +2803,7 @@ function requireRole(roleName) {
 __name(requireRole, "requireRole");
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  ACCESS_TOKEN_MODEL_DEF,
   AccessRule,
   AccessTokenModel,
   AuthLocalizer,
@@ -2821,8 +2816,11 @@ __name(requireRole, "requireRole");
   CASE_INSENSITIVE_LOGIN_IDS,
   JWT_ISSUE_RESULT_SCHEMA,
   LOGIN_ID_NAMES,
+  ROLE_MODEL_DEF,
   RoleModel,
+  USER_LOOKUP_SCHEMA,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA,
+  USER_MODE_DEF,
   UserModel,
   requireRole,
   roleGuard

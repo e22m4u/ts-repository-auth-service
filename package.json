@@ -43,8 +43,8 @@
   },
   "dependencies": {
     "@e22m4u/js-format": "~0.2.0",
-    "@e22m4u/js-localizer": "~0.2.1",
-    "@e22m4u/js-service": "~0.4.3",
+    "@e22m4u/js-localizer": "~0.2.3",
+    "@e22m4u/js-service": "~0.4.4",
     "@e22m4u/ts-projection": "~0.2.1",
     "@types/jsonwebtoken": "~9.0.10",
     "bcrypt": "~6.0.0",
@@ -54,7 +54,7 @@
   },
   "peerDependencies": {
     "@e22m4u/ts-repository": "~0.2.0",
-    "@e22m4u/ts-rest-router": "~0.6.4"
+    "@e22m4u/ts-rest-router": "~0.6.6"
   },
   "devDependencies": {
     "@commitlint/cli": "~20.1.0",
@@ -65,7 +65,7 @@
     "@types/chai": "~5.2.3",
     "@types/http-errors": "~2.0.5",
     "@types/mocha": "~10.0.10",
-    "@types/node": "~24.9.1",
+    "@types/node": "~24.9.2",
     "c8": "~10.1.3",
     "chai": "~6.2.0",
     "esbuild": "~0.25.11",

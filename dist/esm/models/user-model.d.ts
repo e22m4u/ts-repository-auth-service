@@ -18,3 +18,7 @@ export declare class BaseUserModel<IdType = number | string, RoleType extends Ba
  */
 export declare class UserModel<IdType = number | string, RoleModel extends BaseRoleModel = BaseRoleModel> extends BaseUserModel<IdType, RoleModel> {
 }
+/**
+ * User model definition.
+ */
+export declare const USER_MODE_DEF: import("@e22m4u/ts-repository").ModelDefinition;

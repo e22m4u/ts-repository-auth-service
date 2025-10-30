@@ -6,12 +6,6 @@ import { DebuggableService } from './debuggable-service.js';
 import { FilterClause, IncludeClause, WithOptionalId } from '@e22m4u/ts-repository';
 import { AccessTokenModel, BaseAccessTokenModel, BaseUserModel } from './models/index.js';
 /**
- * Register models options.
- */
-type RegisterModelsOptions = {
-    datasource?: string;
-};
-/**
  * Login id names.
  */
 export declare const LOGIN_ID_NAMES: readonly ["username", "email", "phone"];
@@ -93,10 +87,6 @@ export declare class AuthService extends DebuggableService {
      * @param options
      */
     constructor(container?: ServiceContainer, options?: Partial<AuthServiceOptions>, requestContext?: RequestContext | undefined);
-    /**
-     * Register models.
-     */
-    registerModels(options?: RegisterModelsOptions): void;
     /**
      * Create access token.
      *
@@ -250,4 +240,3 @@ export declare class AuthService extends DebuggableService {
      */
     createAuthSession(ctx: RequestContext): Promise<AuthSession>;
 }
-export {};

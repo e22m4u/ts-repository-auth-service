@@ -7,9 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { model, property, relation, DataType, RelationType, PropertyUniqueness, } from '@e22m4u/ts-repository';
 import { noInput, noOutput } from '@e22m4u/ts-projection';
 import { RoleModel } from './role-model.js';
+import { model, property, relation, DataType, RelationType, PropertyUniqueness, getModelDefinitionFromClass, } from '@e22m4u/ts-repository';
 /**
  * Base user model.
  */
@@ -107,3 +107,7 @@ UserModel = __decorate([
     model()
 ], UserModel);
 export { UserModel };
+/**
+ * User model definition.
+ */
+export const USER_MODE_DEF = getModelDefinitionFromClass(UserModel);

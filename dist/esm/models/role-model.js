@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { model, property, DataType, PropertyUniqueness, } from '@e22m4u/ts-repository';
+import { model, property, DataType, PropertyUniqueness, getModelDefinitionFromClass, } from '@e22m4u/ts-repository';
 /**
  * Base role model.
  */
@@ -51,3 +51,7 @@ RoleModel = __decorate([
     model()
 ], RoleModel);
 export { RoleModel };
+/**
+ * Role model definition.
+ */
+export const ROLE_MODEL_DEF = getModelDefinitionFromClass(RoleModel);

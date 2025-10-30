@@ -6,20 +6,9 @@ import { AuthSession } from './auth-session.js';
 import { AuthLocalizer } from './auth-localizer.js';
 import { DebuggableService } from './debuggable-service.js';
 import { createError, removeEmptyKeys } from './utils/index.js';
-import { DatabaseSchema, DefinitionRegistry, getModelDefinitionFromClass, } from '@e22m4u/ts-repository';
-import { AccessTokenModel, BaseAccessTokenModel, BaseRoleModel, BaseUserModel, RoleModel, UserModel, } from './models/index.js';
+import { DatabaseSchema, } from '@e22m4u/ts-repository';
+import { AccessTokenModel, UserModel, } from './models/index.js';
 import { emailFormatValidator, passwordFormatValidator, phoneFormatValidator, usernameFormatValidator, } from './validators/index.js';
-/**
- * Auth model list.
- */
-const AUTH_MODEL_LIST = [
-    BaseRoleModel,
-    BaseUserModel,
-    BaseAccessTokenModel,
-    RoleModel,
-    UserModel,
-    AccessTokenModel,
-];
 /**
  * Login id names.
  */
@@ -86,29 +75,6 @@ export class AuthService extends DebuggableService {
             this.options.jwtSecret === 'REPLACE_ME!') {
             throw new Error('JWT secret is not set for the production environment!');
         }
-    }
-    /**
-     * Register models.
-     */
-    registerModels(options) {
-        const debug = this.getDebuggerFor(this.registerModels);
-        debug('Registering models.');
-        const dbs = this.getRegisteredService(DatabaseSchema);
-        const defReg = dbs.getService(DefinitionRegistry);
-        AUTH_MODEL_LIST.forEach(modelCtor => {
-            if (defReg.hasModel(modelCtor.name)) {
-                debug('%s skipped, already registered.', modelCtor.name);
-            }
-            else {
-                const modelDef = getModelDefinitionFromClass(modelCtor);
-                dbs.defineModel({
-                    ...modelDef,
-                    datasource: options?.datasource,
-                });
-                debug('%s registered.', modelCtor.name);
-            }
-        });
-        debug('Models registered.');
     }
     /**
      * Create access token.
