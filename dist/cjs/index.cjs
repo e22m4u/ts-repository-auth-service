@@ -2288,8 +2288,9 @@ var _AuthService = class _AuthService extends DebuggableService {
         debug("Given %s was %v.", name, inputData[name]);
         hasAnyLoginId = true;
         const idValue = String(inputData[name]).trim();
+        const idRegex = `^${idValue}$`;
         const isCaseInsensitive = CASE_INSENSITIVE_LOGIN_IDS.includes(name);
-        where[name] = isCaseInsensitive ? { regexp: idValue, flags: "i" } : idValue;
+        where[name] = isCaseInsensitive ? { regexp: idRegex, flags: "i" } : idValue;
       }
     });
     if (!hasAnyLoginId) {
