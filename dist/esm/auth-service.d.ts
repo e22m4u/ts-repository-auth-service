@@ -1,14 +1,10 @@
 import { AuthSession } from './auth-session.js';
 import { Localizer } from '@e22m4u/js-localizer';
-import { BaseUserModel } from './models/index.js';
-import { AccessTokenModel } from './models/index.js';
-import { FilterClause } from '@e22m4u/ts-repository';
-import { IncludeClause } from '@e22m4u/ts-repository';
 import { ServiceContainer } from '@e22m4u/js-service';
-import { WithOptionalId } from '@e22m4u/ts-repository';
 import { RequestContext } from '@e22m4u/ts-rest-router';
-import { BaseAccessTokenModel } from './models/index.js';
 import { DebuggableService } from './debuggable-service.js';
+import { FilterClause, IncludeClause, WithOptionalId } from '@e22m4u/ts-repository';
+import { AccessTokenModel, BaseAccessTokenModel, BaseUserModel } from './models/index.js';
 /**
  * Register models options.
  */
@@ -34,7 +30,7 @@ export type DataFormatValidator = (value: unknown, localizer: Localizer) => void
 /**
  * Auth service options.
  */
-export type AuthServiceOptions = {
+export declare class AuthServiceOptions {
     passwordHashRounds: number;
     usernameFormatValidator: DataFormatValidator;
     emailFormatValidator: DataFormatValidator;
@@ -46,11 +42,13 @@ export type AuthServiceOptions = {
     jwtCookieName: string;
     jwtQueryParam: string;
     sessionUserInclusion: IncludeClause;
-};
-/**
- * Default auth options.
- */
-export declare const DEFAULT_AUTH_OPTIONS: AuthServiceOptions;
+    /**
+     * Constructor.
+     *
+     * @param options
+     */
+    constructor(options?: Partial<AuthServiceOptions>);
+}
 /**
  * Login ids filter.
  */
@@ -96,19 +94,9 @@ export declare class AuthService extends DebuggableService {
      */
     constructor(container?: ServiceContainer, options?: Partial<AuthServiceOptions>, requestContext?: RequestContext | undefined);
     /**
-     * Clone with request context.
-     *
-     * @param ctx
-     */
-    cloneWithRequestContext(ctx: RequestContext): AuthService;
-    /**
      * Register models.
      */
     registerModels(options?: RegisterModelsOptions): void;
-    /**
-     * Register hooks.
-     */
-    registerRequestHooks(): void;
     /**
      * Create access token.
      *

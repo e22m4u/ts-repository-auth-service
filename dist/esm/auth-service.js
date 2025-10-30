@@ -2,25 +2,13 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { v7 as uuidV7 } from 'uuid';
 import HttpErrors from 'http-errors';
-import { RoleModel } from './models/index.js';
-import { UserModel } from './models/index.js';
-import { createError } from './utils/index.js';
 import { AuthSession } from './auth-session.js';
-import { BaseRoleModel } from './models/index.js';
-import { BaseUserModel } from './models/index.js';
-import { removeEmptyKeys } from './utils/index.js';
 import { AuthLocalizer } from './auth-localizer.js';
-import { RestRouter } from '@e22m4u/ts-rest-router';
-import { AccessTokenModel } from './models/index.js';
-import { DatabaseSchema } from '@e22m4u/ts-repository';
-import { BaseAccessTokenModel } from './models/index.js';
-import { DefinitionRegistry } from '@e22m4u/ts-repository';
 import { DebuggableService } from './debuggable-service.js';
-import { emailFormatValidator } from './validators/index.js';
-import { phoneFormatValidator } from './validators/index.js';
-import { passwordFormatValidator } from './validators/index.js';
-import { usernameFormatValidator } from './validators/index.js';
-import { getModelDefinitionFromClass } from '@e22m4u/ts-repository';
+import { createError, removeEmptyKeys } from './utils/index.js';
+import { DatabaseSchema, DefinitionRegistry, getModelDefinitionFromClass, } from '@e22m4u/ts-repository';
+import { AccessTokenModel, BaseAccessTokenModel, BaseRoleModel, BaseUserModel, RoleModel, UserModel, } from './models/index.js';
+import { emailFormatValidator, passwordFormatValidator, phoneFormatValidator, usernameFormatValidator, } from './validators/index.js';
 /**
  * Auth model list.
  */
@@ -45,44 +33,31 @@ export const CASE_INSENSITIVE_LOGIN_IDS = [
     'phone',
 ];
 /**
- * Default auth options.
+ * Auth service options.
  */
-export const DEFAULT_AUTH_OPTIONS = {
-    passwordHashRounds: 12,
-    usernameFormatValidator,
-    emailFormatValidator,
-    phoneFormatValidator,
-    passwordFormatValidator,
-    jwtSecret: 'REPLACE_ME!',
-    jwtTtl: 14 * 86400, // 14 days
-    jwtHeaderName: 'authorization',
-    jwtCookieName: 'accessToken',
-    jwtQueryParam: 'accessToken',
-    sessionUserInclusion: 'roles',
-};
-/**
- * Pre handler hook.
- *
- * @param ctx
- */
-async function preHandlerHook(ctx) {
-    // инъекция экземпляра переводчика в контейнер контекста запроса
-    ctx.container.use(AuthLocalizer, { httpRequest: ctx.req });
-    // в контейнере запроса нет AuthService, но сервис есть в контейнере
-    // приложения, который является родителем для контейнера запроса,
-    // поэтому извлечение AuthService из контейнера запроса возвращает
-    // существующий экземпляр из своего родителя (контейнера приложения)
-    const rootAuthService = ctx.container.getRegistered(AuthService);
-    // далее выполняется клонирование AuthService с включением текущего
-    // контекста запроса в новый экземпляр сервиса
-    const authService = rootAuthService.cloneWithRequestContext(ctx);
-    // чтобы расширенная копия сервиса авторизации была доступна
-    // в обработчиках маршрута (вместо оригинального сервиса),
-    // выполняется инъекция данной копии в контейнер запроса
-    ctx.container.set(AuthService, authService);
-    // инъекция пользовательской сессии в контейнер контекста запроса
-    const authSession = await authService.createAuthSession(ctx);
-    ctx.container.set(AuthSession, authSession);
+export class AuthServiceOptions {
+    passwordHashRounds = 12;
+    usernameFormatValidator = usernameFormatValidator;
+    emailFormatValidator = emailFormatValidator;
+    phoneFormatValidator = phoneFormatValidator;
+    passwordFormatValidator = passwordFormatValidator;
+    jwtSecret = 'REPLACE_ME!';
+    jwtTtl = 14 * 86400; // 14 days
+    jwtHeaderName = 'authorization';
+    jwtCookieName = 'accessToken';
+    jwtQueryParam = 'accessToken';
+    sessionUserInclusion = 'roles';
+    /**
+     * Constructor.
+     *
+     * @param options
+     */
+    constructor(options) {
+        if (options) {
+            const filteredOptions = removeEmptyKeys(options);
+            Object.assign(this, filteredOptions);
+        }
+    }
 }
 /**
  * Auth service.
@@ -92,7 +67,7 @@ export class AuthService extends DebuggableService {
     /**
      * Options.
      */
-    options = Object.assign({}, DEFAULT_AUTH_OPTIONS);
+    options;
     /**
      * Constructor.
      *
@@ -102,22 +77,15 @@ export class AuthService extends DebuggableService {
     constructor(container, options, requestContext) {
         super(container);
         this.requestContext = requestContext;
+        this.options = this.getService(AuthServiceOptions);
         if (options) {
             const filteredOptions = removeEmptyKeys(options);
-            this.options = Object.assign(this.options, filteredOptions);
+            Object.assign(this.options, filteredOptions);
         }
         if (process.env.NODE_ENV === 'production' &&
             this.options.jwtSecret === 'REPLACE_ME!') {
             throw new Error('JWT secret is not set for the production environment!');
         }
-    }
-    /**
-     * Clone with request context.
-     *
-     * @param ctx
-     */
-    cloneWithRequestContext(ctx) {
-        return new AuthService(this.container, this.options, ctx);
     }
     /**
      * Register models.
@@ -141,15 +109,6 @@ export class AuthService extends DebuggableService {
             }
         });
         debug('Models registered.');
-    }
-    /**
-     * Register hooks.
-     */
-    registerRequestHooks() {
-        const debug = this.getDebuggerFor(this.registerRequestHooks);
-        debug('Registering request hooks.');
-        this.getRegisteredService(RestRouter).addHook('preHandler', preHandlerHook);
-        debug('Hooks registered.');
     }
     /**
      * Create access token.

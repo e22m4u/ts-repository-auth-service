@@ -2,32 +2,39 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {v7 as uuidV7} from 'uuid';
 import HttpErrors from 'http-errors';
-import {RoleModel} from './models/index.js';
-import {UserModel} from './models/index.js';
-import {createError} from './utils/index.js';
 import {AuthSession} from './auth-session.js';
 import {Localizer} from '@e22m4u/js-localizer';
-import {BaseRoleModel} from './models/index.js';
-import {BaseUserModel} from './models/index.js';
-import {removeEmptyKeys} from './utils/index.js';
 import {AuthLocalizer} from './auth-localizer.js';
-import {WhereClause} from '@e22m4u/ts-repository';
-import {RestRouter} from '@e22m4u/ts-rest-router';
-import {AccessTokenModel} from './models/index.js';
-import {FilterClause} from '@e22m4u/ts-repository';
-import {IncludeClause} from '@e22m4u/ts-repository';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {WithOptionalId} from '@e22m4u/ts-repository';
-import {DatabaseSchema} from '@e22m4u/ts-repository';
 import {RequestContext} from '@e22m4u/ts-rest-router';
-import {BaseAccessTokenModel} from './models/index.js';
-import {DefinitionRegistry} from '@e22m4u/ts-repository';
 import {DebuggableService} from './debuggable-service.js';
-import {emailFormatValidator} from './validators/index.js';
-import {phoneFormatValidator} from './validators/index.js';
-import {passwordFormatValidator} from './validators/index.js';
-import {usernameFormatValidator} from './validators/index.js';
-import {getModelDefinitionFromClass} from '@e22m4u/ts-repository';
+import {createError, removeEmptyKeys} from './utils/index.js';
+
+import {
+  DatabaseSchema,
+  DefinitionRegistry,
+  FilterClause,
+  getModelDefinitionFromClass,
+  IncludeClause,
+  WhereClause,
+  WithOptionalId,
+} from '@e22m4u/ts-repository';
+
+import {
+  AccessTokenModel,
+  BaseAccessTokenModel,
+  BaseRoleModel,
+  BaseUserModel,
+  RoleModel,
+  UserModel,
+} from './models/index.js';
+
+import {
+  emailFormatValidator,
+  passwordFormatValidator,
+  phoneFormatValidator,
+  usernameFormatValidator,
+} from './validators/index.js';
 
 /**
  * Auth model list.
@@ -78,36 +85,31 @@ export type DataFormatValidator = (
 /**
  * Auth service options.
  */
-export type AuthServiceOptions = {
-  passwordHashRounds: number;
-  usernameFormatValidator: DataFormatValidator;
-  emailFormatValidator: DataFormatValidator;
-  phoneFormatValidator: DataFormatValidator;
-  passwordFormatValidator: DataFormatValidator;
-  jwtSecret: string;
-  jwtTtl: number;
-  jwtHeaderName: string;
-  jwtCookieName: string;
-  jwtQueryParam: string;
-  sessionUserInclusion: IncludeClause;
-};
+export class AuthServiceOptions {
+  passwordHashRounds: number = 12;
+  usernameFormatValidator: DataFormatValidator = usernameFormatValidator;
+  emailFormatValidator: DataFormatValidator = emailFormatValidator;
+  phoneFormatValidator: DataFormatValidator = phoneFormatValidator;
+  passwordFormatValidator: DataFormatValidator = passwordFormatValidator;
+  jwtSecret: string = 'REPLACE_ME!';
+  jwtTtl: number = 14 * 86400; // 14 days
+  jwtHeaderName: string = 'authorization';
+  jwtCookieName: string = 'accessToken';
+  jwtQueryParam: string = 'accessToken';
+  sessionUserInclusion: IncludeClause = 'roles';
 
-/**
- * Default auth options.
- */
-export const DEFAULT_AUTH_OPTIONS: AuthServiceOptions = {
-  passwordHashRounds: 12,
-  usernameFormatValidator,
-  emailFormatValidator,
-  phoneFormatValidator,
-  passwordFormatValidator,
-  jwtSecret: 'REPLACE_ME!',
-  jwtTtl: 14 * 86400, // 14 days
-  jwtHeaderName: 'authorization',
-  jwtCookieName: 'accessToken',
-  jwtQueryParam: 'accessToken',
-  sessionUserInclusion: 'roles',
-};
+  /**
+   * Constructor.
+   *
+   * @param options
+   */
+  constructor(options?: Partial<AuthServiceOptions>) {
+    if (options) {
+      const filteredOptions = removeEmptyKeys(options);
+      Object.assign(this, filteredOptions);
+    }
+  }
+}
 
 /**
  * Login ids filter.
@@ -142,41 +144,13 @@ export type JwtIssueResult = {
 };
 
 /**
- * Pre handler hook.
- *
- * @param ctx
- */
-async function preHandlerHook(ctx: RequestContext) {
-  // инъекция экземпляра переводчика в контейнер контекста запроса
-  ctx.container.use(AuthLocalizer, {httpRequest: ctx.req});
-  // в контейнере запроса нет AuthService, но сервис есть в контейнере
-  // приложения, который является родителем для контейнера запроса,
-  // поэтому извлечение AuthService из контейнера запроса возвращает
-  // существующий экземпляр из своего родителя (контейнера приложения)
-  const rootAuthService = ctx.container.getRegistered(AuthService);
-  // далее выполняется клонирование AuthService с включением текущего
-  // контекста запроса в новый экземпляр сервиса
-  const authService = rootAuthService.cloneWithRequestContext(ctx);
-  // чтобы расширенная копия сервиса авторизации была доступна
-  // в обработчиках маршрута (вместо оригинального сервиса),
-  // выполняется инъекция данной копии в контейнер запроса
-  ctx.container.set(AuthService, authService);
-  // инъекция пользовательской сессии в контейнер контекста запроса
-  const authSession = await authService.createAuthSession(ctx);
-  ctx.container.set(AuthSession, authSession);
-}
-
-/**
  * Auth service.
  */
 export class AuthService extends DebuggableService {
   /**
    * Options.
    */
-  readonly options: AuthServiceOptions = Object.assign(
-    {},
-    DEFAULT_AUTH_OPTIONS,
-  );
+  readonly options: AuthServiceOptions;
 
   /**
    * Constructor.
@@ -190,9 +164,10 @@ export class AuthService extends DebuggableService {
     readonly requestContext?: RequestContext,
   ) {
     super(container);
+    this.options = this.getService(AuthServiceOptions);
     if (options) {
       const filteredOptions = removeEmptyKeys(options);
-      this.options = Object.assign(this.options, filteredOptions);
+      Object.assign(this.options, filteredOptions);
     }
     if (
       process.env.NODE_ENV === 'production' &&
@@ -200,15 +175,6 @@ export class AuthService extends DebuggableService {
     ) {
       throw new Error('JWT secret is not set for the production environment!');
     }
-  }
-
-  /**
-   * Clone with request context.
-   *
-   * @param ctx
-   */
-  cloneWithRequestContext(ctx: RequestContext) {
-    return new AuthService(this.container, this.options, ctx);
   }
 
   /**
@@ -232,16 +198,6 @@ export class AuthService extends DebuggableService {
       }
     });
     debug('Models registered.');
-  }
-
-  /**
-   * Register hooks.
-   */
-  registerRequestHooks() {
-    const debug = this.getDebuggerFor(this.registerRequestHooks);
-    debug('Registering request hooks.');
-    this.getRegisteredService(RestRouter).addHook('preHandler', preHandlerHook);
-    debug('Hooks registered.');
   }
 
   /**

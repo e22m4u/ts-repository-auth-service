@@ -1200,12 +1200,12 @@ __export(index_exports, {
   AccessTokenModel: () => AccessTokenModel,
   AuthLocalizer: () => AuthLocalizer,
   AuthService: () => AuthService,
+  AuthServiceOptions: () => AuthServiceOptions,
   AuthSession: () => AuthSession,
   BaseAccessTokenModel: () => BaseAccessTokenModel,
   BaseRoleModel: () => BaseRoleModel,
   BaseUserModel: () => BaseUserModel,
   CASE_INSENSITIVE_LOGIN_IDS: () => CASE_INSENSITIVE_LOGIN_IDS,
-  DEFAULT_AUTH_OPTIONS: () => DEFAULT_AUTH_OPTIONS,
   JWT_ISSUE_RESULT_SCHEMA: () => JWT_ISSUE_RESULT_SCHEMA,
   LOGIN_ID_NAMES: () => LOGIN_ID_NAMES,
   RoleModel: () => RoleModel,
@@ -1738,6 +1738,7 @@ var import_bcrypt = __toESM(require("bcrypt"), 1);
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"), 1);
 var import_uuid = require("uuid");
 var import_http_errors7 = __toESM(require("http-errors"), 1);
+var import_ts_repository4 = require("@e22m4u/ts-repository");
 
 // dist/esm/models/role-model.js
 var import_ts_repository = require("@e22m4u/ts-repository");
@@ -1957,11 +1958,6 @@ AccessTokenModel = __decorate3([
   (0, import_ts_repository3.model)()
 ], AccessTokenModel);
 
-// dist/esm/auth-service.js
-var import_ts_rest_router = require("@e22m4u/ts-rest-router");
-var import_ts_repository4 = require("@e22m4u/ts-repository");
-var import_ts_repository5 = require("@e22m4u/ts-repository");
-
 // dist/esm/validators/email-format-validator.js
 var import_http_errors3 = __toESM(require("http-errors"), 1);
 var EMAIL_FORMAT_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -2011,7 +2007,6 @@ var passwordFormatValidator = /* @__PURE__ */ __name(function(value, localizer) 
 }, "passwordFormatValidator");
 
 // dist/esm/auth-service.js
-var import_ts_repository6 = require("@e22m4u/ts-repository");
 var AUTH_MODEL_LIST = [
   BaseRoleModel,
   BaseUserModel,
@@ -2026,35 +2021,39 @@ var CASE_INSENSITIVE_LOGIN_IDS = [
   "email",
   "phone"
 ];
-var DEFAULT_AUTH_OPTIONS = {
-  passwordHashRounds: 12,
-  usernameFormatValidator,
-  emailFormatValidator,
-  phoneFormatValidator,
-  passwordFormatValidator,
-  jwtSecret: "REPLACE_ME!",
-  jwtTtl: 14 * 86400,
+var _AuthServiceOptions = class _AuthServiceOptions {
+  passwordHashRounds = 12;
+  usernameFormatValidator = usernameFormatValidator;
+  emailFormatValidator = emailFormatValidator;
+  phoneFormatValidator = phoneFormatValidator;
+  passwordFormatValidator = passwordFormatValidator;
+  jwtSecret = "REPLACE_ME!";
+  jwtTtl = 14 * 86400;
   // 14 days
-  jwtHeaderName: "authorization",
-  jwtCookieName: "accessToken",
-  jwtQueryParam: "accessToken",
-  sessionUserInclusion: "roles"
+  jwtHeaderName = "authorization";
+  jwtCookieName = "accessToken";
+  jwtQueryParam = "accessToken";
+  sessionUserInclusion = "roles";
+  /**
+   * Constructor.
+   *
+   * @param options
+   */
+  constructor(options) {
+    if (options) {
+      const filteredOptions = removeEmptyKeys(options);
+      Object.assign(this, filteredOptions);
+    }
+  }
 };
-async function preHandlerHook(ctx) {
-  ctx.container.use(AuthLocalizer, { httpRequest: ctx.req });
-  const rootAuthService = ctx.container.getRegistered(AuthService);
-  const authService = rootAuthService.cloneWithRequestContext(ctx);
-  ctx.container.set(AuthService, authService);
-  const authSession = await authService.createAuthSession(ctx);
-  ctx.container.set(AuthSession, authSession);
-}
-__name(preHandlerHook, "preHandlerHook");
+__name(_AuthServiceOptions, "AuthServiceOptions");
+var AuthServiceOptions = _AuthServiceOptions;
 var _AuthService = class _AuthService extends DebuggableService {
   requestContext;
   /**
    * Options.
    */
-  options = Object.assign({}, DEFAULT_AUTH_OPTIONS);
+  options;
   /**
    * Constructor.
    *
@@ -2064,21 +2063,14 @@ var _AuthService = class _AuthService extends DebuggableService {
   constructor(container, options, requestContext) {
     super(container);
     this.requestContext = requestContext;
+    this.options = this.getService(AuthServiceOptions);
     if (options) {
       const filteredOptions = removeEmptyKeys(options);
-      this.options = Object.assign(this.options, filteredOptions);
+      Object.assign(this.options, filteredOptions);
     }
     if (process.env.NODE_ENV === "production" && this.options.jwtSecret === "REPLACE_ME!") {
       throw new Error("JWT secret is not set for the production environment!");
     }
-  }
-  /**
-   * Clone with request context.
-   *
-   * @param ctx
-   */
-  cloneWithRequestContext(ctx) {
-    return new _AuthService(this.container, this.options, ctx);
   }
   /**
    * Register models.
@@ -2087,12 +2079,12 @@ var _AuthService = class _AuthService extends DebuggableService {
     const debug = this.getDebuggerFor(this.registerModels);
     debug("Registering models.");
     const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
-    const defReg = dbs.getService(import_ts_repository5.DefinitionRegistry);
+    const defReg = dbs.getService(import_ts_repository4.DefinitionRegistry);
     AUTH_MODEL_LIST.forEach((modelCtor) => {
       if (defReg.hasModel(modelCtor.name)) {
         debug("%s skipped, already registered.", modelCtor.name);
       } else {
-        const modelDef = (0, import_ts_repository6.getModelDefinitionFromClass)(modelCtor);
+        const modelDef = (0, import_ts_repository4.getModelDefinitionFromClass)(modelCtor);
         dbs.defineModel({
           ...modelDef,
           datasource: options == null ? void 0 : options.datasource
@@ -2101,15 +2093,6 @@ var _AuthService = class _AuthService extends DebuggableService {
       }
     });
     debug("Models registered.");
-  }
-  /**
-   * Register hooks.
-   */
-  registerRequestHooks() {
-    const debug = this.getDebuggerFor(this.registerRequestHooks);
-    debug("Registering request hooks.");
-    this.getRegisteredService(import_ts_rest_router.RestRouter).addHook("preHandler", preHandlerHook);
-    debug("Hooks registered.");
   }
   /**
    * Create access token.
@@ -2819,9 +2802,9 @@ var USER_LOOKUP_WITH_PASSWORD_SCHEMA = {
 };
 
 // dist/esm/decorators/require-role.js
-var import_ts_rest_router2 = require("@e22m4u/ts-rest-router");
+var import_ts_rest_router = require("@e22m4u/ts-rest-router");
 function requireRole(roleName) {
-  return (0, import_ts_rest_router2.beforeAction)(roleGuard(roleName));
+  return (0, import_ts_rest_router.beforeAction)(roleGuard(roleName));
 }
 __name(requireRole, "requireRole");
 // Annotate the CommonJS export names for ESM import in node:
@@ -2830,12 +2813,12 @@ __name(requireRole, "requireRole");
   AccessTokenModel,
   AuthLocalizer,
   AuthService,
+  AuthServiceOptions,
   AuthSession,
   BaseAccessTokenModel,
   BaseRoleModel,
   BaseUserModel,
   CASE_INSENSITIVE_LOGIN_IDS,
-  DEFAULT_AUTH_OPTIONS,
   JWT_ISSUE_RESULT_SCHEMA,
   LOGIN_ID_NAMES,
   RoleModel,
