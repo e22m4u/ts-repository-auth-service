@@ -7,7 +7,7 @@
 **TypeScript**
 
 - [@e22m4u/ts-rest-router](https://www.npmjs.com/package/@e22m4u/ts-rest-router)
-  \- REST-маршрутизатор на основе префиксного дерева;
+  \- REST-маршрутизатор на основе контроллеров;
 - [@e22m4u/ts-repository](https://www.npmjs.com/package/@e22m4u/ts-repository)
   \- ORM/ODM для работы с базами данных;
 
