@@ -81,9 +81,9 @@ class UserController extends Service {
     return {token, expiresAt, user};
   }
 
-  // GET /users/whoAmI
-  @getAction('whoAmI')
-  whoAmI() {
+  // GET /users/findMe
+  @getAction('findMe')
+  findMe() {
     const session = this.getRegisteredService(AuthSession);
     return session.getUser();
   }
@@ -124,11 +124,13 @@ const port = 3000;
 const host = '0.0.0.0';
 server.listen(port, host, function () {
   const cyan = '\x1b[36m%s\x1b[0m';
-  console.log(cyan, 'Server listening on port:', port);
+  console.log(cyan, 'Server listening on', `http://${host}:${port}`);
   // List users
+  console.log('');
   console.log(cyan, 'List users:');
   console.log(`  curl http://${host}:${port}/users | jq`);
   // Register user
+  console.log('');
   console.log(cyan, 'Register user:');
   console.log(`  curl -X POST http://${host}:${port}/users/register \\`);
   console.log(`    -H "content-type: application/json" \\`);
@@ -137,6 +139,7 @@ server.listen(port, host, function () {
   );
   console.log(`    | jq;`);
   // Login
+  console.log('');
   console.log(cyan, 'Login:');
   console.log(`  curl -X POST http://${host}:${port}/users/login \\`);
   console.log(`    -H "content-type: application/json" \\`);
@@ -145,12 +148,14 @@ server.listen(port, host, function () {
   );
   console.log(`    | jq;`);
   // Current user
+  console.log('');
   console.log(cyan, 'Current user:');
-  console.log(`  curl http://${host}:${port}/users/whoAmI \\`);
+  console.log(`  curl http://${host}:${port}/users/findMe \\`);
   console.log(`    -H "content-type: application/json" \\`);
   console.log(`    -H "authorization: JWT_TOKEN_FROM_LOGIN" \\`);
   console.log(`    | jq;`);
   // Update current user
+  console.log('');
   console.log(cyan, 'Update current user:');
   console.log(`  curl -X PATCH http://${host}:${port}/users/profile \\`);
   console.log(`    -H "content-type: application/json" \\`);
@@ -158,6 +163,7 @@ server.listen(port, host, function () {
   console.log(`    -d '{"firstName": "Andrew", "age": 27}' \\`);
   console.log(`    | jq;`);
   // Logout
+  console.log('');
   console.log(cyan, 'Logout:');
   console.log(`  curl http://${host}:${port}/users/logout \\`);
   console.log(`    -H "content-type: application/json" \\`);

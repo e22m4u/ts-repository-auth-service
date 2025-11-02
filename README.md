@@ -2,14 +2,21 @@
 
 Подключаемый сервис авторизации с ролевой моделью.
 
-Модуль встраивается в связку:
+Модуль предназначен для работы в двух окружениях:
 
-- [@e22m4u/js-service](https://www.npmjs.com/package/@e22m4u/js-service)
-  \- сервис-контейнер (IoC);
+**TypeScript**
+
 - [@e22m4u/ts-rest-router](https://www.npmjs.com/package/@e22m4u/ts-rest-router)
   \- REST-маршрутизатор на основе префиксного дерева;
 - [@e22m4u/ts-repository](https://www.npmjs.com/package/@e22m4u/ts-repository)
   \- ORM/ODM для работы с базами данных;
+
+**JavaScript**
+
+- [@e22m4u/js-trie-router](https://www.npmjs.com/package/@e22m4u/js-trie-router)
+  \- HTTP маршрутизатор на основе префиксного дерева;
+- [@e22m4u/js-repository](https://www.npmjs.com/package/@e22m4u/js-repository)
+  \- Реализация репозитория для работы с базами данных;
 
 ## Оглавление
 
@@ -61,97 +68,82 @@ const {AuthService} = require('@e22m4u/ts-rest-router-auth');
 
 ## Использование
 
-Модули `ts-rest-router` и `ts-repository` обычно работают в рамках одного
-сервис-контейнера или корневого сервиса (*application*). Ниже рассматривается
-первый вариант.
+Создание приложения (сервис-контейнера), маршрутизатора и схемы баз данных.
 
-```js
+```ts
 import {RestRouter} from '@e22m4u/ts-rest-router';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {DatabaseSchema} from '@e22m4u/ts-repository';
 
-const app = new ServiceContainer();
-// инъекция маршрутизатора и схемы баз данных
-const router = app.get(RestRouter);
-const dbs = app.get(DatabaseSchema);
+const app = new ServiceContainer();  // контейнер
+const router = app.get(RestRouter);  // маршрутизатор
+const dbs = app.get(DatabaseSchema); // схема баз данных
+```
 
-// для примера используется MongoDB адаптер
+Определение источника данных и моделей.
+
+```ts
+import {
+  USER_MODE_DEF,
+  ROLE_MODEL_DEF,
+  ACCESS_TOKEN_MODEL_DEF,
+} from '@e22m4u/ts-rest-router-auth';
+
+// источник данных
 dbs.defineDatasource({
-  name: 'myMongo',
-  adapter: 'mongodb',
-  // параметры адаптера
-  host: '127.0.0.1',
-  port: 27017,
-  database: 'myDatabase',
+  name: 'main',
+  adapter: 'memory',
+});
+
+// модели
+dbs.defineModel({...ACCESS_TOKEN_MODEL_DEF, datasource: 'main'});
+dbs.defineModel({...ROLE_MODEL_DEF, datasource: 'main'});
+dbs.defineModel({...USER_MODE_DEF, datasource: 'main'});
+```
+
+Определение перехватчика запроса, в котором будет создаваться сессия
+авторизованного пользователя.
+
+```ts
+router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
+  const authService = ctx.container.get(AuthService);
+  const authSession = await authService.createAuthSession(ctx);
+  const authLocalizer = authService.getService(AuthLocalizer);
+  ctx.container.set(AuthSession, authSession);
 });
 ```
 
-*i. MongoDB адаптер устанавливается отдельно (см. [js-repository-mongodb-adapter](https://www.npmjs.com/package/@e22m4u/js-repository-mongodb-adapter)).*
-
-### Настройка AuthService
-
-Для интеграции сервиса `AuthService` выполняется создание экземпляра
-и его инъекция в сервис-контейнер приложения, после чего следуют вызовы
-некоторых методов предварительной настройки. Создание экземпляра выполняется
-автоматически при запросе данного сервиса методом `app.get()`.
+Определение и регистрация контроллера `UserController` в маршрутизаторе.
 
 ```ts
-const authService = app.get(AuthService); // см. 1
-authService.registerModels({datasource: 'myMongo'}); // см. 2
-authService.registerRequestHooks(); // см. 3
+import {Service} from '@e22m4u/js-service';
+import {restController} from '@e22m4u/ts-rest-router';
+
+@restController('users')
+class UserController extends Service {
+  // ... см. далее ...
+}
+
+// добавление контроллера в маршрутизатор
+router.addController(UserController);
 ```
 
-1\. На первой строке примера выше выполняется инъекция сервиса авторизации
-без дополнительных аргументов. Вторым параметром метода `app.get()` можно
-передать объект с настройками, как это показано ниже.
+Создание экземпляра HTTP-сервера и прослушивание запросов.
 
 ```ts
-// создание экземпляра AuthService
-// (инъекция сервиса авторизации)
-const authService = app.get(AuthService, {
-  passwordHashRounds: 12,
-  jwtSecret: 'REPLACE_ME!',
-  jwtTtl: 14 * 86400, // 14 days
-  jwtHeaderName: 'authorization',
-  jwtCookieName: 'accessToken',
-  jwtQueryParam: 'accessToken',
-  sessionUserInclusion: 'roles',
-  // usernameFormatValidator,
-  // emailFormatValidator,
-  // phoneFormatValidator,
-  // passwordFormatValidator,
+// создание экземпляра сервера
+// и установка слушателя запросов
+const server = new http.Server();
+server.on('request', router.requestListener);
+
+// прослушивание входящих запросов
+// на указанный адрес и порт
+const port = 3000;
+const host = '0.0.0.0';
+server.listen(port, host, function () {
+  const cyan = '\x1b[36m%s\x1b[0m';
+  console.log(cyan, 'Server listening on ', `${host:port}`);
 });
-```
-
-2\. На второй строке выполняется регистрация [моделей](#Модели) с передачей
-параметра `datasource`. В данном параметре требуется указать название
-предварительно зарегистрированного
-[источника данных](https://www.npmjs.com/package/@e22m4u/js-repository#источник-данных),
-где будут храниться роли, пользователи и другие сущности. Ниже приводится
-пример определения источника данных и регистрация моделей.
-
-```ts
-// регистрация источника данных
-dbs.defineDatasource({
-  name: 'myMongo',
-  adapter: 'mongodb',
-  host: '127.0.0.1',
-  port: 27017,
-  database: 'myDatabase',
-});
-
-// регистрация моделей
-authService.registerModels({
-  datasource: 'myMongo',
-});
-```
-
-3\. На третьей строке выполняется регистрация служебных перехватчиков запроса
-для работы пользовательской сессии и декораторов контроля доступа к маршрутам.
-
-```ts
-// регистрация перехватчиков запроса
-authService.registerRequestHooks();
 ```
 
 ### Регистрация пользователя
@@ -164,8 +156,7 @@ authService.registerRequestHooks();
 ```ts
 import {Service} from '@e22m4u/js-service';
 import {WithoutId} from '@e22m4u/ts-repository';
-import {postAction} from '@e22m4u/ts-rest-router';
-import {restController} from '@e22m4u/ts-rest-router';
+import {postAction, restController} from '@e22m4u/ts-rest-router';
 import {requestBodyWithModel} from '@e22m4u/ts-rest-router-repository';
 
 import {AuthService, UserModel} from '@e22m4u/ts-rest-router-auth';
@@ -237,9 +228,11 @@ class UserController extends Service {
     // создание токена доступа (в базе данных)
     const accessToken = await authService.createAccessToken(user.id);
     // генерация JWT
-    const { token, expiresAt } = await authService.issueJwt(accessToken);
+    const {token, expiresAt} = await authService.issueJwt(accessToken);
+    // удаление пароля перед отправкой
+    const {password, ...userDto} = user;
     // возврат токена и данных пользователя
-    return {token, expiresAt, user};
+    return {token, expiresAt, user: userDto};
   }
 }
 ```
@@ -262,10 +255,10 @@ class UserController extends Service {
   /**
    * Получение данных текущего пользователя.
    *
-   * GET /users/whoAmI
+   * GET /users/findMe
    */
-  @getAction('whoAmI')
-  whoAmI() {
+  @getAction('findMe')
+  findMe() {
     // получение request-scoped экземпляра AuthSession
     const session = this.getRegisteredService(AuthSession);
     // возврат данных пользователя из сессии
@@ -285,8 +278,7 @@ class UserController extends Service {
 ```ts
 import {Service} from '@e22m4u/js-service';
 import {WithoutId} from '@e22m4u/ts-repository';
-import {patchAction} from '@e22m4u/ts-rest-router';
-import {restController} from '@e22m4u/ts-rest-router';
+import {patchAction, restController} from '@e22m4u/ts-rest-router';
 import {requestBodyWithModel} from '@e22m4u/ts-rest-router-repository';
 
 import {
@@ -330,8 +322,7 @@ class UserController extends Service {
 
 ```ts
 import {Service} from '@e22m4u/js-service';
-import {getAction} from '@e22m4u/ts-rest-router';
-import {restController} from '@e22m4u/ts-rest-router';
+import {getAction, restController} from '@e22m4u/ts-rest-router';
 
 import {
   AccessRule,
@@ -365,59 +356,7 @@ class UserController extends Service {
 
 `AuthService` является центральным компонентом модуля, предоставляющим всю
 основную логику для управления пользователями, аутентификации, генерации
-токенов и управления сессиями. Этот сервис регистрируется в корневом
-IoC-контейнере приложения. Ниже приводится список методов его экземпляра.
-
-### authService.registerModels
-
-Регистрирует встроенные [модели](#модели) данных в `DatabaseSchema`
-и привязывает их к указанному источнику данных. Этот метод необходимо
-вызвать один раз при инициализации приложения.
-
-**Сигнатура**
-
-```ts
-registerModels(options?: {datasource?: string}): void
-```
-
-**Параметры**
-
-- `options.datasource`  
-  Строка, содержащая имя источника данных, в котором будут созданы и сохранены коллекции/таблицы для моделей.
-
-**Пример**
-
-```ts
-// определение источника данных
-dbs.defineDatasource({
-  name: 'myDb',
-  adapter: 'memory',
-});
-
-// регистрация моделей в этом источнике данных
-authService.registerModels({datasource: 'myDb'});
-```
-
-### authService.registerRequestHooks
-
-Регистрирует глобальный перехватчик запроса `preHandler` в `RestRouter`. Этот
-перехватчик выполняется перед каждым запросом и отвечает за создание и внедрение
-сессии `AuthSession` и *request-scoped* экземпляра `AuthService` в DI-контейнер
-запроса. Вызов этого метода является обязательным для корректной работы сессий
-и декораторов защиты маршрутов.
-
-**Сигнатура**
-
-```ts
-registerRequestHooks(): void
-```
-
-**Пример**
-
-```ts
-// этот вызов активирует систему сессий для всех маршрутов
-authService.registerRequestHooks();
-```
+токенов и управления сессиями. Ниже приводится список методов его экземпляра.
 
 ### authService.createUser
 

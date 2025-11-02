@@ -9,6 +9,7 @@ import { createError, removeEmptyKeys } from './utils/index.js';
 import { DatabaseSchema, } from '@e22m4u/ts-repository';
 import { AccessTokenModel, UserModel, } from './models/index.js';
 import { emailFormatValidator, passwordFormatValidator, phoneFormatValidator, usernameFormatValidator, } from './validators/index.js';
+const { JsonWebTokenError, TokenExpiredError } = jwt;
 /**
  * Login id names.
  */
@@ -163,6 +164,11 @@ export class AuthService extends DebuggableService {
             });
         }
         catch (err) {
+            if (err instanceof TokenExpiredError ||
+                err instanceof JsonWebTokenError) {
+                throw createError(HttpErrors.Unauthorized, 'TOKEN_VERIFYING_FAILED', err.message, // Можно использовать сообщение из ошибки
+                { token: jwToken });
+            }
             error = err;
         }
         if (error ||
@@ -370,7 +376,7 @@ export class AuthService extends DebuggableService {
         const debug = this.getDebuggerFor(this.createUser);
         debug('Creating user.');
         const localizer = this.getService(AuthLocalizer);
-        inputData = JSON.parse(JSON.stringify(inputData));
+        inputData = { ...inputData };
         // обрезка пробелов в идентификаторах
         LOGIN_ID_NAMES.forEach(idName => {
             if (typeof inputData[idName] === 'string')
@@ -408,7 +414,7 @@ export class AuthService extends DebuggableService {
         const debug = this.getDebuggerFor(this.updateUser);
         debug('Updating user.');
         debug('User id was %v.', userId);
-        inputData = JSON.parse(JSON.stringify(inputData));
+        inputData = { ...inputData };
         const localizer = this.getService(AuthLocalizer);
         const errorKeyPrefix = 'authService.updateUser';
         const dbs = this.getRegisteredService(DatabaseSchema);
