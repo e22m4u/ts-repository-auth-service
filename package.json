@@ -1,7 +1,7 @@
 {
   "name": "@e22m4u/ts-rest-router-auth",
   "version": "0.0.3",
-  "description": "Подключаемый сервис авторизации с ролевой моделью",
+  "description": "Сервис авторизации с ролевой моделью",
   "author": "Mikhail Evstropov <e22m4u@yandex.ru>",
   "license": "MIT",
   "keywords": [

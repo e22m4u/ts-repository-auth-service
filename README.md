@@ -1,25 +1,11 @@
 ## @e22m4u/ts-rest-router-auth
 
-Подключаемый сервис авторизации с ролевой моделью.  
-Модуль предназначен для работы в двух окружениях:
-
-**TypeScript**
-
-- [@e22m4u/ts-rest-router](https://www.npmjs.com/package/@e22m4u/ts-rest-router)
-  \- REST-маршрутизатор на основе контроллеров;
-- [@e22m4u/ts-repository](https://www.npmjs.com/package/@e22m4u/ts-repository)
-  \- ORM/ODM для работы с базами данных;
-
-**JavaScript**
-
-- [@e22m4u/js-trie-router](https://www.npmjs.com/package/@e22m4u/js-trie-router)
-  \- HTTP маршрутизатор на основе префиксного дерева;
-- [@e22m4u/js-repository](https://www.npmjs.com/package/@e22m4u/js-repository)
-  \- Реализация репозитория для работы с базами данных;
+Сервис авторизации с ролевой моделью.  
 
 ## Оглавление
 
 - [Установка](#установка)
+- [Окружение](#окружение)
 - [Использование](#использование)
   - [Регистрация пользователя](#регистрация-пользователя)
   - [Аутентификация (вход в систему)](#аутентификация-вход-в-систему)
@@ -61,6 +47,26 @@ import {AuthService} from '@e22m4u/ts-rest-router-auth';
 ```js
 const {AuthService} = require('@e22m4u/ts-rest-router-auth');
 ```
+
+## Окружение
+
+Модуль предназначен для работы в двух окружениях:
+
+**TypeScript**
+
+- [@e22m4u/ts-rest-router](https://www.npmjs.com/package/@e22m4u/ts-rest-router)  
+  REST-маршрутизатор на основе контроллеров;
+
+- [@e22m4u/ts-repository](https://www.npmjs.com/package/@e22m4u/ts-repository)  
+  TypeScript версия репозитория для работы с базами данных;
+
+**JavaScript**
+
+- [@e22m4u/js-trie-router](https://www.npmjs.com/package/@e22m4u/js-trie-router)  
+  HTTP маршрутизатор на основе префиксного дерева;
+
+- [@e22m4u/js-repository](https://www.npmjs.com/package/@e22m4u/js-repository)  
+  Реализация репозитория для работы с базами данных;
 
 ## Использование
 
