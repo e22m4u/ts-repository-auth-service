@@ -42,10 +42,10 @@
     "example:basic": "DEBUG=tsRestRouterAuth* tsx --tsconfig ./examples/tsconfig.json ./examples/basic-example.ts"
   },
   "dependencies": {
-    "@e22m4u/js-format": "~0.2.0",
-    "@e22m4u/js-localizer": "~0.2.4",
-    "@e22m4u/js-service": "~0.4.5",
-    "@e22m4u/ts-projection": "~0.2.1",
+    "@e22m4u/js-format": "~0.2.1",
+    "@e22m4u/js-localizer": "~0.2.5",
+    "@e22m4u/js-service": "~0.4.6",
+    "@e22m4u/ts-projection": "~0.2.2",
     "@types/jsonwebtoken": "~9.0.10",
     "bcrypt": "~6.0.0",
     "http-errors": "~2.0.0",
@@ -59,7 +59,7 @@
   "devDependencies": {
     "@commitlint/cli": "~20.1.0",
     "@commitlint/config-conventional": "~20.0.0",
-    "@e22m4u/ts-rest-router-repository": "~0.4.0",
+    "@e22m4u/ts-rest-router-repository": "~0.4.1",
     "@eslint/js": "~9.39.1",
     "@types/bcrypt": "~6.0.0",
     "@types/chai": "~5.2.3",
