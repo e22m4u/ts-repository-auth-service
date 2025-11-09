@@ -7,13 +7,12 @@ import {
   UserModel,
   AuthService,
   AuthSession,
+  USER_MODE_DEF,
+  ROLE_MODEL_DEF,
+  ACCESS_TOKEN_MODEL_DEF,
   UserLookupWithPassword,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA,
-  ACCESS_TOKEN_MODEL_DEF,
-  ROLE_MODEL_DEF,
-  USER_MODE_DEF,
-  AuthLocalizer,
-} from '../src/index.js'; // @e22m4u/ts-rest-router-auth
+} from '../src/index.js'; // @e22m4u/js-repository-auth-service
 
 import {
   getAction,
@@ -40,8 +39,7 @@ dbs.defineModel({...USER_MODE_DEF, datasource: 'main'});
 
 router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
   const authService = ctx.container.get(AuthService);
-  const authSession = await authService.createAuthSession(ctx);
-  const authLocalizer = authService.getService(AuthLocalizer);
+  const authSession = await authService.createAuthSession(ctx.req);
   ctx.container.set(AuthSession, authSession);
 });
 
@@ -100,7 +98,7 @@ class UserController extends Service {
     return authService.updateUser(session.getUserId(), body);
   }
 
-  // PATCH /users/logout
+  // GET /users/logout
   @getAction('logout')
   logout() {
     const session = this.getRegisteredService(AuthSession);

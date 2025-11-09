@@ -1,13 +1,11 @@
 import HttpErrors from 'http-errors';
+import {IncomingMessage} from 'http';
 import {createError} from './utils/index.js';
-import {UserModel} from './models/user-model.js';
+import {BaseRoleModel} from './models/index.js';
 import {AuthLocalizer} from './auth-localizer.js';
-import {ServiceContainer} from '@e22m4u/js-service';
-import {BaseUserModel} from './models/user-model.js';
-import {BaseRoleModel} from './models/role-model.js';
-import {DebuggableService} from './debuggable-service.js';
-import {AccessTokenModel} from './models/access-token-model.js';
-import {BaseAccessTokenModel} from './models/access-token-model.js';
+import {UserModel, BaseUserModel} from './models/index.js';
+import {DebuggableService, ServiceContainer} from '@e22m4u/js-service';
+import {AccessTokenModel, BaseAccessTokenModel} from './models/index.js';
 
 /**
  * Auth session.
@@ -16,6 +14,11 @@ export class AuthSession<
   UserType extends BaseUserModel = UserModel,
   TokenType extends BaseAccessTokenModel = AccessTokenModel,
 > extends DebuggableService {
+  /**
+   * Http request.
+   */
+  protected httpRequest: IncomingMessage;
+
   /**
    * Access token.
    */
@@ -40,12 +43,28 @@ export class AuthSession<
    */
   constructor(
     container: ServiceContainer,
+    httpRequest: IncomingMessage,
     accessToken?: TokenType | undefined,
     user?: UserType | undefined,
   ) {
     super(container);
+    this.httpRequest = httpRequest;
     this.accessToken = accessToken;
     this.user = user;
+  }
+
+  /**
+   * Get request method.
+   */
+  getRequestMethod() {
+    return this.httpRequest.method || '';
+  }
+
+  /**
+   * Get request pathname.
+   */
+  getRequestPathname() {
+    return (this.httpRequest.url || '').replace(/(#.*)|(\?.*)/, '');
   }
 
   /**

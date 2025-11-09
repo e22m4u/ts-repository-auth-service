@@ -1,10 +1,8 @@
 import HttpErrors from 'http-errors';
-import {createError} from '../utils/index.js';
-import {AuthSession} from '../auth-session.js';
-import {debugFn} from '../debuggable-service.js';
-import {AuthLocalizer} from '../auth-localizer.js';
-import {RequestContext} from '@e22m4u/ts-rest-router';
-import {RoutePreHandler} from '@e22m4u/ts-rest-router';
+import {createError} from './utils/index.js';
+import {AuthSession} from './auth-session.js';
+import {AuthLocalizer} from './auth-localizer.js';
+import {DebuggableService} from '@e22m4u/js-service';
 
 /**
  * Access rule.
@@ -19,23 +17,26 @@ export const AccessRule = {
 export type AccessRule = (typeof AccessRule)[keyof typeof AccessRule];
 
 /**
- * Role guard.
- *
- * @param roleName
+ * Access guard.
  */
-export function roleGuard(roleName?: string | string[]): RoutePreHandler {
-  return function (ctx: RequestContext) {
-    const debug = debugFn.withNs(roleGuard.name).withHash();
-    debug('Role checking for %s %v.', ctx.method, ctx.path);
-    const localizer = ctx.container.getRegistered(AuthLocalizer);
-    const session = ctx.container.getRegistered(AuthSession);
+export class RoleGuard extends DebuggableService {
+  /**
+   * Require role.
+   */
+  requireRole(roleName?: string | string[]) {
+    const debug = this.getDebuggerFor(this.requireRole);
+    const session = this.getRegisteredService(AuthSession);
+    const method = session.getRequestMethod();
+    const pathname = session.getRequestPathname();
+    debug('Role checking for %s %v.', method, pathname);
+    const localizer = this.getRegisteredService(AuthLocalizer);
     // если пользователь не авторизован,
     // то выбрасывается ошибка
     if (!session.isLoggedIn)
       throw createError(
         HttpErrors.Unauthorized,
         'AUTHORIZATION_REQUIRED',
-        localizer.t('roleGuard.authenticationRequired'),
+        localizer.t('roleGuard.requireRole.authenticationRequired'),
       );
     debug('User id was %v.', session.getUserId());
     // если требуемые роли не указаны, то допускается
@@ -59,5 +60,5 @@ export function roleGuard(roleName?: string | string[]): RoutePreHandler {
         localizer.t('roleGuard.roleNotAllowed'),
       );
     debug('Access allowed.');
-  };
+  }
 }

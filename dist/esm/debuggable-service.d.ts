@@ -3,7 +3,7 @@ import { DebuggableService as BaseDebuggableService } from '@e22m4u/js-service';
 /**
  * Module debugger namespace.
  */
-export declare const MODULE_DEBUGGER_NAMESPACE = "tsRestRouterAuth";
+export declare const MODULE_DEBUGGER_NAMESPACE = "jsRepositoryAuthService";
 /**
  * Debuggable service.
  */
@@ -15,7 +15,3 @@ export declare class DebuggableService extends BaseDebuggableService {
      */
     constructor(container?: ServiceContainer);
 }
-/**
- * Debugger.
- */
-export declare const debugFn: import("@e22m4u/js-debug").Debugger;

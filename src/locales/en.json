@@ -18,8 +18,8 @@
   "authService.updateUser.userNotFoundError": "User not found",
   "authService.findUserByLoginIds.loginFailedError": "Invalid login or password",
   "authService.verifyPassword.invalidPasswordError": "Invalid login or password",
-  "roleGuard.authenticationRequired": "Authentication is required",
-  "roleGuard.roleNotAllowed": "You do not have permissions to perform this action",
+  "roleGuard.requireRole.authenticationRequired": "Authentication is required",
+  "roleGuard.requireRole.roleNotAllowed": "You do not have permissions to perform this action",
   "authSession.getUser.authenticationRequired": "Authentication is required",
   "authSession.getAccessTokenId.authenticationRequired": "Authentication is required"
 }

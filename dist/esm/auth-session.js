@@ -1,11 +1,15 @@
 import HttpErrors from 'http-errors';
 import { createError } from './utils/index.js';
 import { AuthLocalizer } from './auth-localizer.js';
-import { DebuggableService } from './debuggable-service.js';
+import { DebuggableService } from '@e22m4u/js-service';
 /**
  * Auth session.
  */
 export class AuthSession extends DebuggableService {
+    /**
+     * Http request.
+     */
+    httpRequest;
     /**
      * Access token.
      */
@@ -25,10 +29,23 @@ export class AuthSession extends DebuggableService {
      *
      * @param user
      */
-    constructor(container, accessToken, user) {
+    constructor(container, httpRequest, accessToken, user) {
         super(container);
+        this.httpRequest = httpRequest;
         this.accessToken = accessToken;
         this.user = user;
+    }
+    /**
+     * Get request method.
+     */
+    getRequestMethod() {
+        return this.httpRequest.method || '';
+    }
+    /**
+     * Get request pathname.
+     */
+    getRequestPathname() {
+        return (this.httpRequest.url || '').replace(/(#.*)|(\?.*)/, '');
     }
     /**
      * Get user.

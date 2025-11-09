@@ -5,8 +5,8 @@ import HttpErrors from 'http-errors';
 import { AuthSession } from './auth-session.js';
 import { AuthLocalizer } from './auth-localizer.js';
 import { DebuggableService } from './debuggable-service.js';
-import { createError, removeEmptyKeys } from './utils/index.js';
-import { DatabaseSchema, } from '@e22m4u/ts-repository';
+import { DatabaseSchema, } from '@e22m4u/js-repository';
+import { createError, parseUrlQuery, removeEmptyKeys, parseCookieHeader, } from './utils/index.js';
 import { AccessTokenModel, UserModel, } from './models/index.js';
 import { emailFormatValidator, passwordFormatValidator, phoneFormatValidator, usernameFormatValidator, } from './validators/index.js';
 const { JsonWebTokenError, TokenExpiredError } = jwt;
@@ -53,7 +53,6 @@ export class AuthServiceOptions {
  * Auth service.
  */
 export class AuthService extends DebuggableService {
-    requestContext;
     /**
      * Options.
      */
@@ -64,9 +63,8 @@ export class AuthService extends DebuggableService {
      * @param container
      * @param options
      */
-    constructor(container, options, requestContext) {
+    constructor(container, options) {
         super(container);
-        this.requestContext = requestContext;
         this.options = this.getService(AuthServiceOptions);
         if (options) {
             const filteredOptions = removeEmptyKeys(options);
@@ -452,21 +450,23 @@ export class AuthService extends DebuggableService {
         return res;
     }
     /**
-     * Find access token by request context.
+     * Find access token by http request.
      *
      * @param ctx
      * @param include
      */
-    async findAccessTokenByRequestContext(ctx, include) {
-        const debug = this.getDebuggerFor(this.findAccessTokenByRequestContext);
-        debug('Finding access token by request context.');
-        let jwToken = ctx.headers[this.options.jwtHeaderName] ||
-            ctx.cookies[this.options.jwtCookieName] ||
-            ctx.query[this.options.jwtQueryParam];
+    async findAccessTokenByHttpRequest(req, include) {
+        const debug = this.getDebuggerFor(this.findAccessTokenByHttpRequest);
+        debug('Finding access token by http request.');
+        const cookies = parseCookieHeader(req.headers['cookie']);
+        const query = parseUrlQuery(req.url);
+        let jwToken = req.headers[this.options.jwtHeaderName] ||
+            cookies[this.options.jwtCookieName] ||
+            query[this.options.jwtQueryParam];
         if (typeof jwToken === 'string') {
             jwToken = jwToken.replace('Bearer ', '');
         }
-        if (!jwToken) {
+        if (!jwToken || typeof jwToken !== 'string') {
             debug('JWT not found.');
             return;
         }
@@ -505,14 +505,14 @@ export class AuthService extends DebuggableService {
      *
      * @param ctx
      */
-    async createAuthSession(ctx) {
-        const accessToken = await this.findAccessTokenByRequestContext(ctx);
+    async createAuthSession(req) {
+        const accessToken = await this.findAccessTokenByHttpRequest(req);
         if (accessToken) {
             const user = await this.findAccessTokenOwner(accessToken, this.options.sessionUserInclusion);
-            return new AuthSession(ctx.container, accessToken, user);
+            return new AuthSession(this.container, req, accessToken, user);
         }
         else {
-            return new AuthSession(ctx.container);
+            return new AuthSession(this.container, req);
         }
     }
 }

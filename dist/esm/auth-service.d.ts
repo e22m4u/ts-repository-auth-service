@@ -1,9 +1,9 @@
+import { IncomingMessage } from 'http';
 import { AuthSession } from './auth-session.js';
 import { Localizer } from '@e22m4u/js-localizer';
 import { ServiceContainer } from '@e22m4u/js-service';
-import { RequestContext } from '@e22m4u/ts-rest-router';
 import { DebuggableService } from './debuggable-service.js';
-import { FilterClause, IncludeClause, WithOptionalId } from '@e22m4u/ts-repository';
+import { IncludeClause, WithOptionalId, ItemFilterClause } from '@e22m4u/js-repository';
 import { AccessTokenModel, BaseAccessTokenModel, BaseUserModel } from './models/index.js';
 /**
  * Login id names.
@@ -75,7 +75,6 @@ export type JwtIssueResult = {
  * Auth service.
  */
 export declare class AuthService extends DebuggableService {
-    readonly requestContext?: RequestContext | undefined;
     /**
      * Options.
      */
@@ -86,7 +85,7 @@ export declare class AuthService extends DebuggableService {
      * @param container
      * @param options
      */
-    constructor(container?: ServiceContainer, options?: Partial<AuthServiceOptions>, requestContext?: RequestContext | undefined);
+    constructor(container?: ServiceContainer, options?: Partial<AuthServiceOptions>);
     /**
      * Create access token.
      *
@@ -210,7 +209,7 @@ export declare class AuthService extends DebuggableService {
      * @param data
      * @param filter
      */
-    createUser<T extends BaseUserModel>(inputData: WithOptionalId<T>, filter?: FilterClause<T>): Promise<T>;
+    createUser<T extends BaseUserModel>(inputData: WithOptionalId<T>, filter?: ItemFilterClause<T>): Promise<T>;
     /**
      * Update user.
      *
@@ -219,14 +218,14 @@ export declare class AuthService extends DebuggableService {
      * @param data
      * @param filter
      */
-    updateUser<T extends BaseUserModel>(userId: T['id'], inputData: Partial<T>, filter?: FilterClause<T>): Promise<T>;
+    updateUser<T extends BaseUserModel>(userId: T['id'], inputData: Partial<T>, filter?: ItemFilterClause<T>): Promise<T>;
     /**
-     * Find access token by request context.
+     * Find access token by http request.
      *
      * @param ctx
      * @param include
      */
-    findAccessTokenByRequestContext<T extends BaseAccessTokenModel>(ctx: RequestContext, include?: IncludeClause<T>): Promise<T | undefined>;
+    findAccessTokenByHttpRequest<T extends BaseAccessTokenModel>(req: IncomingMessage, include?: IncludeClause<T>): Promise<T | undefined>;
     /**
      * Find access token owner.
      *
@@ -238,5 +237,5 @@ export declare class AuthService extends DebuggableService {
      *
      * @param ctx
      */
-    createAuthSession(ctx: RequestContext): Promise<AuthSession>;
+    createAuthSession(req: IncomingMessage): Promise<AuthSession>;
 }

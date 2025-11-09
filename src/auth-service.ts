@@ -2,21 +2,27 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {v7 as uuidV7} from 'uuid';
 import HttpErrors from 'http-errors';
+import {IncomingMessage} from 'http';
 import {AuthSession} from './auth-session.js';
 import {Localizer} from '@e22m4u/js-localizer';
 import {AuthLocalizer} from './auth-localizer.js';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {RequestContext} from '@e22m4u/ts-rest-router';
 import {DebuggableService} from './debuggable-service.js';
-import {createError, removeEmptyKeys} from './utils/index.js';
 
 import {
-  DatabaseSchema,
-  FilterClause,
-  IncludeClause,
   WhereClause,
+  IncludeClause,
   WithOptionalId,
-} from '@e22m4u/ts-repository';
+  DatabaseSchema,
+  ItemFilterClause,
+} from '@e22m4u/js-repository';
+
+import {
+  createError,
+  parseUrlQuery,
+  removeEmptyKeys,
+  parseCookieHeader,
+} from './utils/index.js';
 
 import {
   AccessTokenModel,
@@ -140,7 +146,6 @@ export class AuthService extends DebuggableService {
   constructor(
     container?: ServiceContainer,
     options?: Partial<AuthServiceOptions>,
-    readonly requestContext?: RequestContext,
   ) {
     super(container);
     this.options = this.getService(AuthServiceOptions);
@@ -644,7 +649,7 @@ export class AuthService extends DebuggableService {
    */
   async createUser<T extends BaseUserModel>(
     inputData: WithOptionalId<T>,
-    filter?: FilterClause<T>,
+    filter?: ItemFilterClause<T>,
   ): Promise<T> {
     const debug = this.getDebuggerFor(this.createUser);
     debug('Creating user.');
@@ -687,7 +692,7 @@ export class AuthService extends DebuggableService {
   async updateUser<T extends BaseUserModel>(
     userId: T['id'],
     inputData: Partial<T>,
-    filter?: FilterClause<T>,
+    filter?: ItemFilterClause<T>,
   ): Promise<T> {
     const debug = this.getDebuggerFor(this.updateUser);
     debug('Updating user.');
@@ -734,25 +739,27 @@ export class AuthService extends DebuggableService {
   }
 
   /**
-   * Find access token by request context.
+   * Find access token by http request.
    *
    * @param ctx
    * @param include
    */
-  async findAccessTokenByRequestContext<T extends BaseAccessTokenModel>(
-    ctx: RequestContext,
+  async findAccessTokenByHttpRequest<T extends BaseAccessTokenModel>(
+    req: IncomingMessage,
     include?: IncludeClause<T>,
   ): Promise<T | undefined> {
-    const debug = this.getDebuggerFor(this.findAccessTokenByRequestContext);
-    debug('Finding access token by request context.');
+    const debug = this.getDebuggerFor(this.findAccessTokenByHttpRequest);
+    debug('Finding access token by http request.');
+    const cookies = parseCookieHeader(req.headers['cookie']);
+    const query = parseUrlQuery(req.url);
     let jwToken =
-      ctx.headers[this.options.jwtHeaderName] ||
-      ctx.cookies[this.options.jwtCookieName] ||
-      ctx.query[this.options.jwtQueryParam];
+      req.headers[this.options.jwtHeaderName] ||
+      cookies[this.options.jwtCookieName] ||
+      query[this.options.jwtQueryParam];
     if (typeof jwToken === 'string') {
       jwToken = jwToken.replace('Bearer ', '');
     }
-    if (!jwToken) {
+    if (!jwToken || typeof jwToken !== 'string') {
       debug('JWT not found.');
       return;
     }
@@ -811,16 +818,16 @@ export class AuthService extends DebuggableService {
    *
    * @param ctx
    */
-  async createAuthSession(ctx: RequestContext): Promise<AuthSession> {
-    const accessToken = await this.findAccessTokenByRequestContext(ctx);
+  async createAuthSession(req: IncomingMessage): Promise<AuthSession> {
+    const accessToken = await this.findAccessTokenByHttpRequest(req);
     if (accessToken) {
       const user = await this.findAccessTokenOwner(
         accessToken,
         this.options.sessionUserInclusion as IncludeClause<BaseUserModel>,
       );
-      return new AuthSession(ctx.container, accessToken, user);
+      return new AuthSession(this.container, req, accessToken, user);
     } else {
-      return new AuthSession(ctx.container);
+      return new AuthSession(this.container, req);
     }
   }
 }

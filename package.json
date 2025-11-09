@@ -1,5 +1,5 @@
 {
-  "name": "@e22m4u/ts-rest-router-auth",
+  "name": "@e22m4u/js-repository-auth-service",
   "version": "0.0.4",
   "description": "Сервис авторизации с ролевой моделью",
   "author": "Mikhail Evstropov <e22m4u@yandex.ru>",
@@ -11,10 +11,10 @@
     "authorization",
     "authentication"
   ],
-  "homepage": "https://github.com/e22m4u/ts-rest-router-auth",
+  "homepage": "https://github.com/e22m4u/js-repository-auth-service",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/e22m4u/ts-rest-router-auth.git"
+    "url": "git+https://github.com/e22m4u/js-repository-auth-service.git"
   },
   "type": "module",
   "types": "./dist/esm/index.d.ts",
@@ -39,7 +39,8 @@
     "test": "npm run lint && c8 --reporter=text-summary mocha --bail",
     "test:coverage": "npm run lint && c8 --reporter=text mocha --bail",
     "prepare": "husky",
-    "example:basic": "DEBUG=tsRestRouterAuth* tsx --tsconfig ./examples/tsconfig.json ./examples/basic-example.ts"
+    "example:trie-router": "DEBUG=jsRepositoryAuthService* node ./examples/trie-router-example.js",
+    "example:rest-router": "DEBUG=jsRepositoryAuthService* tsx --tsconfig ./examples/tsconfig.json ./examples/rest-router-example.ts"
   },
   "dependencies": {
     "@e22m4u/js-format": "~0.2.1",
@@ -53,12 +54,14 @@
     "uuid": "~13.0.0"
   },
   "peerDependencies": {
-    "@e22m4u/ts-repository": "~0.2.0",
-    "@e22m4u/ts-rest-router": "~0.6.6"
+    "@e22m4u/js-repository": "~0.6.0",
+    "@e22m4u/ts-repository": "~0.2.0"
   },
   "devDependencies": {
     "@commitlint/cli": "~20.1.0",
     "@commitlint/config-conventional": "~20.0.0",
+    "@e22m4u/js-trie-router": "^0.3.5",
+    "@e22m4u/ts-rest-router": "^0.6.8",
     "@e22m4u/ts-rest-router-repository": "~0.4.1",
     "@eslint/js": "~9.39.1",
     "@types/bcrypt": "~6.0.0",

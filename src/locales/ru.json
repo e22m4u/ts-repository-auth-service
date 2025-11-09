@@ -18,8 +18,8 @@
   "authService.updateUser.userNotFoundError": "Пользователь не найден",
   "authService.findUserByLoginIds.loginFailedError": "Неверный логин или пароль",
   "authService.verifyPassword.invalidPasswordError": "Неверный логин или пароль",
-  "roleGuard.authenticationRequired": "Требуется авторизация",
-  "roleGuard.roleNotAllowed": "У вас недостаточно прав для выполнения данного действия",
+  "roleGuard.requireRole.authenticationRequired": "Требуется авторизация",
+  "roleGuard.requireRole.roleNotAllowed": "У вас недостаточно прав для выполнения данного действия",
   "authSession.getUser.authenticationRequired": "Требуется авторизация",
   "authSession.getAccessTokenId.authenticationRequired": "Требуется авторизация"
 }

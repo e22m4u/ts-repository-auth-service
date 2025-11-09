@@ -1210,17 +1210,16 @@ __export(index_exports, {
   JWT_ISSUE_RESULT_SCHEMA: () => JWT_ISSUE_RESULT_SCHEMA,
   LOGIN_ID_NAMES: () => LOGIN_ID_NAMES,
   ROLE_MODEL_DEF: () => ROLE_MODEL_DEF,
+  RoleGuard: () => RoleGuard,
   RoleModel: () => RoleModel,
   USER_LOOKUP_SCHEMA: () => USER_LOOKUP_SCHEMA,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA: () => USER_LOOKUP_WITH_PASSWORD_SCHEMA,
   USER_MODE_DEF: () => USER_MODE_DEF,
-  UserModel: () => UserModel,
-  requireRole: () => requireRole,
-  roleGuard: () => roleGuard
+  UserModel: () => UserModel
 });
 module.exports = __toCommonJS(index_exports);
 
-// dist/esm/hooks/role-guard.js
+// dist/esm/role-guard.js
 var import_http_errors2 = __toESM(require("http-errors"), 1);
 
 // dist/esm/utils/create-error.js
@@ -1233,11 +1232,47 @@ function createError(ctor, code, message, details, ...args) {
 }
 __name(createError, "createError");
 
+// dist/esm/utils/parse-url-query.js
+function parseUrlQuery(urlString) {
+  if (!urlString) {
+    return {};
+  }
+  const url = new URL(urlString, "http://localhost");
+  return Object.fromEntries(url.searchParams.entries());
+}
+__name(parseUrlQuery, "parseUrlQuery");
+
 // dist/esm/utils/remove-empty-keys.js
 function removeEmptyKeys(plainObject, removeWhen = (v) => v == null) {
   return Object.fromEntries(Object.entries(plainObject).filter(([, value]) => !removeWhen(value)));
 }
 __name(removeEmptyKeys, "removeEmptyKeys");
+
+// dist/esm/utils/parse-cookie-header.js
+function parseCookieHeader(cookieHeader) {
+  if (!cookieHeader) {
+    return {};
+  }
+  return cookieHeader.split(";").reduce((acc, cookie) => {
+    const eqIndex = cookie.indexOf("=");
+    if (eqIndex === -1) {
+      return acc;
+    }
+    const key = cookie.substring(0, eqIndex).trim();
+    let value = cookie.substring(eqIndex + 1).trim();
+    if (!key) {
+      return acc;
+    }
+    try {
+      value = decodeURIComponent(value);
+    } catch (e) {
+      console.error(`Failed to decode cookie value: "${value}"`, e);
+    }
+    acc[key] = value;
+    return acc;
+  }, {});
+}
+__name(parseCookieHeader, "parseCookieHeader");
 
 // dist/esm/auth-session.js
 var import_http_errors = __toESM(require("http-errors"), 1);
@@ -1266,8 +1301,8 @@ var en_default = {
   "authService.updateUser.userNotFoundError": "User not found",
   "authService.findUserByLoginIds.loginFailedError": "Invalid login or password",
   "authService.verifyPassword.invalidPasswordError": "Invalid login or password",
-  "roleGuard.authenticationRequired": "Authentication is required",
-  "roleGuard.roleNotAllowed": "You do not have permissions to perform this action",
+  "roleGuard.requireRole.authenticationRequired": "Authentication is required",
+  "roleGuard.requireRole.roleNotAllowed": "You do not have permissions to perform this action",
   "authSession.getUser.authenticationRequired": "Authentication is required",
   "authSession.getAccessTokenId.authenticationRequired": "Authentication is required"
 };
@@ -1293,8 +1328,8 @@ var ru_default = {
   "authService.updateUser.userNotFoundError": "\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D",
   "authService.findUserByLoginIds.loginFailedError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u043B\u043E\u0433\u0438\u043D \u0438\u043B\u0438 \u043F\u0430\u0440\u043E\u043B\u044C",
   "authService.verifyPassword.invalidPasswordError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u043B\u043E\u0433\u0438\u043D \u0438\u043B\u0438 \u043F\u0430\u0440\u043E\u043B\u044C",
-  "roleGuard.authenticationRequired": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F",
-  "roleGuard.roleNotAllowed": "\u0423 \u0432\u0430\u0441 \u043D\u0435\u0434\u043E\u0441\u0442\u0430\u0442\u043E\u0447\u043D\u043E \u043F\u0440\u0430\u0432 \u0434\u043B\u044F \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u0434\u0430\u043D\u043D\u043E\u0433\u043E \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
+  "roleGuard.requireRole.authenticationRequired": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F",
+  "roleGuard.requireRole.roleNotAllowed": "\u0423 \u0432\u0430\u0441 \u043D\u0435\u0434\u043E\u0441\u0442\u0430\u0442\u043E\u0447\u043D\u043E \u043F\u0440\u0430\u0432 \u0434\u043B\u044F \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u0434\u0430\u043D\u043D\u043E\u0433\u043E \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
   "authSession.getUser.authenticationRequired": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F",
   "authSession.getAccessTokenId.authenticationRequired": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F"
 };
@@ -1311,329 +1346,13 @@ var _AuthLocalizer = class _AuthLocalizer extends import_js_localizer.Localizer 
 __name(_AuthLocalizer, "AuthLocalizer");
 var AuthLocalizer = _AuthLocalizer;
 
-// node_modules/@e22m4u/js-debug/src/utils/is-non-array-object.js
-function isNonArrayObject(input) {
-  return Boolean(input && typeof input === "object" && !Array.isArray(input));
-}
-__name(isNonArrayObject, "isNonArrayObject");
-
-// node_modules/@e22m4u/js-debug/src/utils/generate-random-hex.js
-function generateRandomHex(length = 4) {
-  if (length <= 0) {
-    return "";
-  }
-  const firstCharCandidates = "abcdef";
-  const restCharCandidates = "0123456789abcdef";
-  let result = "";
-  const firstCharIndex = Math.floor(Math.random() * firstCharCandidates.length);
-  result += firstCharCandidates[firstCharIndex];
-  for (let i = 1; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * restCharCandidates.length);
-    result += restCharCandidates[randomIndex];
-  }
-  return result;
-}
-__name(generateRandomHex, "generateRandomHex");
-
-// node_modules/@e22m4u/js-debug/src/create-debugger.js
-var import_js_format2 = require("@e22m4u/js-format");
-var import_js_format3 = require("@e22m4u/js-format");
-
-// node_modules/@e22m4u/js-debug/src/create-colorized-dump.js
-var import_util = require("util");
-var INSPECT_OPTIONS = {
-  showHidden: false,
-  depth: null,
-  colors: true,
-  compact: false
-};
-function createColorizedDump(value) {
-  return (0, import_util.inspect)(value, INSPECT_OPTIONS);
-}
-__name(createColorizedDump, "createColorizedDump");
-
-// node_modules/@e22m4u/js-debug/src/create-debugger.js
-var AVAILABLE_COLORS = [
-  20,
-  21,
-  26,
-  27,
-  32,
-  33,
-  38,
-  39,
-  40,
-  41,
-  42,
-  43,
-  44,
-  45,
-  56,
-  57,
-  62,
-  63,
-  68,
-  69,
-  74,
-  75,
-  76,
-  77,
-  78,
-  79,
-  80,
-  81,
-  92,
-  93,
-  98,
-  99,
-  112,
-  113,
-  128,
-  129,
-  134,
-  135,
-  148,
-  149,
-  160,
-  161,
-  162,
-  163,
-  164,
-  165,
-  166,
-  167,
-  168,
-  169,
-  170,
-  171,
-  172,
-  173,
-  178,
-  179,
-  184,
-  185,
-  196,
-  197,
-  198,
-  199,
-  200,
-  201,
-  202,
-  203,
-  204,
-  205,
-  206,
-  207,
-  208,
-  209,
-  214,
-  215,
-  220,
-  221
-];
-var DEFAULT_OFFSET_STEP_SPACES = 2;
-function pickColorCode(input) {
-  if (typeof input !== "string")
-    throw new import_js_format2.Errorf(
-      'The parameter "input" of the function pickColorCode must be a String, but %v given.',
-      input
-    );
-  let hash = 0;
-  for (let i = 0; i < input.length; i++) {
-    hash = (hash << 5) - hash + input.charCodeAt(i);
-    hash |= 0;
-  }
-  return AVAILABLE_COLORS[Math.abs(hash) % AVAILABLE_COLORS.length];
-}
-__name(pickColorCode, "pickColorCode");
-function wrapStringByColorCode(input, color) {
-  if (typeof input !== "string")
-    throw new import_js_format2.Errorf(
-      'The parameter "input" of the function wrapStringByColorCode must be a String, but %v given.',
-      input
-    );
-  if (typeof color !== "number")
-    throw new import_js_format2.Errorf(
-      'The parameter "color" of the function wrapStringByColorCode must be a Number, but %v given.',
-      color
-    );
-  const colorCode = "\x1B[3" + (Number(color) < 8 ? color : "8;5;" + color);
-  return `${colorCode};1m${input}\x1B[0m`;
-}
-__name(wrapStringByColorCode, "wrapStringByColorCode");
-function matchPattern(pattern, input) {
-  if (typeof pattern !== "string")
-    throw new import_js_format2.Errorf(
-      'The parameter "pattern" of the function matchPattern must be a String, but %v given.',
-      pattern
-    );
-  if (typeof input !== "string")
-    throw new import_js_format2.Errorf(
-      'The parameter "input" of the function matchPattern must be a String, but %v given.',
-      input
-    );
-  const regexpStr = pattern.replace(/\*/g, ".*?");
-  const regexp = new RegExp("^" + regexpStr + "$");
-  return regexp.test(input);
-}
-__name(matchPattern, "matchPattern");
-function createDebugger(namespaceOrOptions = void 0, ...namespaceSegments) {
-  if (namespaceOrOptions && typeof namespaceOrOptions !== "string" && !isNonArrayObject(namespaceOrOptions)) {
-    throw new import_js_format2.Errorf(
-      'The parameter "namespace" of the function createDebugger must be a String or an Object, but %v given.',
-      namespaceOrOptions
-    );
-  }
-  const withCustomState = isNonArrayObject(namespaceOrOptions);
-  const state = withCustomState ? namespaceOrOptions : {};
-  state.envNsSegments = Array.isArray(state.envNsSegments) ? state.envNsSegments : [];
-  state.nsSegments = Array.isArray(state.nsSegments) ? state.nsSegments : [];
-  state.pattern = typeof state.pattern === "string" ? state.pattern : "";
-  state.hash = typeof state.hash === "string" ? state.hash : "";
-  state.offsetSize = typeof state.offsetSize === "number" ? state.offsetSize : 0;
-  state.offsetStep = typeof state.offsetStep !== "string" ? " ".repeat(DEFAULT_OFFSET_STEP_SPACES) : state.offsetStep;
-  state.delimiter = state.delimiter && typeof state.delimiter === "string" ? state.delimiter : ":";
-  if (!withCustomState) {
-    if (typeof process !== "undefined" && process.env && process.env["DEBUGGER_NAMESPACE"]) {
-      state.envNsSegments.push(process.env.DEBUGGER_NAMESPACE);
-    }
-    if (typeof namespaceOrOptions === "string")
-      state.nsSegments.push(namespaceOrOptions);
-  }
-  namespaceSegments.forEach((segment) => {
-    if (!segment || typeof segment !== "string")
-      throw new import_js_format2.Errorf(
-        "Namespace segment must be a non-empty String, but %v given.",
-        segment
-      );
-    state.nsSegments.push(segment);
-  });
-  if (typeof process !== "undefined" && process.env && process.env["DEBUG"]) {
-    state.pattern = process.env["DEBUG"];
-  } else if (typeof localStorage !== "undefined" && typeof localStorage.getItem("debug") === "string") {
-    state.pattern = localStorage.getItem("debug");
-  }
-  const isDebuggerEnabled = /* @__PURE__ */ __name(() => {
-    const nsStr = [...state.envNsSegments, ...state.nsSegments].join(
-      state.delimiter
-    );
-    const patterns = state.pattern.split(/[\s,]+/).filter((p) => p.length > 0);
-    if (patterns.length === 0 && state.pattern !== "*") return false;
-    for (const singlePattern of patterns) {
-      if (matchPattern(singlePattern, nsStr)) return true;
-    }
-    return false;
-  }, "isDebuggerEnabled");
-  const getPrefix = /* @__PURE__ */ __name(() => {
-    let tokens = [];
-    [...state.envNsSegments, ...state.nsSegments, state.hash].filter(Boolean).forEach((token) => {
-      const extractedTokens = token.split(state.delimiter).filter(Boolean);
-      tokens = [...tokens, ...extractedTokens];
-    });
-    let res = tokens.reduce((acc, token, index) => {
-      const isLast = tokens.length - 1 === index;
-      const tokenColor = pickColorCode(token);
-      acc += wrapStringByColorCode(token, tokenColor);
-      if (!isLast) acc += state.delimiter;
-      return acc;
-    }, "");
-    if (state.offsetSize > 0) res += state.offsetStep.repeat(state.offsetSize);
-    return res;
-  }, "getPrefix");
-  function debugFn2(messageOrData, ...args) {
-    if (!isDebuggerEnabled()) return;
-    const prefix = getPrefix();
-    const multiString = (0, import_js_format3.format)(messageOrData, ...args);
-    const rows = multiString.split("\n");
-    rows.forEach((message) => {
-      prefix ? console.log(`${prefix} ${message}`) : console.log(message);
-    });
-  }
-  __name(debugFn2, "debugFn");
-  debugFn2.withNs = function(namespace, ...args) {
-    const stateCopy = JSON.parse(JSON.stringify(state));
-    [namespace, ...args].forEach((ns) => {
-      if (!ns || typeof ns !== "string")
-        throw new import_js_format2.Errorf(
-          "Debugger namespace must be a non-empty String, but %v given.",
-          ns
-        );
-      stateCopy.nsSegments.push(ns);
-    });
-    return createDebugger(stateCopy);
-  };
-  debugFn2.withHash = function(hashLength = 4) {
-    const stateCopy = JSON.parse(JSON.stringify(state));
-    if (!hashLength || typeof hashLength !== "number" || hashLength < 1) {
-      throw new import_js_format2.Errorf(
-        "Debugger hash must be a positive Number, but %v given.",
-        hashLength
-      );
-    }
-    stateCopy.hash = generateRandomHex(hashLength);
-    return createDebugger(stateCopy);
-  };
-  debugFn2.withOffset = function(offsetSize) {
-    const stateCopy = JSON.parse(JSON.stringify(state));
-    if (!offsetSize || typeof offsetSize !== "number" || offsetSize < 1) {
-      throw new import_js_format2.Errorf(
-        "Debugger offset must be a positive Number, but %v given.",
-        offsetSize
-      );
-    }
-    stateCopy.offsetSize = offsetSize;
-    return createDebugger(stateCopy);
-  };
-  debugFn2.withoutEnvNs = function() {
-    const stateCopy = JSON.parse(JSON.stringify(state));
-    stateCopy.envNsSegments = [];
-    return createDebugger(stateCopy);
-  };
-  debugFn2.inspect = function(valueOrDesc, ...args) {
-    if (!isDebuggerEnabled()) return;
-    const prefix = getPrefix();
-    let multiString = "";
-    if (typeof valueOrDesc === "string" && args.length) {
-      multiString += `${valueOrDesc}
-`;
-      const multilineDump = args.map((v) => createColorizedDump(v)).join("\n");
-      const dumpRows = multilineDump.split("\n");
-      multiString += dumpRows.map((v) => `${state.offsetStep}${v}`).join("\n");
-    } else {
-      multiString += [valueOrDesc, ...args].map((v) => createColorizedDump(v)).join("\n");
-    }
-    const rows = multiString.split("\n");
-    rows.forEach((message) => {
-      prefix ? console.log(`${prefix} ${message}`) : console.log(message);
-    });
-  };
-  debugFn2.state = state;
-  return debugFn2;
-}
-__name(createDebugger, "createDebugger");
-
-// dist/esm/debuggable-service.js
-var import_js_service = require("@e22m4u/js-service");
-var MODULE_DEBUGGER_NAMESPACE = "tsRestRouterAuth";
-var _DebuggableService = class _DebuggableService extends import_js_service.DebuggableService {
-  /**
-   * Constructor.
-   *
-   * @param container
-   */
-  constructor(container) {
-    super(container, {
-      namespace: MODULE_DEBUGGER_NAMESPACE,
-      noEnvironmentNamespace: true
-    });
-  }
-};
-__name(_DebuggableService, "DebuggableService");
-var DebuggableService = _DebuggableService;
-var debugFn = createDebugger(MODULE_DEBUGGER_NAMESPACE).withoutEnvNs();
-
 // dist/esm/auth-session.js
-var _AuthSession = class _AuthSession extends DebuggableService {
+var import_js_service = require("@e22m4u/js-service");
+var _AuthSession = class _AuthSession extends import_js_service.DebuggableService {
+  /**
+   * Http request.
+   */
+  httpRequest;
   /**
    * Access token.
    */
@@ -1653,10 +1372,23 @@ var _AuthSession = class _AuthSession extends DebuggableService {
    *
    * @param user
    */
-  constructor(container, accessToken, user) {
+  constructor(container, httpRequest, accessToken, user) {
     super(container);
+    this.httpRequest = httpRequest;
     this.accessToken = accessToken;
     this.user = user;
+  }
+  /**
+   * Get request method.
+   */
+  getRequestMethod() {
+    return this.httpRequest.method || "";
+  }
+  /**
+   * Get request pathname.
+   */
+  getRequestPathname() {
+    return (this.httpRequest.url || "").replace(/(#.*)|(\?.*)/, "");
   }
   /**
    * Get user.
@@ -1706,18 +1438,24 @@ var _AuthSession = class _AuthSession extends DebuggableService {
 __name(_AuthSession, "AuthSession");
 var AuthSession = _AuthSession;
 
-// dist/esm/hooks/role-guard.js
+// dist/esm/role-guard.js
+var import_js_service2 = require("@e22m4u/js-service");
 var AccessRule = {
   AUTHENTICATED: "$authenticated"
 };
-function roleGuard(roleName) {
-  return function(ctx) {
-    const debug = debugFn.withNs(roleGuard.name).withHash();
-    debug("Role checking for %s %v.", ctx.method, ctx.path);
-    const localizer = ctx.container.getRegistered(AuthLocalizer);
-    const session = ctx.container.getRegistered(AuthSession);
+var _RoleGuard = class _RoleGuard extends import_js_service2.DebuggableService {
+  /**
+   * Require role.
+   */
+  requireRole(roleName) {
+    const debug = this.getDebuggerFor(this.requireRole);
+    const session = this.getRegisteredService(AuthSession);
+    const method = session.getRequestMethod();
+    const pathname = session.getRequestPathname();
+    debug("Role checking for %s %v.", method, pathname);
+    const localizer = this.getRegisteredService(AuthLocalizer);
     if (!session.isLoggedIn)
-      throw createError(import_http_errors2.default.Unauthorized, "AUTHORIZATION_REQUIRED", localizer.t("roleGuard.authenticationRequired"));
+      throw createError(import_http_errors2.default.Unauthorized, "AUTHORIZATION_REQUIRED", localizer.t("roleGuard.requireRole.authenticationRequired"));
     debug("User id was %v.", session.getUserId());
     const roleNames = [roleName].flat().filter(Boolean);
     if (!roleNames.length || roleNames.includes(AccessRule.AUTHENTICATED)) {
@@ -1733,16 +1471,38 @@ function roleGuard(roleName) {
     if (!isAllowed)
       throw createError(import_http_errors2.default.Forbidden, "ROLE_NOT_ALLOWED", localizer.t("roleGuard.roleNotAllowed"));
     debug("Access allowed.");
-  };
-}
-__name(roleGuard, "roleGuard");
+  }
+};
+__name(_RoleGuard, "RoleGuard");
+var RoleGuard = _RoleGuard;
 
 // dist/esm/auth-service.js
 var import_bcrypt = __toESM(require("bcrypt"), 1);
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"), 1);
 var import_uuid = require("uuid");
 var import_http_errors7 = __toESM(require("http-errors"), 1);
-var import_ts_repository4 = require("@e22m4u/ts-repository");
+
+// dist/esm/debuggable-service.js
+var import_js_service3 = require("@e22m4u/js-service");
+var MODULE_DEBUGGER_NAMESPACE = "jsRepositoryAuthService";
+var _DebuggableService = class _DebuggableService extends import_js_service3.DebuggableService {
+  /**
+   * Constructor.
+   *
+   * @param container
+   */
+  constructor(container) {
+    super(container, {
+      namespace: MODULE_DEBUGGER_NAMESPACE,
+      noEnvironmentNamespace: true
+    });
+  }
+};
+__name(_DebuggableService, "DebuggableService");
+var DebuggableService3 = _DebuggableService;
+
+// dist/esm/auth-service.js
+var import_js_repository = require("@e22m4u/js-repository");
 
 // dist/esm/models/role-model.js
 var import_ts_repository = require("@e22m4u/ts-repository");
@@ -2048,8 +1808,7 @@ var _AuthServiceOptions = class _AuthServiceOptions {
 };
 __name(_AuthServiceOptions, "AuthServiceOptions");
 var AuthServiceOptions = _AuthServiceOptions;
-var _AuthService = class _AuthService extends DebuggableService {
-  requestContext;
+var _AuthService = class _AuthService extends DebuggableService3 {
   /**
    * Options.
    */
@@ -2060,9 +1819,8 @@ var _AuthService = class _AuthService extends DebuggableService {
    * @param container
    * @param options
    */
-  constructor(container, options, requestContext) {
+  constructor(container, options) {
     super(container);
-    this.requestContext = requestContext;
     this.options = this.getService(AuthServiceOptions);
     if (options) {
       const filteredOptions = removeEmptyKeys(options);
@@ -2087,7 +1845,7 @@ var _AuthService = class _AuthService extends DebuggableService {
       createdAt: (/* @__PURE__ */ new Date()).toISOString(),
       ...patch
     };
-    const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
+    const dbs = this.getRegisteredService(import_js_repository.DatabaseSchema);
     const rep = dbs.getRepository(AccessTokenModel.name);
     const res = await rep.create(data);
     debug("Access token created and saved to database.");
@@ -2102,7 +1860,7 @@ var _AuthService = class _AuthService extends DebuggableService {
     const debug = this.getDebuggerFor(this.removeAccessTokenById);
     debug("Removing access token by id.");
     debug("Token id was %v.", accessTokenId);
-    const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
+    const dbs = this.getRegisteredService(import_js_repository.DatabaseSchema);
     const rep = dbs.getRepository(AccessTokenModel.name);
     const res = await rep.deleteById(accessTokenId);
     if (res) {
@@ -2186,7 +1944,7 @@ var _AuthService = class _AuthService extends DebuggableService {
     const debug = this.getDebuggerFor(this.findAccessTokenById);
     debug("Finding access token by id.");
     debug("Token id was %v.", tokenId);
-    const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
+    const dbs = this.getRegisteredService(import_js_repository.DatabaseSchema);
     const rep = dbs.getRepository(AccessTokenModel.name);
     const accessToken = await rep.findOne({ where: { id: tokenId }, include });
     if (!accessToken)
@@ -2268,7 +2026,7 @@ var _AuthService = class _AuthService extends DebuggableService {
         return;
       this.requireAnyLoginId(inputData);
     }
-    const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
+    const dbs = this.getRegisteredService(import_js_repository.DatabaseSchema);
     const userRep = dbs.getRepository(UserModel.name);
     const user = await userRep.findOne({ where, include });
     if (!user) {
@@ -2363,7 +2121,7 @@ var _AuthService = class _AuthService extends DebuggableService {
       debug("Password hashed.");
     }
     inputData.createdAt = (/* @__PURE__ */ new Date()).toISOString();
-    const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
+    const dbs = this.getRegisteredService(import_js_repository.DatabaseSchema);
     const userRep = dbs.getRepository(UserModel.name);
     const res = await userRep.create(inputData, filter);
     debug("User created.");
@@ -2385,7 +2143,7 @@ var _AuthService = class _AuthService extends DebuggableService {
     inputData = { ...inputData };
     const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = "authService.updateUser";
-    const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
+    const dbs = this.getRegisteredService(import_js_repository.DatabaseSchema);
     const userRep = dbs.getRepository(UserModel.name);
     const existingUser = await userRep.findOne({ where: { id: userId } });
     if (!existingUser)
@@ -2413,19 +2171,21 @@ var _AuthService = class _AuthService extends DebuggableService {
     return res;
   }
   /**
-   * Find access token by request context.
+   * Find access token by http request.
    *
    * @param ctx
    * @param include
    */
-  async findAccessTokenByRequestContext(ctx, include) {
-    const debug = this.getDebuggerFor(this.findAccessTokenByRequestContext);
-    debug("Finding access token by request context.");
-    let jwToken = ctx.headers[this.options.jwtHeaderName] || ctx.cookies[this.options.jwtCookieName] || ctx.query[this.options.jwtQueryParam];
+  async findAccessTokenByHttpRequest(req, include) {
+    const debug = this.getDebuggerFor(this.findAccessTokenByHttpRequest);
+    debug("Finding access token by http request.");
+    const cookies = parseCookieHeader(req.headers["cookie"]);
+    const query = parseUrlQuery(req.url);
+    let jwToken = req.headers[this.options.jwtHeaderName] || cookies[this.options.jwtCookieName] || query[this.options.jwtQueryParam];
     if (typeof jwToken === "string") {
       jwToken = jwToken.replace("Bearer ", "");
     }
-    if (!jwToken) {
+    if (!jwToken || typeof jwToken !== "string") {
       debug("JWT not found.");
       return;
     }
@@ -2448,7 +2208,7 @@ var _AuthService = class _AuthService extends DebuggableService {
     debug("Finding access token owner.");
     if (!accessToken.ownerId)
       throw createError(import_http_errors7.default.BadRequest, "NO_ACCESS_TOKEN_OWNER", "Your access token does not have an owner", accessToken);
-    const dbs = this.getRegisteredService(import_ts_repository4.DatabaseSchema);
+    const dbs = this.getRegisteredService(import_js_repository.DatabaseSchema);
     const rep = dbs.getRepository(UserModel.name);
     const owner = await rep.findOne({
       where: { id: accessToken.ownerId },
@@ -2464,13 +2224,13 @@ var _AuthService = class _AuthService extends DebuggableService {
    *
    * @param ctx
    */
-  async createAuthSession(ctx) {
-    const accessToken = await this.findAccessTokenByRequestContext(ctx);
+  async createAuthSession(req) {
+    const accessToken = await this.findAccessTokenByHttpRequest(req);
     if (accessToken) {
       const user = await this.findAccessTokenOwner(accessToken, this.options.sessionUserInclusion);
-      return new AuthSession(ctx.container, accessToken, user);
+      return new AuthSession(this.container, req, accessToken, user);
     } else {
-      return new AuthSession(ctx.container);
+      return new AuthSession(this.container, req);
     }
   }
 };
@@ -2488,10 +2248,10 @@ var DataType4 = {
 };
 
 // node_modules/@e22m4u/js-data-schema/dist/esm/errors/type-cast-error.js
-var import_js_format6 = require("@e22m4u/js-format");
+var import_js_format4 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/js-data-schema/dist/esm/utils/get-data-schema-from-class.js
-var import_js_format5 = require("@e22m4u/js-format");
+var import_js_format3 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/ts-reflector/dist/esm/reflector.js
 var import_reflect_metadata = __toESM(require_Reflect(), 1);
@@ -2685,7 +2445,7 @@ __name(_DataSchemaReflector, "DataSchemaReflector");
 var DataSchemaReflector = _DataSchemaReflector;
 
 // node_modules/@e22m4u/js-data-schema/dist/esm/decorators/data-schema-decorators.js
-var import_js_format4 = require("@e22m4u/js-format");
+var import_js_format2 = require("@e22m4u/js-format");
 var DECORATOR_PROPERTY_TARGET_ERROR_MESSAGE = "@%s decorator is only supported on an instance property.";
 var REDUNDANT_TYPE_OPTION_ERROR_MESSAGE = 'The option "type" is not supported in the @%s decorator.';
 function dsProperty(schema) {
@@ -2699,7 +2459,7 @@ function dsProperty(schema) {
 __name(dsProperty, "dsProperty");
 function checkDataSchemaDoesNotHaveSpecifiedTypeOption(decoratorName, schema) {
   if (schema && typeof schema === "object" && !Array.isArray(schema) && schema.type) {
-    throw new import_js_format4.Errorf(REDUNDANT_TYPE_OPTION_ERROR_MESSAGE, decoratorName);
+    throw new import_js_format2.Errorf(REDUNDANT_TYPE_OPTION_ERROR_MESSAGE, decoratorName);
   }
 }
 __name(checkDataSchemaDoesNotHaveSpecifiedTypeOption, "checkDataSchemaDoesNotHaveSpecifiedTypeOption");
@@ -2732,28 +2492,28 @@ var dsNumber = createDataSchemaPropertyDecoratorWithDataType("dsNumber", DataTyp
 var dsBoolean = createDataSchemaPropertyDecoratorWithDataType("dsBoolean", DataType4.BOOLEAN);
 
 // node_modules/@e22m4u/js-data-schema/dist/esm/errors/validation-error.js
-var import_js_format7 = require("@e22m4u/js-format");
+var import_js_format5 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/js-data-schema/dist/esm/errors/decorator-target-error.js
-var import_js_format8 = require("@e22m4u/js-format");
-var _DecoratorTargetError = class _DecoratorTargetError extends import_js_format8.Errorf {
+var import_js_format6 = require("@e22m4u/js-format");
+var _DecoratorTargetError = class _DecoratorTargetError extends import_js_format6.Errorf {
 };
 __name(_DecoratorTargetError, "DecoratorTargetError");
 var DecoratorTargetError = _DecoratorTargetError;
 
 // node_modules/@e22m4u/js-data-schema/dist/esm/data-validator.js
-var import_js_format10 = require("@e22m4u/js-format");
-var import_js_format11 = require("@e22m4u/js-format");
+var import_js_format8 = require("@e22m4u/js-format");
+var import_js_format9 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/js-empty-values/src/empty-values-service.js
-var import_js_format9 = require("@e22m4u/js-format");
-var import_js_service2 = require("@e22m4u/js-service");
+var import_js_format7 = require("@e22m4u/js-format");
+var import_js_service4 = require("@e22m4u/js-service");
 
 // node_modules/@e22m4u/js-data-schema/dist/esm/debuggable-service.js
-var import_js_service3 = require("@e22m4u/js-service");
+var import_js_service5 = require("@e22m4u/js-service");
 
 // node_modules/@e22m4u/js-data-schema/dist/esm/data-type-caster.js
-var import_js_format12 = require("@e22m4u/js-format");
+var import_js_format10 = require("@e22m4u/js-format");
 
 // dist/esm/schemas/user-lookup-schema.js
 var USER_LOOKUP_SCHEMA = {
@@ -2804,13 +2564,6 @@ var USER_LOOKUP_WITH_PASSWORD_SCHEMA = {
   },
   required: true
 };
-
-// dist/esm/decorators/require-role.js
-var import_ts_rest_router = require("@e22m4u/ts-rest-router");
-function requireRole(roleName) {
-  return (0, import_ts_rest_router.beforeAction)(roleGuard(roleName));
-}
-__name(requireRole, "requireRole");
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ACCESS_TOKEN_MODEL_DEF,
@@ -2827,13 +2580,12 @@ __name(requireRole, "requireRole");
   JWT_ISSUE_RESULT_SCHEMA,
   LOGIN_ID_NAMES,
   ROLE_MODEL_DEF,
+  RoleGuard,
   RoleModel,
   USER_LOOKUP_SCHEMA,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA,
   USER_MODE_DEF,
-  UserModel,
-  requireRole,
-  roleGuard
+  UserModel
 });
 /*! Bundled license information:
 
