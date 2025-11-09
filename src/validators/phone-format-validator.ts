@@ -1,6 +1,7 @@
 import HttpErrors from 'http-errors';
 import {createError} from '../utils/index.js';
-import {Localizer} from '@e22m4u/js-localizer';
+import {AuthLocalizer} from '../auth-localizer.js';
+import {ServiceContainer} from '@e22m4u/js-service';
 import {DataFormatValidator} from '../auth-service.js';
 
 /**
@@ -18,13 +19,15 @@ export const PHONE_FORMAT_REGEX =
  */
 export const phoneFormatValidator: DataFormatValidator = function (
   value: unknown,
-  localizer: Localizer,
+  container: ServiceContainer,
 ): void {
-  if (!value || typeof value !== 'string' || !PHONE_FORMAT_REGEX.test(value))
+  if (!value || typeof value !== 'string' || !PHONE_FORMAT_REGEX.test(value)) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(
       HttpErrors.BadRequest,
       'INVALID_PHONE_FORMAT',
       localizer.t('validators.dataFormatValidator.invalidPhoneFormatError'),
       {phone: value},
     );
+  }
 };

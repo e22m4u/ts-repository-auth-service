@@ -1,5 +1,6 @@
 import HttpErrors from 'http-errors';
 import { createError } from '../utils/index.js';
+import { AuthLocalizer } from '../auth-localizer.js';
 export const MIN_PASSWORD_LENGTH = 8;
 export const MAX_PASSWORD_LENGTH = 80;
 /**
@@ -7,13 +8,21 @@ export const MAX_PASSWORD_LENGTH = 80;
  *
  * @param value
  */
-export const passwordFormatValidator = function (value, localizer) {
-    if (typeof value !== 'string')
+export const passwordFormatValidator = function (value, container) {
+    if (typeof value !== 'string') {
+        const localizer = container.get(AuthLocalizer);
         throw createError(HttpErrors.BadRequest, 'INVALID_PASSWORD_FORMAT', localizer.t('validators.dataFormatValidator.invalidPasswordFormatError'), { password: value });
-    if (value.length < MIN_PASSWORD_LENGTH)
+    }
+    if (value.length < MIN_PASSWORD_LENGTH) {
+        const localizer = container.get(AuthLocalizer);
         throw createError(HttpErrors.BadRequest, 'INVALID_PASSWORD_FORMAT', localizer.t('validators.dataFormatValidator.minPasswordLengthError'), { password: value }, MIN_PASSWORD_LENGTH);
-    if (value.length > MAX_PASSWORD_LENGTH)
+    }
+    if (value.length > MAX_PASSWORD_LENGTH) {
+        const localizer = container.get(AuthLocalizer);
         throw createError(HttpErrors.BadRequest, 'INVALID_PASSWORD_FORMAT', localizer.t('validators.dataFormatValidator.maxPasswordLengthError'), { password: value }, MAX_PASSWORD_LENGTH);
-    if (!/\p{L}/u.test(value) || !/\p{N}/u.test(value))
+    }
+    if (!/\p{L}/u.test(value) || !/\p{N}/u.test(value)) {
+        const localizer = container.get(AuthLocalizer);
         throw createError(HttpErrors.BadRequest, 'INVALID_PASSWORD_FORMAT', localizer.t('validators.dataFormatValidator.invalidPasswordFormatError'), { password: value });
+    }
 };

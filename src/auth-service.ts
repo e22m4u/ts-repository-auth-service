@@ -4,7 +4,6 @@ import {v7 as uuidV7} from 'uuid';
 import HttpErrors from 'http-errors';
 import {IncomingMessage} from 'http';
 import {AuthSession} from './auth-session.js';
-import {Localizer} from '@e22m4u/js-localizer';
 import {AuthLocalizer} from './auth-localizer.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {DebuggableService} from './debuggable-service.js';
@@ -64,7 +63,7 @@ export const CASE_INSENSITIVE_LOGIN_IDS: LoginIdName[] = [
  */
 export type DataFormatValidator = (
   value: unknown,
-  localizer: Localizer,
+  container: ServiceContainer,
 ) => void;
 
 /**
@@ -560,7 +559,7 @@ export class AuthService extends DebuggableService {
     if (idValue) {
       // проверка формата при наличии значения
       const validator = this.options[`${idName}FormatValidator`];
-      validator(idValue, localizer);
+      validator(idValue, this.container);
       debug('Value format validated.');
       // если найден дубликат идентификатора другого
       // пользователя, то выбрасывается ошибка
@@ -642,7 +641,6 @@ export class AuthService extends DebuggableService {
   ): Promise<T> {
     const debug = this.getDebuggerFor(this.createUser);
     debug('Creating user.');
-    const localizer = this.getService(AuthLocalizer);
     inputData = {...inputData};
     // обрезка пробелов в идентификаторах
     LOGIN_ID_NAMES.forEach(idName => {
@@ -655,7 +653,7 @@ export class AuthService extends DebuggableService {
     }
     // хэширование пароля
     if (inputData.password) {
-      this.options.passwordFormatValidator(inputData.password, localizer);
+      this.options.passwordFormatValidator(inputData.password, this.container);
       inputData.password = await this.hashPassword(inputData.password || '');
       debug('Password hashed.');
     }
@@ -713,7 +711,7 @@ export class AuthService extends DebuggableService {
     });
     // хэширование пароля (при наличии)
     if (inputData.password) {
-      this.options.passwordFormatValidator(inputData.password, localizer);
+      this.options.passwordFormatValidator(inputData.password, this.container);
       inputData.password = await this.hashPassword(inputData.password || '');
       debug('Password hashed.');
     }

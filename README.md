@@ -358,28 +358,28 @@ router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
 
 Функция для проверки формата имени пользователя.
 
-- Тип: `(value: unknown) => void`  
+- Тип: `(value: unknown, container: ServiceContainer) => void`  
 - По умолчанию: Предустановленный валидатор.  
 
 #### emailFormatValidator
 
 Функция для проверки формата email-адреса.
 
-- Тип: `(value: unknown) => void`
+- Тип: `(value: unknown, container: ServiceContainer) => void`
 - По умолчанию: Предустановленный валидатор.
 
 #### phoneFormatValidator
 
 Функция для проверки формата номера телефона.
 
-- Тип: `(value: unknown) => void`
+- Тип: `(value: unknown, container: ServiceContainer) => void`
 - По умолчанию: Предустановленный валидатор.
 
 #### passwordFormatValidator
 
 Функция для проверки формата пароля.
 
-- Тип: `(value: unknown) => void`
+- Тип: `(value: unknown, container: ServiceContainer) => void`
 - По умолчанию: Предустановленный валидатор.
 
 #### jwtSecret

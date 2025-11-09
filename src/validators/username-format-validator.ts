@@ -1,7 +1,8 @@
 import HttpErrors from 'http-errors';
-import {Localizer} from '@e22m4u/js-localizer';
+import {ServiceContainer} from '@e22m4u/js-service';
 import {createError} from '../utils/create-error.js';
 import {DataFormatValidator} from '../auth-service.js';
+import {AuthLocalizer} from '../auth-localizer.js';
 
 export const MIN_USERNAME_LENGTH = 4;
 export const MAX_USERNAME_LENGTH = 30;
@@ -13,16 +14,19 @@ export const MAX_USERNAME_LENGTH = 30;
  */
 export const usernameFormatValidator: DataFormatValidator = function (
   value: unknown,
-  localizer: Localizer,
+  container: ServiceContainer,
 ): void {
-  if (typeof value !== 'string')
+  if (typeof value !== 'string') {
+    const localizer = container.get(AuthLocalizer);
     throw createError(
       HttpErrors.BadRequest,
       'INVALID_USERNAME_FORMAT',
       localizer.t('validators.dataFormatValidator.invalidUsernameFormatError'),
       {username: value},
     );
-  if (value.length < MIN_USERNAME_LENGTH)
+  }
+  if (value.length < MIN_USERNAME_LENGTH) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(
       HttpErrors.BadRequest,
       'INVALID_USERNAME_FORMAT',
@@ -30,7 +34,9 @@ export const usernameFormatValidator: DataFormatValidator = function (
       {username: value},
       MIN_USERNAME_LENGTH,
     );
-  if (value.length > MAX_USERNAME_LENGTH)
+  }
+  if (value.length > MAX_USERNAME_LENGTH) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(
       HttpErrors.BadRequest,
       'INVALID_USERNAME_FORMAT',
@@ -38,18 +44,23 @@ export const usernameFormatValidator: DataFormatValidator = function (
       {username: value},
       MAX_USERNAME_LENGTH,
     );
-  if (!/^[a-zA-Z]/.test(value))
+  }
+  if (!/^[a-zA-Z]/.test(value)) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(
       HttpErrors.BadRequest,
       'INVALID_USERNAME_FORMAT',
       localizer.t('validators.dataFormatValidator.usernameStartLetterError'),
       {username: value},
     );
-  if (!/^[a-zA-Z0-9]+$/.test(value))
+  }
+  if (!/^[a-zA-Z0-9]+$/.test(value)) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(
       HttpErrors.BadRequest,
       'INVALID_USERNAME_FORMAT',
       localizer.t('validators.dataFormatValidator.invalidUsernameFormatError'),
       {username: value},
     );
+  }
 };

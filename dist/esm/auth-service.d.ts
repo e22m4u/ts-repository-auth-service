@@ -1,6 +1,5 @@
 import { IncomingMessage } from 'http';
 import { AuthSession } from './auth-session.js';
-import { Localizer } from '@e22m4u/js-localizer';
 import { ServiceContainer } from '@e22m4u/js-service';
 import { DebuggableService } from './debuggable-service.js';
 import { IncludeClause, WithOptionalId, ItemFilterClause } from '@e22m4u/js-repository';
@@ -20,7 +19,7 @@ export declare const CASE_INSENSITIVE_LOGIN_IDS: LoginIdName[];
 /**
  * Data format validator.
  */
-export type DataFormatValidator = (value: unknown, localizer: Localizer) => void;
+export type DataFormatValidator = (value: unknown, container: ServiceContainer) => void;
 /**
  * Auth service options.
  */

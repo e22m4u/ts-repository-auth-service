@@ -1,5 +1,6 @@
 import HttpErrors from 'http-errors';
 import { createError } from '../utils/index.js';
+import { AuthLocalizer } from '../auth-localizer.js';
 /**
  * Email format regex.
  *
@@ -11,7 +12,9 @@ export const EMAIL_FORMAT_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@
  *
  * @param value
  */
-export const emailFormatValidator = function (value, localizer) {
-    if (!value || typeof value !== 'string' || !EMAIL_FORMAT_REGEX.test(value))
+export const emailFormatValidator = function (value, container) {
+    if (!value || typeof value !== 'string' || !EMAIL_FORMAT_REGEX.test(value)) {
+        const localizer = container.get(AuthLocalizer);
         throw createError(HttpErrors.BadRequest, 'INVALID_EMAIL_FORMAT', localizer.t('validators.dataFormatValidator.invalidEmailFormatError'), { email: value });
+    }
 };

@@ -1215,7 +1215,9 @@ __export(index_exports, {
   USER_LOOKUP_SCHEMA: () => USER_LOOKUP_SCHEMA,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA: () => USER_LOOKUP_WITH_PASSWORD_SCHEMA,
   USER_MODE_DEF: () => USER_MODE_DEF,
-  UserModel: () => UserModel
+  UserModel: () => UserModel,
+  requireRole: () => requireRole,
+  roleGuard: () => roleGuard
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -1475,6 +1477,15 @@ var _RoleGuard = class _RoleGuard extends import_js_service2.DebuggableService {
 __name(_RoleGuard, "RoleGuard");
 var RoleGuard = _RoleGuard;
 
+// dist/esm/hooks/role-guard.js
+function roleGuard(roleName) {
+  return function(ctx) {
+    const guard = ctx.container.get(RoleGuard);
+    guard.requireRole(roleName);
+  };
+}
+__name(roleGuard, "roleGuard");
+
 // dist/esm/auth-service.js
 var import_bcrypt = __toESM(require("bcrypt"), 1);
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"), 1);
@@ -1727,49 +1738,71 @@ var ACCESS_TOKEN_MODEL_DEF = (0, import_ts_repository3.getModelDefinitionFromCla
 // dist/esm/validators/email-format-validator.js
 var import_http_errors3 = __toESM(require("http-errors"), 1);
 var EMAIL_FORMAT_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-var emailFormatValidator = /* @__PURE__ */ __name(function(value, localizer) {
-  if (!value || typeof value !== "string" || !EMAIL_FORMAT_REGEX.test(value))
+var emailFormatValidator = /* @__PURE__ */ __name(function(value, container) {
+  if (!value || typeof value !== "string" || !EMAIL_FORMAT_REGEX.test(value)) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors3.default.BadRequest, "INVALID_EMAIL_FORMAT", localizer.t("validators.dataFormatValidator.invalidEmailFormatError"), { email: value });
+  }
 }, "emailFormatValidator");
 
 // dist/esm/validators/phone-format-validator.js
 var import_http_errors4 = __toESM(require("http-errors"), 1);
 var PHONE_FORMAT_REGEX = /^[+]?[0-9]{0,3}\W*[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
-var phoneFormatValidator = /* @__PURE__ */ __name(function(value, localizer) {
-  if (!value || typeof value !== "string" || !PHONE_FORMAT_REGEX.test(value))
+var phoneFormatValidator = /* @__PURE__ */ __name(function(value, container) {
+  if (!value || typeof value !== "string" || !PHONE_FORMAT_REGEX.test(value)) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors4.default.BadRequest, "INVALID_PHONE_FORMAT", localizer.t("validators.dataFormatValidator.invalidPhoneFormatError"), { phone: value });
+  }
 }, "phoneFormatValidator");
 
 // dist/esm/validators/username-format-validator.js
 var import_http_errors5 = __toESM(require("http-errors"), 1);
 var MIN_USERNAME_LENGTH = 4;
 var MAX_USERNAME_LENGTH = 30;
-var usernameFormatValidator = /* @__PURE__ */ __name(function(value, localizer) {
-  if (typeof value !== "string")
+var usernameFormatValidator = /* @__PURE__ */ __name(function(value, container) {
+  if (typeof value !== "string") {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.invalidUsernameFormatError"), { username: value });
-  if (value.length < MIN_USERNAME_LENGTH)
+  }
+  if (value.length < MIN_USERNAME_LENGTH) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.minUsernameLengthError"), { username: value }, MIN_USERNAME_LENGTH);
-  if (value.length > MAX_USERNAME_LENGTH)
+  }
+  if (value.length > MAX_USERNAME_LENGTH) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.maxUsernameLengthError"), { username: value }, MAX_USERNAME_LENGTH);
-  if (!/^[a-zA-Z]/.test(value))
+  }
+  if (!/^[a-zA-Z]/.test(value)) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.usernameStartLetterError"), { username: value });
-  if (!/^[a-zA-Z0-9]+$/.test(value))
+  }
+  if (!/^[a-zA-Z0-9]+$/.test(value)) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.invalidUsernameFormatError"), { username: value });
+  }
 }, "usernameFormatValidator");
 
 // dist/esm/validators/password-format-validator.js
 var import_http_errors6 = __toESM(require("http-errors"), 1);
 var MIN_PASSWORD_LENGTH = 8;
 var MAX_PASSWORD_LENGTH = 80;
-var passwordFormatValidator = /* @__PURE__ */ __name(function(value, localizer) {
-  if (typeof value !== "string")
+var passwordFormatValidator = /* @__PURE__ */ __name(function(value, container) {
+  if (typeof value !== "string") {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.invalidPasswordFormatError"), { password: value });
-  if (value.length < MIN_PASSWORD_LENGTH)
+  }
+  if (value.length < MIN_PASSWORD_LENGTH) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.minPasswordLengthError"), { password: value }, MIN_PASSWORD_LENGTH);
-  if (value.length > MAX_PASSWORD_LENGTH)
+  }
+  if (value.length > MAX_PASSWORD_LENGTH) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.maxPasswordLengthError"), { password: value }, MAX_PASSWORD_LENGTH);
-  if (!new RegExp("\\p{L}", "u").test(value) || !new RegExp("\\p{N}", "u").test(value))
+  }
+  if (!new RegExp("\\p{L}", "u").test(value) || !new RegExp("\\p{N}", "u").test(value)) {
+    const localizer = container.get(AuthLocalizer);
     throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.invalidPasswordFormatError"), { password: value });
+  }
 }, "passwordFormatValidator");
 
 // dist/esm/auth-service.js
@@ -2053,7 +2086,7 @@ var _AuthService = class _AuthService extends DebuggableService3 {
     debug("Given id value was %v.", idValue);
     if (idValue) {
       const validator = this.options[`${idName}FormatValidator`];
-      validator(idValue, localizer);
+      validator(idValue, this.container);
       debug("Value format validated.");
       debug("Checking identifier duplicates.");
       const duplicate = await this.findUserByLoginIds({ [idName]: idValue }, void 0, true);
@@ -2104,7 +2137,6 @@ var _AuthService = class _AuthService extends DebuggableService3 {
   async createUser(inputData, filter) {
     const debug = this.getDebuggerFor(this.createUser);
     debug("Creating user.");
-    const localizer = this.getService(AuthLocalizer);
     inputData = { ...inputData };
     LOGIN_ID_NAMES.forEach((idName) => {
       if (typeof inputData[idName] === "string")
@@ -2114,7 +2146,7 @@ var _AuthService = class _AuthService extends DebuggableService3 {
       await this.validateLoginId(idName, inputData[idName]);
     }
     if (inputData.password) {
-      this.options.passwordFormatValidator(inputData.password, localizer);
+      this.options.passwordFormatValidator(inputData.password, this.container);
       inputData.password = await this.hashPassword(inputData.password || "");
       debug("Password hashed.");
     }
@@ -2158,7 +2190,7 @@ var _AuthService = class _AuthService extends DebuggableService3 {
         delete inputData[idName];
     });
     if (inputData.password) {
-      this.options.passwordFormatValidator(inputData.password, localizer);
+      this.options.passwordFormatValidator(inputData.password, this.container);
       inputData.password = await this.hashPassword(inputData.password || "");
       debug("Password hashed.");
     }
@@ -2571,6 +2603,13 @@ var USER_LOOKUP_WITH_PASSWORD_SCHEMA = {
   },
   required: true
 };
+
+// dist/esm/decorators/require-role.js
+var import_ts_rest_router = require("@e22m4u/ts-rest-router");
+function requireRole(roleName) {
+  return (0, import_ts_rest_router.beforeAction)(roleGuard(roleName));
+}
+__name(requireRole, "requireRole");
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ACCESS_TOKEN_MODEL_DEF,
@@ -2592,7 +2631,9 @@ var USER_LOOKUP_WITH_PASSWORD_SCHEMA = {
   USER_LOOKUP_SCHEMA,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA,
   USER_MODE_DEF,
-  UserModel
+  UserModel,
+  requireRole,
+  roleGuard
 });
 /*! Bundled license information:
 
