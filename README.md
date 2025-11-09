@@ -916,7 +916,7 @@ router.defineRoute({
 requireRole(roleName?: string | string[]): void;
 ```
 
-**Поведение 1. Требуется только аутентификация**
+**Проверка факта аутентификации**
 
 Если метод вызван без аргументов или с использованием специальной
 константы `AccessRule.AUTHENTICATED` (`'$authenticated'`), он проверяет
@@ -931,9 +931,11 @@ accessGuard.requireRole();
 import {AccessRule} from '@e22m4u/js-repository-auth-service';
 
 accessGuard.requireRole(AccessRule.AUTHENTICATED);
+// или
+accessGuard.requireRole('$authenticated');
 ```
 
-**Поведение 2. Требуется одна конкретная роль**
+**Проверка одной конкретной роли**
 
 Если в качестве аргумента передана строка, метод проверит, что у пользователя
 есть именно эта роль.
@@ -943,7 +945,7 @@ accessGuard.requireRole(AccessRule.AUTHENTICATED);
 accessGuard.requireRole('editor');
 ```
 
-**Поведение 3. Требуется одна из нескольких ролей**
+**Проверка наличия роли из списка**
 
 Если передан массив строк, пользователю будет достаточно иметь *хотя бы одну*
 из перечисленных ролей (логика "ИЛИ").
