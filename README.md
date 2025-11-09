@@ -37,6 +37,8 @@
   - [createAuthSession](#authservicecreateauthsession)
   - [findAccessTokenByHttpRequest](#authservicefindaccesstokenbyhttprequest)
   - [findAccessTokenOwner](#authservicefindaccesstokenowner)
+- [AccessGuard](#accessguard)
+  - [accessGuard.requireRole](#accessguardrequirerole)
 - [Модели](#модели)
   - [BaseRoleModel и RoleModel](#baserolemodel-и-rolemodel)
   - [BaseUserModel и UserModel](#baseusermodel-и-usermodel)
@@ -866,6 +868,91 @@ if (accessToken) {
     console.log('User roles:', user.roles);
   }
 }
+```
+
+## AccessGuard
+
+Сервис `AccessGuard` предназначен для реализации ролевой модели доступа (RBAC)
+и защиты маршрутов. Он позволяет ограничить доступ к определенным ресурсам
+или действиям на основе ролей пользователя текущей сессии.
+
+Данный сервис тесно интегрирован с `AuthSession` и ожидает, что экземпляр
+сессии будет доступен в *request-scoped* контейнере. Если пользователь
+не аутентифицирован или не обладает необходимыми правами, сервис автоматически
+выбросит ошибку (`401 Unauthorized` или `403 Forbidden`), прерывая дальнейшее
+выполнение обработчика.
+
+**Пример использования в маршрутизаторе:**
+
+```ts
+// предполагается, что AuthSession уже создан в PRE_HANDLER хуке
+
+// POST /admin/articles
+router.defineRoute({
+  method: HttpMethod.POST,
+  path: '/admin/articles',
+  async handler({container, body}) {
+    // получение экземпляра AccessGuard из контейнера
+    const accessGuard = container.get(AccessGuard);
+    // вызов проверки на наличие роли 'admin'
+    // (если текущая сессия не проходит проверку,
+    // то выбрасывается ошибка)
+    accessGuard.requireRole('admin');
+    // логика, доступная только администраторам
+    const articlesService = container.get(ArticlesService);
+    return articlesService.createArticle(body);
+  },
+});
+```
+
+### accessGuard.requireRole
+
+Проверяет, аутентифицирован ли пользователь и имеет ли он необходимые роли
+для доступа к ресурсу.
+
+Сигнатура:
+
+```ts
+requireRole(roleName?: string | string[]): void;
+```
+
+#### Поведение в зависимости от параметров:
+
+**1. Требуется только аутентификация**
+
+Если метод вызван без аргументов или с использованием специальной
+константы `AccessRule.AUTHENTICATED` (`'$authenticated'`), он проверяет
+только факт аутентификации пользователя. Любой вошедший в систему пользователь
+получит доступ.
+
+```ts
+// разрешить доступ любому аутентифицированному пользователю
+accessGuard.requireRole();
+
+// аналогично, с использованием константы
+import {AccessRule} from '@e22m4u/js-repository-auth-service';
+
+accessGuard.requireRole(AccessRule.AUTHENTICATED);
+```
+
+**2. Требуется одна конкретная роль**
+
+Если в качестве аргумента передана строка, метод проверит, что у пользователя
+есть именно эта роль.
+
+```ts
+// разрешить доступ только пользователям с ролью 'editor'
+accessGuard.requireRole('editor');
+```
+
+**3. Требуется одна из нескольких ролей**
+
+Если передан массив строк, пользователю будет достаточно иметь *хотя бы одну*
+из перечисленных ролей (логика "ИЛИ").
+
+```ts
+// разрешить доступ пользователям с ролью 'admin' ИЛИ 'moderator'
+accessGuard.requireRole(['admin', 'moderator']);
 ```
 
 ## Модели

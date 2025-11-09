@@ -19,7 +19,7 @@ export type AccessRule = (typeof AccessRule)[keyof typeof AccessRule];
 /**
  * Access guard.
  */
-export class RoleGuard extends DebuggableService {
+export class AccessGuard extends DebuggableService {
   /**
    * Require role.
    */
@@ -36,7 +36,7 @@ export class RoleGuard extends DebuggableService {
       throw createError(
         HttpErrors.Unauthorized,
         'AUTHORIZATION_REQUIRED',
-        localizer.t('roleGuard.requireRole.authenticationRequired'),
+        localizer.t('accessGuard.requireRole.authenticationRequired'),
       );
     debug('User id was %v.', session.getUserId());
     // если требуемые роли не указаны, то допускается
@@ -57,7 +57,7 @@ export class RoleGuard extends DebuggableService {
       throw createError(
         HttpErrors.Forbidden,
         'ROLE_NOT_ALLOWED',
-        localizer.t('roleGuard.roleNotAllowed'),
+        localizer.t('accessGuard.requireRole.roleNotAllowed'),
       );
     debug('Access allowed.');
   }
