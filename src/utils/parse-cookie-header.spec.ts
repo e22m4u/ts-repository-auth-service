@@ -69,31 +69,10 @@ describe('parseCookieHeader', function () {
     expect(result).to.deep.equal({session: '', user: 'test'});
   });
 
-  describe('when URI decoding fails', function () {
-    let originalConsoleError: (...data: unknown[]) => void;
-    let consoleErrorOutput: string[] = [];
-
-    beforeEach(function () {
-      originalConsoleError = console.error;
-      consoleErrorOutput = [];
-      console.error = (...args) => {
-        consoleErrorOutput.push(args.join(' '));
-      };
-    });
-
-    afterEach(function () {
-      console.error = originalConsoleError;
-    });
-
-    it('should return the raw, undecoded value and log an error', function () {
-      const malformedValue = '%E0%A4%A';
-      const header = `badCookie=${malformedValue}`;
-
-      const result = parseCookieHeader(header);
-
-      expect(result).to.deep.equal({badCookie: malformedValue});
-      expect(consoleErrorOutput.length).to.be.greaterThan(0);
-      expect(consoleErrorOutput[0]).to.contain('Failed to decode cookie value');
-    });
+  it('should return the raw undecoded when URI decoding fails', function () {
+    const malformedValue = '%E0%A4%A';
+    const header = `badCookie=${malformedValue}`;
+    const result = parseCookieHeader(header);
+    expect(result).to.deep.equal({badCookie: malformedValue});
   });
 });

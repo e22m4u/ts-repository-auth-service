@@ -65,7 +65,8 @@ router.defineRoute({
     }
     const accessToken = await authService.createAccessToken(user.id);
     const {token, expiresAt} = await authService.issueJwt(accessToken);
-    return {token, expiresAt, user};
+    const {password, ...userDto} = user;
+    return {token, expiresAt, user: userDto};
   },
 });
 
@@ -73,7 +74,7 @@ router.defineRoute({
 router.defineRoute({
   method: HttpMethod.GET,
   path: '/users/findMe',
-  async handler({container}) {
+  handler({container}) {
     const session = container.getRegistered(AuthSession);
     return session.getUser();
   },
@@ -83,7 +84,7 @@ router.defineRoute({
 router.defineRoute({
   method: HttpMethod.PATCH,
   path: '/users/profile',
-  async handler({container, body}) {
+  handler({container, body}) {
     const session = container.getRegistered(AuthSession);
     const authService = container.getRegistered(AuthService);
     authService.requireAnyLoginId(body, true);
@@ -99,7 +100,8 @@ router.defineRoute({
     const session = container.getRegistered(AuthSession);
     const accessTokenId = session.getAccessTokenId();
     const authService = container.getRegistered(AuthService);
-    return authService.removeAccessTokenById(accessTokenId);
+    const result = await authService.removeAccessTokenById(accessTokenId);
+    return {success: result};
   },
 });
 

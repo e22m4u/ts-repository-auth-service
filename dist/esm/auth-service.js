@@ -196,11 +196,10 @@ export class AuthService extends DebuggableService {
         const dbs = this.getRegisteredService(DatabaseSchema);
         const rep = dbs.getRepository(AccessTokenModel.name);
         const accessToken = await rep.findOne({ where: { id: tokenId }, include });
-        if (!accessToken)
-            throw createError(HttpErrors.InternalServerError, 'ACCESS_TOKEN_NOT_FOUND', 'Access token is not found in the database', { tokenId });
-        debug('Owner id was %v.', accessToken.ownerId);
-        if (!accessToken.ownerId)
-            throw createError(HttpErrors.Unauthorized, 'ACCESS_TOKEN_OWNER_NOT_FOUND', 'Access token has no owner', { tokenId });
+        if (!accessToken) {
+            debug('Access token not found in database.');
+            return;
+        }
         debug('Access token found.');
         return accessToken;
     }
@@ -255,7 +254,7 @@ export class AuthService extends DebuggableService {
      * @param include
      * @param silent
      */
-    async findUserByLoginIds(inputData, include, silent = false) {
+    async findUserByLoginIds(idsFilter, include, silent = false) {
         const debug = this.getDebuggerFor(this.findUserByLoginIds);
         debug('Finding user by login identifiers.');
         const localizer = this.getService(AuthLocalizer);
@@ -264,10 +263,10 @@ export class AuthService extends DebuggableService {
         const where = {};
         let hasAnyLoginId = false;
         LOGIN_ID_NAMES.forEach(name => {
-            if (inputData[name] && String(inputData[name]).trim()) {
-                debug('Given %s was %v.', name, inputData[name]);
+            if (idsFilter[name] && String(idsFilter[name]).trim()) {
+                debug('Given %s was %v.', name, idsFilter[name]);
                 hasAnyLoginId = true;
-                const idValue = String(inputData[name]).trim();
+                const idValue = String(idsFilter[name]).trim();
                 const idRegex = `^${idValue}$`;
                 const isCaseInsensitive = CASE_INSENSITIVE_LOGIN_IDS.includes(name);
                 where[name] = isCaseInsensitive
@@ -280,7 +279,7 @@ export class AuthService extends DebuggableService {
         if (!hasAnyLoginId) {
             if (silent)
                 return;
-            this.requireAnyLoginId(inputData);
+            this.requireAnyLoginId(idsFilter);
         }
         const dbs = this.getRegisteredService(DatabaseSchema);
         const userRep = dbs.getRepository(UserModel.name);
@@ -472,6 +471,10 @@ export class AuthService extends DebuggableService {
         }
         const payload = await this.decodeJwt(jwToken);
         const accessToken = await this.findAccessTokenById(payload.tid, include);
+        if (!accessToken) {
+            debug('Access token not found in the database.');
+            return;
+        }
         if (accessToken.ownerId !== payload.uid)
             throw createError(HttpErrors.BadRequest, 'INVALID_ACCESS_TOKEN_OWNER', 'Your access token not match its owner', payload);
         debug('Access token found.');
@@ -487,17 +490,22 @@ export class AuthService extends DebuggableService {
     async findAccessTokenOwner(accessToken, include) {
         const debug = this.getDebuggerFor(this.findAccessTokenOwner);
         debug('Finding access token owner.');
-        if (!accessToken.ownerId)
-            throw createError(HttpErrors.BadRequest, 'NO_ACCESS_TOKEN_OWNER', 'Your access token does not have an owner', accessToken);
+        if (!accessToken.ownerId) {
+            debug('Access token did not have an owner.');
+            return;
+        }
+        debug('Owner id was %v.', accessToken.ownerId);
         const dbs = this.getRegisteredService(DatabaseSchema);
         const rep = dbs.getRepository(UserModel.name);
         const owner = await rep.findOne({
             where: { id: accessToken.ownerId },
             include,
         });
-        if (!owner)
-            throw createError(HttpErrors.BadRequest, 'NO_ACCESS_TOKEN_OWNER', 'Your access token does not have an owner', accessToken);
-        debug('Owner found with id %v.', owner.id);
+        if (!owner) {
+            debug('Owner not found in database.');
+            return;
+        }
+        debug('Owner found successfully.');
         return owner;
     }
     /**

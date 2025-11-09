@@ -116,7 +116,7 @@ export declare class AuthService extends DebuggableService {
      * @param jwToken
      * @param include
      */
-    findAccessTokenById<T extends BaseAccessTokenModel>(tokenId: string, include?: IncludeClause<T>): Promise<T>;
+    findAccessTokenById<T extends BaseAccessTokenModel>(tokenId: string, include?: IncludeClause<T>): Promise<T | undefined>;
     /**
      * Hash password.
      *
@@ -231,7 +231,7 @@ export declare class AuthService extends DebuggableService {
      *
      * @param accessToken
      */
-    findAccessTokenOwner<T extends BaseUserModel>(accessToken: BaseAccessTokenModel, include?: IncludeClause<T>): Promise<T>;
+    findAccessTokenOwner<T extends BaseUserModel>(accessToken: BaseAccessTokenModel, include?: IncludeClause<T>): Promise<T | undefined>;
     /**
      * Create auth session.
      *

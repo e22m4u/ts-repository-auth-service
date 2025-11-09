@@ -3,7 +3,7 @@
 Сервис авторизации с ролевой моделью для
 [@e22m4u/js-repository](https://www.npmjs.com/package/@e22m4u/ts-repository).
 
-## Оглавление
+## Содержание
 
 - [Установка](#установка)
 - [Использование](#использование)
@@ -12,15 +12,31 @@
   - [Получение данных текущего пользователя](#получение-данных-текущего-пользователя)
   - [Обновление профиля](#обновление-профиля)
   - [Выход из системы (завершение сессии)](#выход-из-системы-завершение-сессии)
-- [AuthService](#authservice)
+- [Конфигурация AuthService](#конфигурация-authservice)
+  - [passwordHashRounds](#passwordhashrounds)
+  - [usernameFormatValidator](#usernameformatvalidator)
+  - [emailFormatValidator](#emailformatvalidator)
+  - [phoneFormatValidator](#phoneformatvalidator)
+  - [passwordFormatValidator](#passwordformatvalidator)
+  - [jwtSecret](#jwtsecret)
+  - [jwtTtl](#jwtttl)
+  - [jwtHeaderName](#jwtheadername)
+  - [jwtCookieName](#jwtcookiename)
+  - [jwtQueryParam](#jwtqueryparam)
+  - [sessionUserInclusion](#sessionuserinclusion)
+- [Интерфейс AuthService](#интерфейс-authservice)
   - [createUser](#authservicecreateuser)
   - [findUserByLoginIds](#authservicefinduserbyloginids)
   - [verifyPassword](#authserviceverifypassword)
   - [createAccessToken](#authservicecreateaccesstoken)
   - [issueJwt](#authserviceissuejwt)
+  - [decodeJwt](#authservicedecodejwt)
   - [updateUser](#authserviceupdateuser)
   - [removeAccessTokenById](#authserviceremoveaccesstokenbyid)
   - [requireAnyLoginId](#authservicerequireanyloginid)
+  - [createAuthSession](#authservicecreateauthsession)
+  - [findAccessTokenByHttpRequest](#authservicefindaccesstokenbyhttprequest)
+  - [findAccessTokenOwner](#authservicefindaccesstokenowner)
 - [Модели](#модели)
   - [BaseRoleModel и RoleModel](#baserolemodel-и-rolemodel)
   - [BaseUserModel и UserModel](#baseusermodel-и-usermodel)
@@ -45,7 +61,7 @@ import {AuthService} from '@e22m4u/js-repository-auth-service';
 *CommonJS*
 
 ```js
-const {AuthService} = require('@e22m4u/ts-rest-router-auth');
+const {AuthService} = require('@e22m4u/js-repository-auth-service');
 ```
 
 ## Использование
@@ -118,7 +134,7 @@ router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
   // (экземпляр создается автоматически в методе `container.get`)
   const authService = ctx.container.get(AuthService);
   // на основе токена из контекста запроса (если он есть) создается сессия
-  const authSession = await authService.createAuthSession(ctx);
+  const authSession = await authService.createAuthSession(ctx.req);
   // созданная сессия сохраняется в контейнере запроса
   // для доступа в обработчиках маршрута
   ctx.container.set(AuthSession, authSession);
@@ -143,7 +159,7 @@ const port = 3000;
 const host = '0.0.0.0';
 server.listen(port, host, function () {
   const cyan = '\x1b[36m%s\x1b[0m';
-  console.log(cyan, 'Server listening on ', `${host:port}`);
+  console.log(cyan, 'Server listening on ', `${host}:${port}`);
 });
 ```
 
@@ -284,7 +300,130 @@ router.defineRoute({
 });
 ```
 
-## AuthService
+## Конфигурация AuthService
+
+Поведение `AuthService` можно настроить через объект опций, который передается
+в конструктор сервиса, либо регистрируется в контейнере приложения.
+
+Способ 1. Регистрация опций в контейнере приложения
+
+```js
+
+import {TrieRouter} from '@e22m4u/js-trie-router';
+import {AuthServiceOptions} from '@e22m4u/js-repository-auth-service';
+
+const app = new ServiceContainer();
+// const router = app.get(...
+// const dbs = app.get(...
+
+app.use(AuthServiceOptions, {
+  jwtSecret: '5VGo3m04sGiL',
+  jwtTtl: 14 * 86400; // 14 дней
+  jwtCookieName: 'accessToken',
+  passwordHashRounds: 12,
+});
+```
+
+Способ 2. Передача объекта опций в конструктор
+
+```js
+// настройки можно определить в хуке (middleware) маршрутизатора
+router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
+  // второй аргумент метода `container.get` будет
+  // передан в конструктор AuthService
+  const authService = ctx.container.get(AuthService, {
+    jwtSecret: '5VGo3m04sGiL',
+    jwtTtl: 14 * 86400; // 14 дней
+    jwtCookieName: 'accessToken',
+    passwordHashRounds: 12,
+  });
+  // const authSession = ...
+});
+```
+
+### Список опций
+
+Ниже приводится список свойств объекта `AuthServiceOptions` с их описанием
+и значениями по умолчанию.
+
+#### passwordHashRounds
+
+Количество раундов хеширования пароля модулем `bcrypt`.
+
+- Тип: `number`
+- По умолчанию: `12`
+
+#### usernameFormatValidator
+
+Функция для проверки формата имени пользователя.
+
+- Тип: `(value: unknown) => void`  
+- По умолчанию: Предустановленный валидатор.  
+
+#### emailFormatValidator
+
+Функция для проверки формата email-адреса.
+
+- Тип: `(value: unknown) => void`
+- По умолчанию: Предустановленный валидатор.
+
+#### phoneFormatValidator
+
+Функция для проверки формата номера телефона.
+
+- Тип: `(value: unknown) => void`
+- По умолчанию: Предустановленный валидатор.
+
+#### passwordFormatValidator
+
+Функция для проверки формата пароля.
+
+- Тип: `(value: unknown) => void`
+- По умолчанию: Предустановленный валидатор.
+
+#### jwtSecret
+
+Секретный ключ для подписи JWT.
+
+- Тип: `string`
+- По умолчанию: `'REPLACE_ME!'`
+
+#### jwtTtl
+
+Время жизни JWT в секундах.
+
+- Тип: `number`  
+- По умолчанию: `1209600` (14 дней)  
+
+#### jwtHeaderName
+
+Имя HTTP-заголовка для поиска JWT.
+
+- Тип: `string`
+- По умолчанию: `'authorization'`
+
+#### jwtCookieName
+
+Имя cookie для поиска JWT.
+
+- Тип: `string`
+- По умолчанию: `'accessToken'`
+
+#### jwtQueryParam
+
+Имя query-параметра URL для поиска JWT.
+
+- Тип: `string`
+- По умолчанию: `'accessToken'`
+
+#### sessionUserInclusion
+
+Связанные данные пользователя для загрузки в сессию.
+
+- Тип: `IncludeClause`
+- По умолчанию: `'roles'`
+
+## Интерфейс AuthService
 
 `AuthService` является центральным компонентом модуля, предоставляющим всю
 основную логику для управления пользователями, аутентификации, генерации
@@ -329,15 +468,14 @@ const newUser = await authService.createUser({
 
 ### authService.findUserByLoginIds
 
-Осуществляет поиск пользователя по одному из его идентификаторов: `username`,
-`email` или `phone`. Поиск по `username` и `email` по умолчанию
-регистронезависимый.
+Осуществляет поиск пользователя по одному из его регистронезависимых
+идентификаторов входа (`username`, `email` и `phone`).
 
 Сигнатура:
 
 ```ts
 findUserByLoginIds<T extends BaseUserModel>(
-  lookup: LoginIdsFilter,
+  idsFilter: LoginIdsFilter,
   include?: IncludeClause<T>,
   silent?: boolean,
 ): Promise<T | undefined>;
@@ -396,6 +534,29 @@ verifyPassword(
 await authService.verifyPassword('Password123', user.password);
 ```
 
+### authService.hashPassword
+
+Хеширует пароль с использованием `bcrypt`. Этот метод полезен для
+пользовательских сценариев, таких как миграция данных или сброс пароля,
+когда требуется вручную хешировать пароль перед сохранением.
+
+Сигнатура:
+
+```ts
+hashPassword(password: string): Promise<string>;
+```
+
+Параметры:
+
+- `password`  
+  *пароль в открытом виде для хеширования;*
+
+Пример:
+
+```ts
+const hashedPassword = await authService.hashPassword(newPassword);
+```
+
 ### authService.createAccessToken
 
 Создает запись о токене доступа в базе данных. Это необходимо для управления
@@ -452,6 +613,73 @@ issueJwt(
 
 ```ts
 const {token, expiresAt} = await authService.issueJwt(accessToken);
+```
+
+### authService.decodeJwt
+
+Проверяет и декодирует JWT, извлекая из него полезную нагрузку. Метод
+выбрасывает ошибку, если токен недействителен (неверная подпись, истек
+срок действия).
+
+Сигнатура:
+
+```ts
+decodeJwt(jwToken: string): Promise<JwtPayload>;
+```
+
+Параметры:
+
+- `jwToken`  
+  *Строка JWT, полученная из заголовка, cookie или query-параметра.*
+
+Пример:
+
+```ts
+try {
+  const payload = await authService.decodeJwt(clientToken);
+  console.log('User ID:', payload.uid);
+  console.log('Token ID:', payload.tid);
+} catch (error) {
+  // обработка ошибки невалидного токена
+  console.error('Invalid token:', error.message);
+}
+```
+
+### authService.findAccessTokenById
+
+Осуществляет поиск записи `AccessToken` в базе данных по идентификатору.
+
+Сигнатура:
+
+```ts
+findAccessTokenById<T extends BaseAccessTokenModel>(
+  tokenId: string,
+  include?: IncludeClause<T>,
+): Promise<T | undefined>;
+```
+
+Параметры:
+
+- `tokenId`  
+  *ID токена доступа (соответствует полю `tid` в полезной нагрузке JWT);*
+- `include` (опционально)  
+  *позволяет включить связанные модели, например, `owner`;*
+
+Пример:
+
+```ts
+// декодирование JWT, чтобы получить идентификатор токена
+const payload = await authService.decodeJwt(clientToken);
+
+// поиск токена в базе данных по идентификатору
+const accessToken = await authService.findAccessTokenById(
+  payload.tid, 
+  {relation: 'owner'}
+);
+
+if (accessToken && accessToken.owner) {
+  console.log('Access token owner:', accessToken.owner.username);
+}
 ```
 
 ### authService.updateUser
@@ -537,6 +765,107 @@ requireAnyLoginId(
   *проверяются только те поля, которые присутствуют в объекте `data`
   (используется при обновлении профиля, когда пользователь может изменить
   только одно из полей);*
+
+### authService.createAuthSession
+
+Создает экземпляр `AuthSession` на основе входящего HTTP-запроса. Метод
+автоматически ищет JWT в заголовках, cookie и query-параметрах, проверяет его,
+находит связанного пользователя и создает аутентифицированную сессию.
+Если токен не найден или недействителен, создается анонимная сессия.
+
+Сигнатура:
+
+```ts
+createAuthSession(req: IncomingMessage): Promise<AuthSession>;
+```
+
+Параметры:
+
+- `req`  
+  *Объект `IncomingMessage` из стандартной библиотеки `http` Node.js.*
+
+Пример:
+
+```ts
+// обычно используется в middleware или хуке
+router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
+  const authService = ctx.container.get(AuthService);
+  const authSession = await authService.createAuthSession(ctx.req);
+  ctx.container.set(AuthSession, authSession);
+});
+```
+
+### authService.findAccessTokenByHttpRequest
+
+Извлекает JWT из HTTP-запроса, декодирует его и находит соответствующую
+запись `AccessToken` в базе данных. Возвращает `undefined`, если токен
+не найден.
+
+Сигнатура:
+
+```ts
+findAccessTokenByHttpRequest<T extends BaseAccessTokenModel>(
+  req: IncomingMessage,
+  include?: IncludeClause<T>,
+): Promise<T | undefined>;
+```
+
+Параметры:
+
+- `req`  
+  *Объект `IncomingMessage`.*
+- `include` (опционально)  
+  *Позволяет включить связанные модели, например, `owner`.*
+
+Пример:
+
+```ts
+// логика проверки токена
+const accessToken = await authService.findAccessTokenByHttpRequest(
+  req,
+  {relation: 'owner'},
+);
+
+if (accessToken) {
+  console.log('Token owner:', accessToken.owner);
+}
+```
+
+### authService.findAccessTokenOwner
+
+Находит и возвращает пользователя (`UserModel`), который является владельцем
+переданного `AccessToken`.
+
+Сигнатура:
+
+```ts
+findAccessTokenOwner<T extends BaseUserModel>(
+  accessToken: BaseAccessTokenModel,
+  include?: IncludeClause<T>,
+): Promise<T | undefined>;
+```
+
+Параметры:
+
+- `accessToken`  
+  *Объект токена доступа, обычно полученный из `findAccessTokenByHttpRequest`.*
+- `include` (опционально)  
+  *Позволяет включить связанные модели для пользователя, например, `roles`.*
+
+Пример:
+
+```ts
+const accessToken = await authService.findAccessTokenByHttpRequest(req);
+if (accessToken) {
+  const user = await authService.findAccessTokenOwner(
+    accessToken,
+    {relation: 'roles'},
+  );
+  if (user) {
+    console.log('User roles:', user.roles);
+  }
+}
+```
 
 ## Модели
 

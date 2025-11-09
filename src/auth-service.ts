@@ -313,28 +313,17 @@ export class AuthService extends DebuggableService {
   async findAccessTokenById<T extends BaseAccessTokenModel>(
     tokenId: string,
     include?: IncludeClause<T>,
-  ): Promise<T> {
+  ): Promise<T | undefined> {
     const debug = this.getDebuggerFor(this.findAccessTokenById);
     debug('Finding access token by id.');
     debug('Token id was %v.', tokenId);
     const dbs = this.getRegisteredService(DatabaseSchema);
     const rep = dbs.getRepository<T>(AccessTokenModel.name);
     const accessToken = await rep.findOne({where: {id: tokenId}, include});
-    if (!accessToken)
-      throw createError(
-        HttpErrors.InternalServerError,
-        'ACCESS_TOKEN_NOT_FOUND',
-        'Access token is not found in the database',
-        {tokenId},
-      );
-    debug('Owner id was %v.', accessToken.ownerId);
-    if (!accessToken.ownerId)
-      throw createError(
-        HttpErrors.Unauthorized,
-        'ACCESS_TOKEN_OWNER_NOT_FOUND',
-        'Access token has no owner',
-        {tokenId},
-      );
+    if (!accessToken) {
+      debug('Access token not found in database.');
+      return;
+    }
     debug('Access token found.');
     return accessToken as T;
   }
@@ -504,7 +493,7 @@ export class AuthService extends DebuggableService {
    * @param silent
    */
   async findUserByLoginIds<T extends BaseUserModel>(
-    inputData: LoginIdsFilter,
+    idsFilter: LoginIdsFilter,
     include?: IncludeClause<T>,
     silent = false,
   ): Promise<T | undefined> {
@@ -516,10 +505,10 @@ export class AuthService extends DebuggableService {
     const where: WhereClause = {};
     let hasAnyLoginId = false;
     LOGIN_ID_NAMES.forEach(name => {
-      if (inputData[name] && String(inputData[name]).trim()) {
-        debug('Given %s was %v.', name, inputData[name]);
+      if (idsFilter[name] && String(idsFilter[name]).trim()) {
+        debug('Given %s was %v.', name, idsFilter[name]);
         hasAnyLoginId = true;
-        const idValue = String(inputData[name]).trim();
+        const idValue = String(idsFilter[name]).trim();
         const idRegex = `^${idValue}$`;
         const isCaseInsensitive = CASE_INSENSITIVE_LOGIN_IDS.includes(name);
         where[name] = isCaseInsensitive
@@ -531,7 +520,7 @@ export class AuthService extends DebuggableService {
     // то выбрасывается ошибка
     if (!hasAnyLoginId) {
       if (silent) return;
-      this.requireAnyLoginId(inputData);
+      this.requireAnyLoginId(idsFilter);
     }
     const dbs = this.getRegisteredService(DatabaseSchema);
     const userRep = dbs.getRepository<T>(UserModel.name);
@@ -765,6 +754,10 @@ export class AuthService extends DebuggableService {
     }
     const payload = await this.decodeJwt(jwToken);
     const accessToken = await this.findAccessTokenById(payload.tid, include);
+    if (!accessToken) {
+      debug('Access token not found in the database.');
+      return;
+    }
     if (accessToken.ownerId !== payload.uid)
       throw createError(
         HttpErrors.BadRequest,
@@ -786,30 +779,25 @@ export class AuthService extends DebuggableService {
   async findAccessTokenOwner<T extends BaseUserModel>(
     accessToken: BaseAccessTokenModel,
     include?: IncludeClause<T>,
-  ): Promise<T> {
+  ): Promise<T | undefined> {
     const debug = this.getDebuggerFor(this.findAccessTokenOwner);
     debug('Finding access token owner.');
-    if (!accessToken.ownerId)
-      throw createError(
-        HttpErrors.BadRequest,
-        'NO_ACCESS_TOKEN_OWNER',
-        'Your access token does not have an owner',
-        accessToken,
-      );
+    if (!accessToken.ownerId) {
+      debug('Access token did not have an owner.');
+      return;
+    }
+    debug('Owner id was %v.', accessToken.ownerId);
     const dbs = this.getRegisteredService(DatabaseSchema);
     const rep = dbs.getRepository<T>(UserModel.name);
     const owner = await rep.findOne({
       where: {id: accessToken.ownerId},
       include,
     });
-    if (!owner)
-      throw createError(
-        HttpErrors.BadRequest,
-        'NO_ACCESS_TOKEN_OWNER',
-        'Your access token does not have an owner',
-        accessToken,
-      );
-    debug('Owner found with id %v.', owner.id);
+    if (!owner) {
+      debug('Owner not found in database.');
+      return;
+    }
+    debug('Owner found successfully.');
     return owner as T;
   }
 

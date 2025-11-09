@@ -77,7 +77,8 @@ class UserController extends Service {
     }
     const accessToken = await authService.createAccessToken(user.id);
     const {token, expiresAt} = await authService.issueJwt(accessToken);
-    return {token, expiresAt, user};
+    const {password, ...userDto} = user;
+    return {token, expiresAt, user: userDto};
   }
 
   // GET /users/findMe
@@ -101,11 +102,12 @@ class UserController extends Service {
 
   // GET /users/logout
   @getAction('logout')
-  logout() {
+  async logout() {
     const session = this.getRegisteredService(AuthSession);
     const accessTokenId = session.getAccessTokenId();
     const authService = this.getRegisteredService(AuthService);
-    return authService.removeAccessTokenById(accessTokenId);
+    const result = await authService.removeAccessTokenById(accessTokenId);
+    return {success: result};
   }
 }
 
