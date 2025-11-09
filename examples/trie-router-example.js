@@ -60,8 +60,9 @@ router.defineRoute({
   async handler({container, body}) {
     const authService = container.getRegistered(AuthService);
     const user = await authService.findUserByLoginIds(body);
-    if (user.password)
+    if (user.password) {
       await authService.verifyPassword(body.password || '', user.password);
+    }
     const accessToken = await authService.createAccessToken(user.id);
     const {token, expiresAt} = await authService.issueJwt(accessToken);
     return {token, expiresAt, user};

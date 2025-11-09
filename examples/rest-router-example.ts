@@ -72,8 +72,9 @@ class UserController extends Service {
   ) {
     const authService = this.getRegisteredService(AuthService);
     const user = await authService.findUserByLoginIds(body);
-    if (user.password)
+    if (user.password) {
       await authService.verifyPassword(body.password || '', user.password);
+    }
     const accessToken = await authService.createAccessToken(user.id);
     const {token, expiresAt} = await authService.issueJwt(accessToken);
     return {token, expiresAt, user};

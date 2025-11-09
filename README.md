@@ -77,10 +77,10 @@ const dbs = app.get(DatabaseSchema); // схема баз данных
 
 #### 2. Настройка базы данных и моделей
 
-После получения сервиса для управления схемой данных (`dbs`), необходимо
+После получения сервиса для управления схемой баз данных (`dbs`), необходимо
 определить, как и где будут храниться данные. Сначала определяется источник
 данных (в данном примере *in-memory* база), а затем в нем регистрируются
-модели, поставляемые с библиотекой: `AccessToken`, `Role` и `User`.
+модели, поставляемые с библиотекой.
 
 ```ts
 import {
@@ -119,13 +119,13 @@ router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
   const authService = ctx.container.get(AuthService);
   // на основе токена из контекста запроса (если он есть) создается сессия
   const authSession = await authService.createAuthSession(ctx);
-  // созданная сессия сохраняется в контейнере запроса для доступа
-  // из контроллеров
+  // созданная сессия сохраняется в контейнере запроса
+  // для доступа в обработчиках маршрута
   ctx.container.set(AuthSession, authSession);
 });
 ```
 
-#### 5. Запуск HTTP-сервера
+#### 4. Запуск HTTP-сервера
 
 Финальным шагом является создание и запуск HTTP-сервера Node.js. Маршрутизатор,
 настроенный на предыдущих шагах, передается ему в качестве обработчика запросов.
@@ -147,7 +147,7 @@ server.listen(port, host, function () {
 });
 ```
 
-Теперь, когда базовая структура приложения настроена и сервер готов прослушивать
+Теперь, когда базовая структура приложения настроена и сервер готов обрабатывать
 входящие запросы, можно перейти к реализации таких операций как регистрация
 и вход в систему.
 
@@ -156,7 +156,7 @@ server.listen(port, host, function () {
 Создание новых пользователей выполняется методом `createUser` сервиса
 `AuthService`. Метод реализует логику проверки формата идентификаторов
 входа (`username`, `email` и `phone`), их проверку на дубликаты
-и хеширование пароля (при наличии). Ниже приведен пример реализации
+и хеширование пароля (при наличии). Ниже приводится пример реализации
 маршрута для регистрации нового пользователя.
 
 ```ts
@@ -167,7 +167,7 @@ router.defineRoute({
   handler({container, body}) {
     // получение request-scoped экземпляра AuthService
     const authService = container.getRegistered(AuthService);
-    // проверка наличия хотя бы одного идентификатора для входа
+    // проверка наличия хотя бы одного идентификатора входа
     authService.requireAnyLoginId(body);
     // вызов метода создания пользователя
     return authService.createUser(body);
@@ -176,7 +176,7 @@ router.defineRoute({
 ```
 
 Перед созданием пользователя рекомендуется вызвать метод `requireAnyLoginId`
-сервиса `AuthService`, чтобы убедится в наличии по крайней мере одного
+сервиса `AuthService`, чтобы убедиться в наличии, по крайней мере, одного
 идентификатора входа.
 
 ### Аутентификация (вход в систему)
@@ -184,7 +184,7 @@ router.defineRoute({
 Процесс аутентификации заключается в проверке учетных данных пользователя и,
 в случае успеха, в создании сессии с выпуском *JWT (JSON Web Token)*. Эта логика
 инкапсулирована в сервисе `AuthService` и включает в себя поиск пользователя,
-проверку пароля и генерацию токена. Ниже приведен пример реализации маршрута
+проверку пароля и генерацию токена. Ниже приводится пример реализации маршрута
 для входа в систему.
 
 ```js
@@ -198,8 +198,9 @@ router.defineRoute({
     // поиск пользователя по одному из идентификаторов
     const user = await authService.findUserByLoginIds(body);
     // проверка пароля
-    if (user.password)
+    if (user.password) {
       await authService.verifyPassword(body.password || '', user.password);
+    }
     // создание токена доступа (в базе данных)
     const accessToken = await authService.createAccessToken(user.id);
     // генерация JWT
@@ -214,7 +215,7 @@ router.defineRoute({
 
 ### Получение данных текущего пользователя
 
-Для получения информации об аутентифицированном пользователе используется
+Для получения информации о пользователе текущей сессии используется
 сервис `AuthSession`. Сервис автоматически создается для каждого запроса
 и содержит данные пользователя, если в запросе был предоставлен корректный JWT.
 Метод `session.getUser()` возвращает объект пользователя или выбрасывает ошибку
@@ -237,10 +238,10 @@ router.defineRoute({
 ### Обновление профиля
 
 Обновление данных пользователя выполняется методом `authService.updateUser`.
-В качестве первого аргумента данный метод принимает ID пользователя, которого
-необходимо обновить, а вторым - объект с новыми данными. ID текущего
-пользователя извлекается из сессии с помощью `session.getUserId()`,
-что гарантирует правильного владельца.
+В качестве первого аргумента данный метод принимает идентификатор пользователя,
+а вторым - объект с новыми данными. Идентификатор текущего пользователя
+извлекается из сессии с помощью `session.getUserId()`, что гарантирует
+правильного владельца.
 
 ```js
 // PATCH /users/profile
@@ -250,7 +251,7 @@ router.defineRoute({
   async handler({container, body}) {
     const session = container.getRegistered(AuthSession);
     const authService = container.getRegistered(AuthService);
-    // проверка наличия хотя бы одного идентификатора (в режиме partial)
+    // проверка наличия хотя бы одного идентификатора входа (в режиме partial)
     authService.requireAnyLoginId(body, true);
     // вызов метода обновления пользователя
     return authService.updateUser(session.getUserId(), body);
@@ -261,10 +262,10 @@ router.defineRoute({
 ### Выход из системы (завершение сессии)
 
 Процесс выхода из системы заключается в удалении текущего токена доступа
-из базы данных. Метод `authService.removeAccessTokenById` принимает ID токена
-(не сам JWT), который можно получить из сессии через `session.getAccessTokenId()`.
-После удаления токена из базы все последующие запросы с этим JWT будут
-недействительны.
+из базы данных. Метод `authService.removeAccessTokenById` принимает
+идентификатор токена (не сам JWT), который можно получить из сессии
+через `session.getAccessTokenId()`. После удаления токена из базы
+все последующие запросы с этим JWT будут недействительны.
 
 ```js
 // GET /users/logout
@@ -274,7 +275,7 @@ router.defineRoute({
   async handler({container}) {
     const session = container.getRegistered(AuthSession);
     const authService = container.getRegistered(AuthService);
-    // получение ID токена доступа из сессии
+    // получение идентификатора токена доступа из сессии
     const accessTokenId = session.getAccessTokenId();
     // удаление токена из базы данных
     const result = await authService.removeAccessTokenById(accessTokenId);
@@ -294,7 +295,7 @@ router.defineRoute({
 Создает нового пользователя, выполняя все необходимые проверки и преобразования
 данных.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 createUser<T extends BaseUserModel>(
@@ -302,7 +303,7 @@ createUser<T extends BaseUserModel>(
   filter?: ItemFilterClause<T>,
 ): Promise<T>;
 ```
-**Процесс выполнения**
+Процесс выполнения:
 
 - Проверка формата  
   *проверяет формат `username`, `email`, `phone` и `password`;*
@@ -316,7 +317,7 @@ createUser<T extends BaseUserModel>(
 Метод возвращает `Promise`, который разрешается объектом созданного
 пользователя.
 
-**Пример**
+Пример:
 
 ```ts
 const newUser = await authService.createUser({
@@ -332,7 +333,7 @@ const newUser = await authService.createUser({
 `email` или `phone`. Поиск по `username` и `email` по умолчанию
 регистронезависимый.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 findUserByLoginIds<T extends BaseUserModel>(
@@ -342,7 +343,7 @@ findUserByLoginIds<T extends BaseUserModel>(
 ): Promise<T | undefined>;
 ```
 
-**Параметры**
+Параметры:
 
 - `lookup`  
   *объект полем `username`, `email` или `phone`;*
@@ -351,7 +352,7 @@ findUserByLoginIds<T extends BaseUserModel>(
   *если `true` и пользователь не найден, метод вернет `undefined`;*  
   *если `false`, будет выброшена ошибка `400 Bad Request`;*
 
-**Пример**
+Пример:
 
 ```ts
 // используется при логине, выбрасывает ошибку если пользователь не найден
@@ -369,7 +370,7 @@ const maybeUser = await authService.findUserByLoginIds(
 
 Сравнивает предоставленный пароль с хешем, хранящимся в базе данных.
 
-**Сигнатура**
+Сигнатура:
 ```ts
 verifyPassword(
   password: string,
@@ -378,7 +379,7 @@ verifyPassword(
 ): Promise<boolean>;
 ```
 
-**Параметры**
+Параметры:
 
 - `password`  
   *пароль в открытом виде, введенный пользователем;*
@@ -388,7 +389,7 @@ verifyPassword(
   *если `true` и пароли не совпадают, метод вернет `false`;*  
   *если `false`, будет выброшена ошибка `400 Bad Request`;*
 
-**Пример**
+Пример:
 
 ```ts
 // выбросит ошибку, если пароль неверный
@@ -401,7 +402,7 @@ await authService.verifyPassword('Password123', user.password);
 сессиями и реализации механизма выхода из системы. Идентификатор созданной
 записи используется как `tid` (Token ID) в полезной нагрузке JWT.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 createAccessToken<T extends BaseAccessTokenModel>(
@@ -410,14 +411,14 @@ createAccessToken<T extends BaseAccessTokenModel>(
 ): Promise<T>
 ```
 
-**Параметры**
+Параметры:
 
 - `ownerId`  
   *ID пользователя, для которого создается токен;*
 - `patch` (опционально)  
   *объект дополнительных свойств, который будет записан в данные ключа;*
 
-**Пример**
+Пример:
 
 ```ts
 // создание новой записи о токене и сохранение в базу данных
@@ -428,7 +429,7 @@ const accessToken = await authService.createAccessToken(user.id);
 
 Генерирует JWT на основе ранее созданного `AccessToken`.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 issueJwt(
@@ -436,18 +437,18 @@ issueJwt(
 ): Promise<{token: string, expiresAt: string}>
 ```
 
-**Параметры**
+Параметры:
 
 - `accessToken`  
   *объект токена доступа, полученный из метода `createAccessToken`*
 
-**Процесс выполнения**
+Процесс выполнения:
 
 1. Формирует полезную нагрузку с полями `uid` (User ID) и `tid` (Token ID).
 2. Подписывает токен с помощью `jwtSecret`.
 3. Устанавливает время жизни (`exp`) на основе опции `jwtTtl`.
 
-**Пример**
+Пример:
 
 ```ts
 const {token, expiresAt} = await authService.issueJwt(accessToken);
@@ -459,7 +460,7 @@ const {token, expiresAt} = await authService.issueJwt(accessToken);
 формата и уникальности, что и `createUser`, для всех полей, которые переданы
 в `inputData`.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 updateUser<T extends BaseUserModel>(
@@ -469,14 +470,14 @@ updateUser<T extends BaseUserModel>(
 ): Promise<T>
 ```
 
-**Параметры**
+Параметры:
 
 - `userId`  
   *ID пользователя, которого нужно обновить;*
 - `inputData`  
   *объект с полями для обновления;*
 
-**Пример**
+Пример:
 
 ```ts
 const updatedUser = await authService.updateUser(
@@ -490,19 +491,19 @@ const updatedUser = await authService.updateUser(
 Удаление записи `AccessToken` из базы данных. Это основной механизм
 для реализации выхода из системы.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 removeAccessTokenById(accessTokenId: string): Promise<boolean>;
 ```
 
-**Параметры**
+Параметры:
 
 - `accessTokenId`  
   *ID токена доступа, который необходимо удалить,*  
   *этот ID можно получить из сессии (`session.getAccessTokenId()`);*
 
-**Пример**
+Пример:
 
 ```ts
 const accessTokenId = session.getAccessTokenId();
@@ -516,7 +517,7 @@ const result = await authService.removeAccessTokenById(accessTokenId);
 объекте хотя бы одного из полей для входа (`username`, `email` или `phone`).
 Если ни одно из полей не найдено или их значения пустые, выбрасывается ошибка.
 
-**Сигнатура**
+Сигнатура:
 
 ```ts
 requireAnyLoginId(
@@ -525,7 +526,7 @@ requireAnyLoginId(
 ): void;
 ```
 
-**Параметры**
+Параметры:
 
 - `data`  
   *объект для проверки (обычно `request.body`);*
