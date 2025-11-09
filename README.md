@@ -28,6 +28,7 @@
   - [createUser](#authservicecreateuser)
   - [findUserByLoginIds](#authservicefinduserbyloginids)
   - [verifyPassword](#authserviceverifypassword)
+  - [hashPassword](#authservicehashpassword)
   - [createAccessToken](#authservicecreateaccesstoken)
   - [issueJwt](#authserviceissuejwt)
   - [decodeJwt](#authservicedecodejwt)
@@ -161,7 +162,7 @@ const port = 3000;
 const host = '0.0.0.0';
 server.listen(port, host, function () {
   const cyan = '\x1b[36m%s\x1b[0m';
-  console.log(cyan, 'Server listening on ', `${host}:${port}`);
+  console.log(cyan, 'Server listening on', `${host}:${port}`);
 });
 ```
 
@@ -320,7 +321,7 @@ const app = new ServiceContainer();
 
 app.use(AuthServiceOptions, {
   jwtSecret: '5VGo3m04sGiL',
-  jwtTtl: 14 * 86400; // 14 дней
+  jwtTtl: 14 * 86400, // 14 дней
   jwtCookieName: 'accessToken',
   passwordHashRounds: 12,
 });
@@ -336,7 +337,7 @@ router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
   // передан в конструктор AuthService
   const authService = ctx.container.get(AuthService, {
     jwtSecret: '5VGo3m04sGiL',
-    jwtTtl: 14 * 86400; // 14 дней
+    jwtTtl: 14 * 86400, // 14 дней
     jwtCookieName: 'accessToken',
     passwordHashRounds: 12,
   });
@@ -535,6 +536,29 @@ verifyPassword(
 ```ts
 // выбросит ошибку, если пароль неверный
 await authService.verifyPassword('Password123', user.password);
+```
+
+### authService.hashPassword
+    
+Хеширует пароль с использованием `bcrypt`. Метод полезен для пользовательских
+сценариев, таких как миграция данных или сброс пароля, когда требуется вручную
+хешировать пароль перед сохранением.
+
+Сигнатура:
+
+```ts
+hashPassword(password: string): Promise<string>;
+```
+
+Параметры:
+
+- `password`  
+  *пароль в открытом виде для хеширования;*
+
+Пример:
+
+```ts
+const hashedPassword = await authService.hashPassword(newPassword);
 ```
 
 ### authService.hashPassword
