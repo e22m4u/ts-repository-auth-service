@@ -926,13 +926,13 @@ requireRole(roleName?: string | string[]): void;
 ```ts
 // разрешить доступ любому аутентифицированному пользователю
 accessGuard.requireRole();
+// или
+accessGuard.requireRole('$authenticated');
 
 // аналогично, с использованием константы
 import {AccessRule} from '@e22m4u/js-repository-auth-service';
 
 accessGuard.requireRole(AccessRule.AUTHENTICATED);
-// или
-accessGuard.requireRole('$authenticated');
 ```
 
 **Проверка одной конкретной роли**
