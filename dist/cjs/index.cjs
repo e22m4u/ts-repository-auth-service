@@ -1197,6 +1197,7 @@ var require_Reflect = __commonJS({
 var index_exports = {};
 __export(index_exports, {
   ACCESS_TOKEN_MODEL_DEF: () => ACCESS_TOKEN_MODEL_DEF,
+  AccessGuard: () => AccessGuard,
   AccessRule: () => AccessRule,
   AccessTokenModel: () => AccessTokenModel,
   AuthLocalizer: () => AuthLocalizer,
@@ -1210,18 +1211,15 @@ __export(index_exports, {
   JWT_ISSUE_RESULT_SCHEMA: () => JWT_ISSUE_RESULT_SCHEMA,
   LOGIN_ID_NAMES: () => LOGIN_ID_NAMES,
   ROLE_MODEL_DEF: () => ROLE_MODEL_DEF,
-  RoleGuard: () => RoleGuard,
   RoleModel: () => RoleModel,
   USER_LOOKUP_SCHEMA: () => USER_LOOKUP_SCHEMA,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA: () => USER_LOOKUP_WITH_PASSWORD_SCHEMA,
   USER_MODE_DEF: () => USER_MODE_DEF,
-  UserModel: () => UserModel,
-  requireRole: () => requireRole,
-  roleGuard: () => roleGuard
+  UserModel: () => UserModel
 });
 module.exports = __toCommonJS(index_exports);
 
-// dist/esm/role-guard.js
+// dist/esm/access-guard.js
 var import_http_errors2 = __toESM(require("http-errors"), 1);
 
 // dist/esm/utils/create-error.js
@@ -1302,8 +1300,8 @@ var en_default = {
   "authService.updateUser.userNotFoundError": "User not found",
   "authService.findUserByLoginIds.loginFailedError": "Invalid login or password",
   "authService.verifyPassword.invalidPasswordError": "Invalid login or password",
-  "roleGuard.requireRole.authenticationRequired": "Authentication is required",
-  "roleGuard.requireRole.roleNotAllowed": "You do not have permissions to perform this action",
+  "accessGuard.requireRole.authenticationRequired": "Authentication is required",
+  "accessGuard.requireRole.roleNotAllowed": "You do not have permissions to perform this action",
   "authSession.getUser.authenticationRequired": "Authentication is required",
   "authSession.getAccessTokenId.authenticationRequired": "Authentication is required"
 };
@@ -1329,8 +1327,8 @@ var ru_default = {
   "authService.updateUser.userNotFoundError": "\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D",
   "authService.findUserByLoginIds.loginFailedError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u043B\u043E\u0433\u0438\u043D \u0438\u043B\u0438 \u043F\u0430\u0440\u043E\u043B\u044C",
   "authService.verifyPassword.invalidPasswordError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u043B\u043E\u0433\u0438\u043D \u0438\u043B\u0438 \u043F\u0430\u0440\u043E\u043B\u044C",
-  "roleGuard.requireRole.authenticationRequired": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F",
-  "roleGuard.requireRole.roleNotAllowed": "\u0423 \u0432\u0430\u0441 \u043D\u0435\u0434\u043E\u0441\u0442\u0430\u0442\u043E\u0447\u043D\u043E \u043F\u0440\u0430\u0432 \u0434\u043B\u044F \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u0434\u0430\u043D\u043D\u043E\u0433\u043E \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
+  "accessGuard.requireRole.authenticationRequired": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F",
+  "accessGuard.requireRole.roleNotAllowed": "\u0423 \u0432\u0430\u0441 \u043D\u0435\u0434\u043E\u0441\u0442\u0430\u0442\u043E\u0447\u043D\u043E \u043F\u0440\u0430\u0432 \u0434\u043B\u044F \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u0434\u0430\u043D\u043D\u043E\u0433\u043E \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
   "authSession.getUser.authenticationRequired": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F",
   "authSession.getAccessTokenId.authenticationRequired": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F"
 };
@@ -1439,12 +1437,12 @@ var _AuthSession = class _AuthSession extends import_js_service.DebuggableServic
 __name(_AuthSession, "AuthSession");
 var AuthSession = _AuthSession;
 
-// dist/esm/role-guard.js
+// dist/esm/access-guard.js
 var import_js_service2 = require("@e22m4u/js-service");
 var AccessRule = {
   AUTHENTICATED: "$authenticated"
 };
-var _RoleGuard = class _RoleGuard extends import_js_service2.DebuggableService {
+var _AccessGuard = class _AccessGuard extends import_js_service2.DebuggableService {
   /**
    * Require role.
    */
@@ -1456,7 +1454,7 @@ var _RoleGuard = class _RoleGuard extends import_js_service2.DebuggableService {
     debug("Role checking for %s %v.", method, pathname);
     const localizer = this.getRegisteredService(AuthLocalizer);
     if (!session.isLoggedIn)
-      throw createError(import_http_errors2.default.Unauthorized, "AUTHORIZATION_REQUIRED", localizer.t("roleGuard.requireRole.authenticationRequired"));
+      throw createError(import_http_errors2.default.Unauthorized, "AUTHORIZATION_REQUIRED", localizer.t("accessGuard.requireRole.authenticationRequired"));
     debug("User id was %v.", session.getUserId());
     const roleNames = [roleName].flat().filter(Boolean);
     if (!roleNames.length || roleNames.includes(AccessRule.AUTHENTICATED)) {
@@ -1470,21 +1468,12 @@ var _RoleGuard = class _RoleGuard extends import_js_service2.DebuggableService {
     const userRoles = session.getRoleNames();
     const isAllowed = userRoles.some((v) => roleNames.includes(v));
     if (!isAllowed)
-      throw createError(import_http_errors2.default.Forbidden, "ROLE_NOT_ALLOWED", localizer.t("roleGuard.roleNotAllowed"));
+      throw createError(import_http_errors2.default.Forbidden, "ROLE_NOT_ALLOWED", localizer.t("accessGuard.requireRole.roleNotAllowed"));
     debug("Access allowed.");
   }
 };
-__name(_RoleGuard, "RoleGuard");
-var RoleGuard = _RoleGuard;
-
-// dist/esm/hooks/role-guard.js
-function roleGuard(roleName) {
-  return function(ctx) {
-    const guard = ctx.container.get(RoleGuard);
-    guard.requireRole(roleName);
-  };
-}
-__name(roleGuard, "roleGuard");
+__name(_AccessGuard, "AccessGuard");
+var AccessGuard = _AccessGuard;
 
 // dist/esm/auth-service.js
 var import_bcrypt = __toESM(require("bcrypt"), 1);
@@ -2603,16 +2592,10 @@ var USER_LOOKUP_WITH_PASSWORD_SCHEMA = {
   },
   required: true
 };
-
-// dist/esm/decorators/require-role.js
-var import_ts_rest_router = require("@e22m4u/ts-rest-router");
-function requireRole(roleName) {
-  return (0, import_ts_rest_router.beforeAction)(roleGuard(roleName));
-}
-__name(requireRole, "requireRole");
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ACCESS_TOKEN_MODEL_DEF,
+  AccessGuard,
   AccessRule,
   AccessTokenModel,
   AuthLocalizer,
@@ -2626,14 +2609,11 @@ __name(requireRole, "requireRole");
   JWT_ISSUE_RESULT_SCHEMA,
   LOGIN_ID_NAMES,
   ROLE_MODEL_DEF,
-  RoleGuard,
   RoleModel,
   USER_LOOKUP_SCHEMA,
   USER_LOOKUP_WITH_PASSWORD_SCHEMA,
   USER_MODE_DEF,
-  UserModel,
-  requireRole,
-  roleGuard
+  UserModel
 });
 /*! Bundled license information:
 

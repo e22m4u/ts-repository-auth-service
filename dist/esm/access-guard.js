@@ -12,7 +12,7 @@ export const AccessRule = {
 /**
  * Access guard.
  */
-export class RoleGuard extends DebuggableService {
+export class AccessGuard extends DebuggableService {
     /**
      * Require role.
      */
@@ -26,7 +26,7 @@ export class RoleGuard extends DebuggableService {
         // если пользователь не авторизован,
         // то выбрасывается ошибка
         if (!session.isLoggedIn)
-            throw createError(HttpErrors.Unauthorized, 'AUTHORIZATION_REQUIRED', localizer.t('roleGuard.requireRole.authenticationRequired'));
+            throw createError(HttpErrors.Unauthorized, 'AUTHORIZATION_REQUIRED', localizer.t('accessGuard.requireRole.authenticationRequired'));
         debug('User id was %v.', session.getUserId());
         // если требуемые роли не указаны, то допускается
         // любой аутентифицированный пользователь
@@ -45,7 +45,7 @@ export class RoleGuard extends DebuggableService {
         const userRoles = session.getRoleNames();
         const isAllowed = userRoles.some(v => roleNames.includes(v));
         if (!isAllowed)
-            throw createError(HttpErrors.Forbidden, 'ROLE_NOT_ALLOWED', localizer.t('roleGuard.roleNotAllowed'));
+            throw createError(HttpErrors.Forbidden, 'ROLE_NOT_ALLOWED', localizer.t('accessGuard.requireRole.roleNotAllowed'));
         debug('Access allowed.');
     }
 }

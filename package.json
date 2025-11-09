@@ -1,6 +1,6 @@
 {
   "name": "@e22m4u/js-repository-auth-service",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Сервис авторизации с ролевой моделью",
   "author": "Mikhail Evstropov <e22m4u@yandex.ru>",
   "license": "MIT",

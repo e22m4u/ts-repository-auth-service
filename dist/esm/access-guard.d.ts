@@ -12,7 +12,7 @@ export type AccessRule = (typeof AccessRule)[keyof typeof AccessRule];
 /**
  * Access guard.
  */
-export declare class RoleGuard extends DebuggableService {
+export declare class AccessGuard extends DebuggableService {
     /**
      * Require role.
      */
