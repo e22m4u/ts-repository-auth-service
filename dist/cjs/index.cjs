@@ -1452,7 +1452,7 @@ var _AccessGuard = class _AccessGuard extends import_js_service2.DebuggableServi
     const method = session.getRequestMethod();
     const pathname = session.getRequestPathname();
     debug("Role checking for %s %v.", method, pathname);
-    const localizer = this.getRegisteredService(AuthLocalizer);
+    const localizer = this.getService(AuthLocalizer);
     if (!session.isLoggedIn)
       throw createError(import_http_errors2.default.Unauthorized, "AUTHORIZATION_REQUIRED", localizer.t("accessGuard.requireRole.authenticationRequired"));
     debug("User id was %v.", session.getUserId());

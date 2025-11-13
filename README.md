@@ -137,7 +137,7 @@ router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
   // (экземпляр создается автоматически в методе `container.get`)
   const authService = ctx.container.get(AuthService);
   // на основе токена из контекста запроса (если он есть) создается сессия
-  const authSession = await authService.createAuthSession(ctx.req);
+  const authSession = await authService.createAuthSession(ctx.request);
   // созданная сессия сохраняется в контейнере запроса
   // для доступа в обработчиках маршрута
   ctx.container.set(AuthSession, authSession);
@@ -817,7 +817,7 @@ createAuthSession(req: IncomingMessage): Promise<AuthSession>;
 // обычно используется в middleware или хуке
 router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
   const authService = ctx.container.get(AuthService);
-  const authSession = await authService.createAuthSession(ctx.req);
+  const authSession = await authService.createAuthSession(ctx.request);
   ctx.container.set(AuthSession, authSession);
 });
 ```

@@ -29,7 +29,7 @@ export class AccessGuard extends DebuggableService {
     const method = session.getRequestMethod();
     const pathname = session.getRequestPathname();
     debug('Role checking for %s %v.', method, pathname);
-    const localizer = this.getRegisteredService(AuthLocalizer);
+    const localizer = this.getService(AuthLocalizer);
     // если пользователь не авторизован,
     // то выбрасывается ошибка
     if (!session.isLoggedIn)
