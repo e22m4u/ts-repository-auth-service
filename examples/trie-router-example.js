@@ -27,7 +27,7 @@ dbs.defineModel({...USER_MODE_DEF, datasource: 'main'});
 
 router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
   const authService = ctx.container.get(AuthService);
-  const authSession = await authService.createAuthSession(ctx.req);
+  const authSession = await authService.createAuthSession(ctx.request);
   ctx.container.set(AuthSession, authSession);
 });
 
