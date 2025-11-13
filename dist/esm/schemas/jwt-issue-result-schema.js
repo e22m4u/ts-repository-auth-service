@@ -1,4 +1,4 @@
-import { DataType } from '@e22m4u/js-data-schema';
+import { DataType } from '@e22m4u/ts-data-schema';
 /**
  * Jwt issue result schema.
  */

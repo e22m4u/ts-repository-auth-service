@@ -1,4 +1,4 @@
-import {DataSchema, DataType} from '@e22m4u/js-data-schema';
+import {DataSchema, DataType} from '@e22m4u/ts-data-schema';
 
 /**
  * User lookup schema.
