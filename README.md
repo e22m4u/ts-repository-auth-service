@@ -546,7 +546,7 @@ router.addPreHandler(ctx => {
 основную логику для управления пользователями, аутентификации, генерации
 токенов и управления сессиями. Ниже приводится список методов его экземпляра.
 
-#### authService.createUser
+### authService.createUser
 
 Создает нового пользователя, выполняя все необходимые проверки и преобразования
 данных.
@@ -583,7 +583,7 @@ const newUser = await authService.createUser({
 });
 ```
 
-#### authService.findUserByLoginIds
+### authService.findUserByLoginIds
 
 Осуществляет поиск пользователя по одному из его регистронезависимых
 идентификаторов входа (`username`, `email` и `phone`).
@@ -621,7 +621,7 @@ const maybeUser = await authService.findUserByLoginIds(
 );
 ```
 
-#### authService.verifyPassword
+### authService.verifyPassword
 
 Сравнивает предоставленный пароль с хешем, хранящимся в базе данных.
 
@@ -651,7 +651,7 @@ verifyPassword(
 await authService.verifyPassword('Password123', user.password);
 ```
 
-#### authService.hashPassword
+### authService.hashPassword
     
 Хеширует пароль с использованием `bcrypt`. Метод полезен для пользовательских
 сценариев, таких как миграция данных или сброс пароля, когда требуется вручную
@@ -674,7 +674,7 @@ hashPassword(password: string): Promise<string>;
 const hashedPassword = await authService.hashPassword(newPassword);
 ```
 
-#### authService.createAccessToken
+### authService.createAccessToken
 
 Создает запись о токене доступа в базе данных. Это необходимо для управления
 сессиями и реализации механизма выхода из системы. Идентификатор созданной
@@ -703,7 +703,7 @@ createAccessToken<T extends BaseAccessTokenModel>(
 const accessToken = await authService.createAccessToken(user.id);
 ```
 
-#### authService.issueJwt
+### authService.issueJwt
 
 Генерирует JWT на основе ранее созданного `AccessToken`.
 
@@ -732,7 +732,7 @@ issueJwt(
 const {token, expiresAt} = await authService.issueJwt(accessToken);
 ```
 
-#### authService.decodeJwt
+### authService.decodeJwt
 
 Проверяет и декодирует JWT, извлекая из него полезную нагрузку. Метод
 выбрасывает ошибку, если токен недействителен (неверная подпись, истек
@@ -762,7 +762,7 @@ try {
 }
 ```
 
-#### authService.findAccessTokenById
+### authService.findAccessTokenById
 
 Осуществляет поиск записи `AccessToken` в базе данных по идентификатору.
 
@@ -795,7 +795,7 @@ const accessToken = await authService.findAccessTokenById(
 );
 ```
 
-#### authService.updateUser
+### authService.updateUser
 
 Обновляет данные существующего пользователя. Метод выполняет те же валидации
 формата и уникальности, что и `createUser`, для всех полей, которые переданы
@@ -827,7 +827,7 @@ const updatedUser = await authService.updateUser(
 );
 ```
 
-#### authService.removeAccessTokenById
+### authService.removeAccessTokenById
 
 Удаление записи `AccessToken` из базы данных. Это основной механизм
 для реализации выхода из системы.
@@ -852,7 +852,7 @@ const result = await authService.removeAccessTokenById(accessTokenId);
 // result === true, если токен был успешно удален
 ```
 
-#### authService.requireAnyLoginId
+### authService.requireAnyLoginId
 
 Вспомогательный метод валидации, который проверяет наличие в переданном
 объекте хотя бы одного из полей для входа (`username`, `email` или `phone`).
@@ -879,7 +879,7 @@ requireAnyLoginId(
   (используется при обновлении профиля, когда пользователь может изменить
   только одно из полей);*
 
-#### authService.createAuthSession
+### authService.createAuthSession
 
 Создает экземпляр `AuthSession` на основе входящего HTTP-запроса. Метод
 автоматически ищет JWT в заголовках, cookie и query-параметрах, проверяет его,
@@ -908,7 +908,7 @@ router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
 });
 ```
 
-#### authService.findAccessTokenByHttpRequest
+### authService.findAccessTokenByHttpRequest
 
 Извлекает JWT из HTTP-запроса, декодирует его и находит соответствующую
 запись `AccessToken` в базе данных. Возвращает `undefined`, если токен
@@ -944,7 +944,7 @@ if (accessToken) {
 }
 ```
 
-#### authService.findAccessTokenOwner
+### authService.findAccessTokenOwner
 
 Находит и возвращает пользователя (`UserModel`), который является владельцем
 переданного `AccessToken`.
