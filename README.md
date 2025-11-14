@@ -1114,6 +1114,9 @@ export class RoleModel<
 ### BaseUserModel и UserModel
 
 ```js
+import {noInput, noOutput} from '@e22m4u/ts-projection';
+import {RoleModel, BaseRoleModel} from './role-model.js';
+
 import {
   model,
   property,
@@ -1122,16 +1125,6 @@ import {
   RelationType,
   PropertyUniqueness,
 } from '@e22m4u/ts-repository';
-
-import {
-  noInput,
-  noOutput,
-} from '@e22m4u/ts-projection';
-
-import {
-  RoleModel,
-  BaseRoleModel,
-} from './role-model.js';
 
 /**
  * Base user model.
@@ -1209,14 +1202,16 @@ export class BaseUserModel<
 @model()
 export class UserModel<
   IdType = number | string,
-  RoleModel extends BaseRoleModel = BaseRoleModel,
-> extends BaseUserModel<IdType, RoleModel> {}
+  RoleType extends BaseRoleModel = BaseRoleModel,
+> extends BaseUserModel<IdType, RoleType> {}
 
 ```
 
 ### BaseAccessTokenModel и AccessTokenModel
 
 ```js
+import {UserModel, BaseUserModel} from './user-model.js';
+
 import {
   model,
   property,
@@ -1224,11 +1219,6 @@ import {
   DataType,
   RelationType,
 } from '@e22m4u/ts-repository';
-
-import {
-  UserModel,
-  BaseUserModel,
-} from './user-model.js';
 
 /**
  * Base access token model.
