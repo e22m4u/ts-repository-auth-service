@@ -1,7 +1,7 @@
 {
   "name": "@e22m4u/ts-repository-auth-service",
   "version": "0.0.2",
-  "description": "Сервис авторизации с ролевой моделью",
+  "description": "Сервис авторизации с ролевой моделью для @e22m4u/ts-repository",
   "author": "Mikhail Evstropov <e22m4u@yandex.ru>",
   "license": "MIT",
   "keywords": [
