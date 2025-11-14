@@ -6,7 +6,6 @@ import {
   relation,
   DataType,
   RelationType,
-  getModelDefinitionFromClass,
 } from '@e22m4u/ts-repository';
 
 /**
@@ -57,9 +56,3 @@ export class AccessTokenModel<
   IdType = number | string,
   UserType extends BaseUserModel = BaseUserModel,
 > extends BaseAccessTokenModel<IdType, UserType> {}
-
-/**
- * Access token model definition.
- */
-export const ACCESS_TOKEN_MODEL_DEF =
-  getModelDefinitionFromClass(AccessTokenModel);

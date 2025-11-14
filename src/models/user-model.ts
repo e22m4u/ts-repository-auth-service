@@ -8,7 +8,6 @@ import {
   DataType,
   RelationType,
   PropertyUniqueness,
-  getModelDefinitionFromClass,
 } from '@e22m4u/ts-repository';
 
 /**
@@ -87,10 +86,5 @@ export class BaseUserModel<
 @model()
 export class UserModel<
   IdType = number | string,
-  RoleModel extends BaseRoleModel = BaseRoleModel,
-> extends BaseUserModel<IdType, RoleModel> {}
-
-/**
- * User model definition.
- */
-export const USER_MODE_DEF = getModelDefinitionFromClass(UserModel);
+  RoleType extends BaseRoleModel = BaseRoleModel,
+> extends BaseUserModel<IdType, RoleType> {}

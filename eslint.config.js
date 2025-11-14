@@ -37,6 +37,7 @@ export default [
         (rules, config) => ({...rules, ...config.rules}),
         {},
       ),
+      'no-duplicate-imports': 'error',
       '@typescript-eslint/no-unused-expressions': 'off',
     },
   },

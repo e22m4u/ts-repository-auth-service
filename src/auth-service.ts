@@ -14,6 +14,7 @@ import {
   WithOptionalId,
   DatabaseSchema,
   ItemFilterClause,
+  OrClause,
 } from '@e22m4u/js-repository';
 
 import {
@@ -232,8 +233,8 @@ export class AuthService extends DebuggableService {
             return rej(
               createError(
                 HttpErrors.InternalServerError,
-                'TOKEN_ENCODING_FAILED',
-                'Unable to encode JSON web token',
+                'ACCESS_TOKEN_ENCODING_ERROR',
+                'Unable to encode JSON web token (JWT)',
                 payload,
               ),
             );
@@ -268,15 +269,20 @@ export class AuthService extends DebuggableService {
         );
       });
     } catch (err) {
-      if (
-        err instanceof TokenExpiredError ||
-        err instanceof JsonWebTokenError
-      ) {
+      if (err instanceof TokenExpiredError) {
         throw createError(
           HttpErrors.Unauthorized,
-          'TOKEN_VERIFYING_FAILED',
-          err.message, // Можно использовать сообщение из ошибки
-          {token: jwToken},
+          'ACCESS_TOKEN_EXPIRED',
+          'Access token is expired',
+          {token: jwToken, error: err.message},
+        );
+      }
+      if (err instanceof JsonWebTokenError) {
+        throw createError(
+          HttpErrors.Unauthorized,
+          'INVALID_ACCESS_TOKEN',
+          'Access token signature is invalid',
+          {token: jwToken, error: err.message},
         );
       }
       error = err;
@@ -293,13 +299,13 @@ export class AuthService extends DebuggableService {
       console.error(error);
       throw createError(
         HttpErrors.InternalServerError,
-        'TOKEN_VERIFYING_FAILED',
-        'Unable to verify JSON web token',
+        'INVALID_ACCESS_TOKEN',
+        'Access token payload is invalid',
         {token: jwToken, payload},
       );
     }
     debug.inspect('Payload:', payload);
-    debug('Token decoded successfully.');
+    debug('JWT decoded successfully.');
     return payload as JwtPayload;
   }
 
@@ -312,7 +318,7 @@ export class AuthService extends DebuggableService {
   async findAccessTokenById<T extends BaseAccessTokenModel>(
     tokenId: string,
     include?: IncludeClause<T>,
-  ): Promise<T | undefined> {
+  ): Promise<T> {
     const debug = this.getDebuggerFor(this.findAccessTokenById);
     debug('Finding access token by id.');
     debug('Token id was %v.', tokenId);
@@ -320,8 +326,12 @@ export class AuthService extends DebuggableService {
     const rep = dbs.getRepository<T>(AccessTokenModel.name);
     const accessToken = await rep.findOne({where: {id: tokenId}, include});
     if (!accessToken) {
-      debug('Access token not found in database.');
-      return;
+      throw createError(
+        HttpErrors.Unauthorized,
+        'ACCESS_TOKEN_NOT_FOUND',
+        'Access token is not found in the database',
+        {tokenId},
+      );
     }
     debug('Access token found.');
     return accessToken as T;
@@ -353,7 +363,7 @@ export class AuthService extends DebuggableService {
    * @param hash
    * @param silent
    */
-  async verifyPassword(password: string, hash: string): Promise<true>;
+  verifyPassword(password: string, hash: string): Promise<true>;
 
   /**
    * Verify password.
@@ -362,11 +372,7 @@ export class AuthService extends DebuggableService {
    * @param hash
    * @param silent
    */
-  async verifyPassword(
-    password: string,
-    hash: string,
-    silent: false,
-  ): Promise<true>;
+  verifyPassword(password: string, hash: string, silent: false): Promise<true>;
 
   /**
    * Verify password.
@@ -375,7 +381,7 @@ export class AuthService extends DebuggableService {
    * @param hash
    * @param silent
    */
-  async verifyPassword(
+  verifyPassword(
     password: string,
     hash: string,
     silent: true,
@@ -388,7 +394,7 @@ export class AuthService extends DebuggableService {
    * @param hash
    * @param silent
    */
-  async verifyPassword(
+  verifyPassword(
     password: string,
     hash: string,
     silent?: boolean,
@@ -424,7 +430,7 @@ export class AuthService extends DebuggableService {
     if (!isValid) {
       if (silent) return false;
       throw createError(
-        HttpErrors.BadRequest,
+        HttpErrors.Unauthorized,
         'PASSWORD_VERIFYING_ERROR',
         localizer.t(`${errorKeyPrefix}.invalidPasswordError`),
       );
@@ -436,24 +442,24 @@ export class AuthService extends DebuggableService {
   /**
    * Find user by login ids.
    *
-   * @param lookup
+   * @param idsFilter
    * @param include
    * @param silent
    */
-  async findUserByLoginIds<T extends BaseUserModel>(
-    lookup: LoginIdsFilter,
+  findUserByLoginIds<T extends BaseUserModel>(
+    idsFilter: LoginIdsFilter,
     include?: IncludeClause<T>,
   ): Promise<T>;
 
   /**
    * Find user by login ids.
    *
-   * @param lookup
+   * @param idsFilter
    * @param include
    * @param silent
    */
-  async findUserByLoginIds<T extends BaseUserModel>(
-    lookup: LoginIdsFilter,
+  findUserByLoginIds<T extends BaseUserModel>(
+    idsFilter: LoginIdsFilter,
     include: IncludeClause<T> | undefined,
     silent: false,
   ): Promise<T>;
@@ -461,12 +467,12 @@ export class AuthService extends DebuggableService {
   /**
    * Find user by login ids.
    *
-   * @param lookup
+   * @param idsFilter
    * @param include
    * @param silent
    */
-  async findUserByLoginIds<T extends BaseUserModel>(
-    lookup: LoginIdsFilter,
+  findUserByLoginIds<T extends BaseUserModel>(
+    idsFilter: LoginIdsFilter,
     include: IncludeClause<T> | undefined,
     silent: true,
   ): Promise<T | undefined>;
@@ -474,12 +480,12 @@ export class AuthService extends DebuggableService {
   /**
    * Find user by login ids.
    *
-   * @param lookup
+   * @param idsFilter
    * @param include
    * @param silent
    */
-  async findUserByLoginIds<T extends BaseUserModel>(
-    lookup: LoginIdsFilter,
+  findUserByLoginIds<T extends BaseUserModel>(
+    idsFilter: LoginIdsFilter,
     include?: IncludeClause<T>,
     silent?: boolean,
   ): Promise<T | undefined>;
@@ -487,7 +493,7 @@ export class AuthService extends DebuggableService {
   /**
    * Find user by login ids.
    *
-   * @param lookup
+   * @param idsFilter
    * @param include
    * @param silent
    */
@@ -501,7 +507,7 @@ export class AuthService extends DebuggableService {
     const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = 'authService.findUserByLoginIds';
     // формирование условий выборки
-    const where: WhereClause = {};
+    const where: WhereClause & OrClause = {or: []};
     let hasAnyLoginId = false;
     LOGIN_ID_NAMES.forEach(name => {
       if (idsFilter[name] && String(idsFilter[name]).trim()) {
@@ -510,9 +516,10 @@ export class AuthService extends DebuggableService {
         const idValue = String(idsFilter[name]).trim();
         const idRegex = `^${idValue}$`;
         const isCaseInsensitive = CASE_INSENSITIVE_LOGIN_IDS.includes(name);
-        where[name] = isCaseInsensitive
+        const lookingValue = isCaseInsensitive
           ? {regexp: idRegex, flags: 'i'}
           : idValue;
+        where.or.push({[name]: lookingValue});
       }
     });
     // если ни один идентификатор не определен,
@@ -538,29 +545,47 @@ export class AuthService extends DebuggableService {
   }
 
   /**
-   * Validate login id.
+   * Validate login id format.
    *
    * @param idName
    * @param idValue
    * @param ownerId
    */
-  protected async validateLoginId(
+  protected validateLoginIdFormat(idName: LoginIdName, idValue: unknown): void {
+    const debug = this.getDebuggerFor(this.validateLoginIdFormat);
+    debug('Validating login identifier format.');
+    debug('Given id name was %v.', idName);
+    debug('Given id value was %v.', idValue);
+    // проверка формата при наличии значения
+    if (idValue) {
+      const validator = this.options[`${idName}FormatValidator`];
+      validator(idValue, this.container);
+      debug('Value format validated.');
+      return;
+    }
+    debug('Validation skipped.');
+  }
+
+  /**
+   * Validate login id duplicates.
+   *
+   * @param idName
+   * @param idValue
+   * @param ownerId
+   */
+  protected async validateLoginIdDuplicates(
     idName: LoginIdName,
     idValue: unknown,
     ownerId?: unknown,
   ): Promise<void> {
-    const debug = this.getDebuggerFor(this.validateLoginId);
-    debug('Validating login identifier in the user data input.');
+    const debug = this.getDebuggerFor(this.validateLoginIdDuplicates);
+    debug('Validating login identifier duplicates.');
     const localizer = this.getService(AuthLocalizer);
     const titledIdName = idName.charAt(0).toUpperCase() + idName.slice(1);
-    const errorKeyPrefix = 'authService.validateLoginId';
+    const errorKeyPrefix = 'authService.validateLoginIdDuplicates';
     debug('Given id name was %v.', idName);
     debug('Given id value was %v.', idValue);
     if (idValue) {
-      // проверка формата при наличии значения
-      const validator = this.options[`${idName}FormatValidator`];
-      validator(idValue, this.container);
-      debug('Value format validated.');
       // если найден дубликат идентификатора другого
       // пользователя, то выбрасывается ошибка
       debug('Checking identifier duplicates.');
@@ -578,8 +603,9 @@ export class AuthService extends DebuggableService {
         );
       }
       debug('No duplicates found.');
+      return;
     }
-    debug('Identifier validated.');
+    debug('Validation skipped.');
   }
 
   /**
@@ -649,7 +675,8 @@ export class AuthService extends DebuggableService {
     });
     // проверка формата идентификаторов и отсутствия дубликатов
     for (const idName of LOGIN_ID_NAMES) {
-      await this.validateLoginId(idName, inputData[idName]);
+      this.validateLoginIdFormat(idName, inputData[idName]);
+      await this.validateLoginIdDuplicates(idName, inputData[idName]);
     }
     // хэширование пароля
     if (inputData.password) {
@@ -703,7 +730,12 @@ export class AuthService extends DebuggableService {
     });
     // проверка формата идентификаторов и отсутствия дубликатов
     for (const idName of LOGIN_ID_NAMES) {
-      await this.validateLoginId(idName, inputData[idName], existingUser.id);
+      this.validateLoginIdFormat(idName, inputData[idName]);
+      await this.validateLoginIdDuplicates(
+        idName,
+        inputData[idName],
+        existingUser.id,
+      );
     }
     // удаление ключей идентификаторов содержащих null и undefined
     LOGIN_ID_NAMES.forEach(idName => {
@@ -747,20 +779,16 @@ export class AuthService extends DebuggableService {
       jwToken = jwToken.replace('Bearer ', '');
     }
     if (!jwToken || typeof jwToken !== 'string') {
-      debug('JWT not found.');
+      debug('Access token not found in the client request.');
       return;
     }
     const payload = await this.decodeJwt(jwToken);
     const accessToken = await this.findAccessTokenById(payload.tid, include);
-    if (!accessToken) {
-      debug('Access token not found in the database.');
-      return;
-    }
     if (accessToken.ownerId !== payload.uid)
       throw createError(
         HttpErrors.BadRequest,
         'INVALID_ACCESS_TOKEN_OWNER',
-        'Your access token not match its owner',
+        'Access token does not match its owner',
         payload,
       );
     debug('Access token found.');
@@ -777,12 +805,16 @@ export class AuthService extends DebuggableService {
   async findAccessTokenOwner<T extends BaseUserModel>(
     accessToken: BaseAccessTokenModel,
     include?: IncludeClause<T>,
-  ): Promise<T | undefined> {
+  ): Promise<T> {
     const debug = this.getDebuggerFor(this.findAccessTokenOwner);
     debug('Finding access token owner.');
     if (!accessToken.ownerId) {
-      debug('Access token did not have an owner.');
-      return;
+      throw createError(
+        HttpErrors.BadRequest,
+        'ACCESS_TOKEN_OWNER_NOT_FOUND',
+        'Access token does not have an owner',
+        {accessTokenId: accessToken.id},
+      );
     }
     debug('Owner id was %v.', accessToken.ownerId);
     const dbs = this.getRegisteredService(DatabaseSchema);
@@ -792,8 +824,12 @@ export class AuthService extends DebuggableService {
       include,
     });
     if (!owner) {
-      debug('Owner not found in database.');
-      return;
+      throw createError(
+        HttpErrors.BadRequest,
+        'ACCESS_TOKEN_OWNER_NOT_FOUND',
+        'Access token owner is not found in the database',
+        {accessTokenId: accessToken.id, ownerId: accessToken.ownerId},
+      );
     }
     debug('Owner found successfully.');
     return owner as T;

@@ -1,6 +1,6 @@
 import HttpErrors from 'http-errors';
-import { createError } from '../utils/create-error.js';
 import { AuthLocalizer } from '../auth-localizer.js';
+import { createError } from '../utils/create-error.js';
 export const MIN_USERNAME_LENGTH = 4;
 export const MAX_USERNAME_LENGTH = 30;
 /**

@@ -1,6 +1,5 @@
-import { Localizer } from '@e22m4u/ts-localizer';
 import { ServiceContainer } from '@e22m4u/js-service';
-import { LocalizerOptions } from '@e22m4u/ts-localizer';
+import { Localizer, LocalizerOptions } from '@e22m4u/ts-localizer';
 /**
  * Auth localizer.
  */

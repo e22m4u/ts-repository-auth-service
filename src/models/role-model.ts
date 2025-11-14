@@ -3,7 +3,6 @@ import {
   property,
   DataType,
   PropertyUniqueness,
-  getModelDefinitionFromClass,
 } from '@e22m4u/ts-repository';
 
 /**
@@ -38,8 +37,3 @@ export class BaseRoleModel<IdType = number | string> {
 export class RoleModel<
   IdType = number | string,
 > extends BaseRoleModel<IdType> {}
-
-/**
- * Role model definition.
- */
-export const ROLE_MODEL_DEF = getModelDefinitionFromClass(RoleModel);

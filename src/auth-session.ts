@@ -1,18 +1,21 @@
 import HttpErrors from 'http-errors';
 import {IncomingMessage} from 'http';
 import {createError} from './utils/index.js';
-import {BaseRoleModel} from './models/index.js';
 import {AuthLocalizer} from './auth-localizer.js';
-import {UserModel, BaseUserModel} from './models/index.js';
 import {DebuggableService, ServiceContainer} from '@e22m4u/js-service';
-import {AccessTokenModel, BaseAccessTokenModel} from './models/index.js';
+
+import {
+  BaseUserModel,
+  BaseRoleModel,
+  BaseAccessTokenModel,
+} from './models/index.js';
 
 /**
  * Auth session.
  */
 export class AuthSession<
-  UserType extends BaseUserModel = UserModel,
-  TokenType extends BaseAccessTokenModel = AccessTokenModel,
+  UserType extends BaseUserModel = BaseUserModel,
+  TokenType extends BaseAccessTokenModel = BaseAccessTokenModel,
 > extends DebuggableService {
   /**
    * Http request.

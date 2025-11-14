@@ -1,9 +1,8 @@
-import { ServiceContainer } from '@e22m4u/js-service';
-import { DebuggableService as BaseDebuggableService } from '@e22m4u/js-service';
+import { ServiceContainer, DebuggableService as BaseDebuggableService } from '@e22m4u/js-service';
 /**
  * Module debugger namespace.
  */
-export declare const MODULE_DEBUGGER_NAMESPACE = "jsRepositoryAuthService";
+export declare const MODULE_DEBUGGER_NAMESPACE = "tsRepositoryAuthService";
 /**
  * Debuggable service.
  */

@@ -1,12 +1,10 @@
 import { IncomingMessage } from 'http';
-import { BaseRoleModel } from './models/index.js';
-import { UserModel, BaseUserModel } from './models/index.js';
 import { DebuggableService, ServiceContainer } from '@e22m4u/js-service';
-import { AccessTokenModel, BaseAccessTokenModel } from './models/index.js';
+import { BaseUserModel, BaseRoleModel, BaseAccessTokenModel } from './models/index.js';
 /**
  * Auth session.
  */
-export declare class AuthSession<UserType extends BaseUserModel = UserModel, TokenType extends BaseAccessTokenModel = AccessTokenModel> extends DebuggableService {
+export declare class AuthSession<UserType extends BaseUserModel = BaseUserModel, TokenType extends BaseAccessTokenModel = BaseAccessTokenModel> extends DebuggableService {
     /**
      * Http request.
      */

@@ -115,7 +115,7 @@ export declare class AuthService extends DebuggableService {
      * @param jwToken
      * @param include
      */
-    findAccessTokenById<T extends BaseAccessTokenModel>(tokenId: string, include?: IncludeClause<T>): Promise<T | undefined>;
+    findAccessTokenById<T extends BaseAccessTokenModel>(tokenId: string, include?: IncludeClause<T>): Promise<T>;
     /**
      * Hash password.
      *
@@ -157,43 +157,51 @@ export declare class AuthService extends DebuggableService {
     /**
      * Find user by login ids.
      *
-     * @param lookup
+     * @param idsFilter
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include?: IncludeClause<T>): Promise<T>;
+    findUserByLoginIds<T extends BaseUserModel>(idsFilter: LoginIdsFilter, include?: IncludeClause<T>): Promise<T>;
     /**
      * Find user by login ids.
      *
-     * @param lookup
+     * @param idsFilter
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include: IncludeClause<T> | undefined, silent: false): Promise<T>;
+    findUserByLoginIds<T extends BaseUserModel>(idsFilter: LoginIdsFilter, include: IncludeClause<T> | undefined, silent: false): Promise<T>;
     /**
      * Find user by login ids.
      *
-     * @param lookup
+     * @param idsFilter
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include: IncludeClause<T> | undefined, silent: true): Promise<T | undefined>;
+    findUserByLoginIds<T extends BaseUserModel>(idsFilter: LoginIdsFilter, include: IncludeClause<T> | undefined, silent: true): Promise<T | undefined>;
     /**
      * Find user by login ids.
      *
-     * @param lookup
+     * @param idsFilter
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(lookup: LoginIdsFilter, include?: IncludeClause<T>, silent?: boolean): Promise<T | undefined>;
+    findUserByLoginIds<T extends BaseUserModel>(idsFilter: LoginIdsFilter, include?: IncludeClause<T>, silent?: boolean): Promise<T | undefined>;
     /**
-     * Validate login id.
+     * Validate login id format.
      *
      * @param idName
      * @param idValue
      * @param ownerId
      */
-    protected validateLoginId(idName: LoginIdName, idValue: unknown, ownerId?: unknown): Promise<void>;
+    protected validateLoginIdFormat(idName: LoginIdName, idValue: unknown): void;
+    /**
+     * Validate login id duplicates.
+     *
+     * @param idName
+     * @param idValue
+     * @param ownerId
+     */
+    protected validateLoginIdDuplicates(idName: LoginIdName, idValue: unknown, ownerId?: unknown): Promise<void>;
     /**
      * Require any login id.
      *
@@ -230,7 +238,7 @@ export declare class AuthService extends DebuggableService {
      *
      * @param accessToken
      */
-    findAccessTokenOwner<T extends BaseUserModel>(accessToken: BaseAccessTokenModel, include?: IncludeClause<T>): Promise<T | undefined>;
+    findAccessTokenOwner<T extends BaseUserModel>(accessToken: BaseAccessTokenModel, include?: IncludeClause<T>): Promise<T>;
     /**
      * Create auth session.
      *

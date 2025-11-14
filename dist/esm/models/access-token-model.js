@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { UserModel } from './user-model.js';
-import { model, property, relation, DataType, RelationType, getModelDefinitionFromClass, } from '@e22m4u/ts-repository';
+import { model, property, relation, DataType, RelationType, } from '@e22m4u/ts-repository';
 /**
  * Base access token model.
  */
@@ -68,7 +68,3 @@ AccessTokenModel = __decorate([
     model()
 ], AccessTokenModel);
 export { AccessTokenModel };
-/**
- * Access token model definition.
- */
-export const ACCESS_TOKEN_MODEL_DEF = getModelDefinitionFromClass(AccessTokenModel);

@@ -1,17 +1,24 @@
-## @e22m4u/js-repository-auth-service
+## @e22m4u/ts-repository-auth-service
 
 Сервис авторизации с ролевой моделью для
-[@e22m4u/js-repository](https://www.npmjs.com/package/@e22m4u/ts-repository).
+[@e22m4u/ts-repository](https://www.npmjs.com/package/@e22m4u/ts-repository).
 
 ## Содержание
 
 - [Установка](#установка)
 - [Использование](#использование)
-  - [Регистрация пользователя](#регистрация-пользователя)
-  - [Аутентификация (вход в систему)](#аутентификация-вход-в-систему)
-  - [Получение данных текущего пользователя](#получение-данных-текущего-пользователя)
-  - [Обновление профиля](#обновление-профиля)
-  - [Выход из системы (завершение сессии)](#выход-из-системы-завершение-сессии)
+  - [Предварительная настройка](#предварительная-настройка)
+    - [1. Инициализация основных сервисов](#1-инициализация-основных-сервисов)
+    - [2. Настройка базы данных и моделей](#2-настройка-базы-данных-и-моделей)
+    - [3. Создание сессии для каждого запроса](#3-создание-сессии-для-каждого-запроса)
+    - [4. Определение контроллера](#4-определение-контроллера)
+    - [5. Запуск HTTP-сервера](#5-запуск-http-сервера)
+  - [Реализация методов](#реализация-методов)
+    - [Регистрация пользователя](#регистрация-пользователя)
+    - [Аутентификация (вход в систему)](#аутентификация-вход-в-систему)
+    - [Получение данных текущего пользователя](#получение-данных-текущего-пользователя)
+    - [Обновление профиля](#обновление-профиля)
+    - [Выход из системы (завершение сессии)](#выход-из-системы-завершение-сессии)
 - [Конфигурация AuthService](#конфигурация-authservice)
   - [passwordHashRounds](#passwordhashrounds)
   - [usernameFormatValidator](#usernameformatvalidator)
@@ -50,7 +57,7 @@
 ## Установка
 
 ```bash
-npm install @e22m4u/js-repository-auth-service
+npm install @e22m4u/ts-repository-auth-service
 ```
 
 Модуль поддерживает ESM и CommonJS стандарты.
@@ -58,13 +65,13 @@ npm install @e22m4u/js-repository-auth-service
 *ESM*
 
 ```js
-import {AuthService} from '@e22m4u/js-repository-auth-service';
+import {AuthService} from '@e22m4u/ts-repository-auth-service';
 ```
 
 *CommonJS*
 
 ```js
-const {AuthService} = require('@e22m4u/js-repository-auth-service');
+const {AuthService} = require('@e22m4u/ts-repository-auth-service');
 ```
 
 ## Использование
@@ -73,8 +80,10 @@ const {AuthService} = require('@e22m4u/js-repository-auth-service');
 приложения с аутентификацией. Каждый следующий фрагмент кода является
 логическим продолжением предыдущего, формируя единое приложение.
 
+### Предварительная настройка
+
 В примерах используется маршрутизатор
-[@e22m4u/js-trie-router](https://www.npmjs.com/package/@e22m4u/js-trie-router),
+[@e22m4u/ts-rest-router](https://www.npmjs.com/package/@e22m4u/ts-rest-router),
 который можно заменить на любой другой.
 
 #### 1. Инициализация основных сервисов
@@ -85,41 +94,58 @@ const {AuthService} = require('@e22m4u/js-repository-auth-service');
 их инициализация.
 
 ```ts
-import {TrieRouter} from '@e22m4u/js-trie-router';
+import {RestRouter} from '@e22m4u/ts-rest-router';
 import {ServiceContainer} from '@e22m4u/js-service';
-import {DatabaseSchema} from '@e22m4u/js-repository';
+import {DatabaseSchema} from '@e22m4u/ts-repository';
 
-const app = new ServiceContainer();  // контейнер
-const router = app.get(TrieRouter);  // маршрутизатор
+const app = new ServiceContainer();  // сервис-контейнер
+const router = app.get(RestRouter);  // маршрутизатор
 const dbs = app.get(DatabaseSchema); // схема баз данных
 ```
 
 #### 2. Настройка базы данных и моделей
 
-После получения сервиса для управления схемой баз данных (`dbs`), необходимо
+После получения сервиса для управления схемой данных (`dbs`), необходимо
 определить, как и где будут храниться данные. Сначала определяется источник
-данных (в данном примере *in-memory* база), а затем в нем регистрируются
+данных (в данном примере in-memory база), а затем в нем регистрируются
 модели, поставляемые с библиотекой.
 
-```ts
-import {
-  USER_MODE_DEF,
-  ROLE_MODEL_DEF,
-  ACCESS_TOKEN_MODEL_DEF,
-} from '@e22m4u/js-repository-auth-service';
+Определение источника:
 
-// определяется источник данных с именем 'main' и адаптером 'memory',
-// но реальном приложении здесь могут быть настройки для MongoDB,
+```ts
+import {model} from '@e22m4u/ts-repository';
+
+// определение источника данных с именем 'main' и адаптером 'memory',
+// но в реальном приложении здесь могут быть настройки для MongoDB,
 // PostgreSQL или другой базы
 dbs.defineDatasource({
   name: 'main',
   adapter: 'memory',
 });
+```
 
-// каждая модель "привязывается" к ранее определенному источнику данных
-dbs.defineModel({...ACCESS_TOKEN_MODEL_DEF, datasource: 'main'});
-dbs.defineModel({...ROLE_MODEL_DEF, datasource: 'main'});
-dbs.defineModel({...USER_MODE_DEF, datasource: 'main'});
+Создание и регистрация моделей:
+
+```ts
+import {
+  BaseRoleModel,
+  BaseUserModel,
+  BaseAccessTokenModel
+} from '@e22m4u/ts-repository-auth-service';
+
+// создание моделей на основе базовых классов с указанием
+// названия источника данных 'main' в декораторе @model
+@model({datasource: 'main'})
+class RoleModel extends BaseRoleModel {}
+@model({datasource: 'main'})
+class UserModel extends BaseUserModel {}
+@model({datasource: 'main'})
+class AccessTokenModel extends BaseAccessTokenModel {}
+
+// регистрация моделей в схеме баз данных
+dbs.defineModelByClass(RoleModel);
+dbs.defineModelByClass(UserModel);
+dbs.defineModelByClass(AccessTokenModel);
 ```
 
 #### 3. Создание сессии для каждого запроса
@@ -144,7 +170,28 @@ router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
 });
 ```
 
-#### 4. Запуск HTTP-сервера
+#### 4. Определение контроллера
+
+Бизнес-логика приложения инкапсулируется в контроллерах. Следующим шагом будет
+создание класса `UserController`, для обработки всех запросов, связанных
+с пользователями. Затем этот контроллер регистрируется в маршрутизаторе
+с базовым адресом `/users`.
+
+```ts
+import {Service} from '@e22m4u/js-service';
+import {restController} from '@e22m4u/ts-rest-router';
+
+@restController('users')
+class UserController extends Service {
+  // логика маршрутов (actions) будет добавлена в следующих разделах
+  // ... см. далее ...
+}
+
+// регистрация контроллера в маршрутизаторе
+router.addController(UserController);
+```
+
+#### 5. Запуск HTTP-сервера
 
 Финальным шагом является создание и запуск HTTP-сервера Node.js. Маршрутизатор,
 настроенный на предыдущих шагах, передается ему в качестве обработчика запросов.
@@ -170,7 +217,14 @@ server.listen(port, host, function () {
 входящие запросы, можно перейти к реализации таких операций как регистрация
 и вход в систему.
 
-### Регистрация пользователя
+### Реализация методов
+
+В следующих подразделах последовательно формируются методы контроллера
+`UserController` для выполнения ключевых операций. Примеры демонстрируют,
+как использовать `AuthService` для бизнес-логики, такой как регистрация,
+аутентификация, обновление профиля и выход из системы.
+
+#### Регистрация пользователя
 
 Создание новых пользователей выполняется методом `createUser` сервиса
 `AuthService`. Метод реализует логику проверки формата идентификаторов
@@ -179,26 +233,38 @@ server.listen(port, host, function () {
 маршрута для регистрации нового пользователя.
 
 ```ts
-// POST /users/register
-router.defineRoute({
-  method: HttpMethod.POST,
-  path: '/users/register',
-  handler({container, body}) {
+import {Service} from '@e22m4u/js-service';
+import {WithOptionalId} from '@e22m4u/ts-repository';
+import {postAction, restController} from '@e22m4u/ts-rest-router';
+import {AuthService, UserModel} from '@e22m4u/ts-repository-auth-service';
+
+@restController('users')
+class UserController extends Service {
+  /**
+   * Создание нового пользователя.
+   * 
+   * POST /users/register
+   */
+  @postAction('register')
+  register(
+    @requestBody()
+    body: WithOptionalId<UserModel>,
+  ) {
     // получение request-scoped экземпляра AuthService
-    const authService = container.getRegistered(AuthService);
+    const authService = this.getRegisteredService(AuthService);
     // проверка наличия хотя бы одного идентификатора входа
     authService.requireAnyLoginId(body);
     // вызов метода создания пользователя
     return authService.createUser(body);
-  },
-});
+  }
+}
 ```
 
 Перед созданием пользователя рекомендуется вызвать метод `requireAnyLoginId`
 сервиса `AuthService`, чтобы убедиться в наличии, по крайней мере, одного
 идентификатора входа.
 
-### Аутентификация (вход в систему)
+#### Аутентификация (вход в систему)
 
 Процесс аутентификации заключается в проверке учетных данных пользователя и,
 в случае успеха, в создании сессии с выпуском *JWT (JSON Web Token)*. Эта логика
@@ -207,13 +273,33 @@ router.defineRoute({
 для входа в систему.
 
 ```js
-// POST /users/login
-router.defineRoute({
-  method: HttpMethod.POST,
-  path: '/users/login',
-  async handler({container, body}) {
+import {Service} from '@e22m4u/js-service';
+
+import {
+  postAction,
+  requestBody,
+  restController,
+} from '@e22m4u/ts-rest-router';
+
+import {
+  AuthService,
+  UserLookupWithPassword,
+} from '@e22m4u/ts-repository-auth-service';
+
+@restController('users')
+class UserController extends Service {
+  /**
+   * Аутентификация пользователя и выпуск JWT.
+   *
+   * POST /users/login
+   */
+  @postAction('login')
+  async login(
+    @requestBody()
+    body: UserLookupWithPassword,
+  ) {
     // получение request-scoped экземпляра AuthService
-    const authService = container.getRegistered(AuthService);
+    const authService = this.getRegisteredService(AuthService);
     // поиск пользователя по одному из идентификаторов
     const user = await authService.findUserByLoginIds(body);
     // проверка пароля
@@ -228,11 +314,11 @@ router.defineRoute({
     const {password, ...userDto} = user;
     // возврат токена и данных пользователя
     return {token, expiresAt, user: userDto};
-  },
-});
+  }
+}
 ```
 
-### Получение данных текущего пользователя
+#### Получение данных текущего пользователя
 
 Для получения информации о пользователе текущей сессии используется
 сервис `AuthSession`. Сервис автоматически создается для каждого запроса
@@ -241,20 +327,28 @@ router.defineRoute({
 `401 Unauthorized`, если сессия анонимна.
 
 ```js
-// GET /users/findMe
-router.defineRoute({
-  method: HttpMethod.GET,
-  path: '/users/findMe',
-  async handler({container}) {
+import {Service} from '@e22m4u/js-service';
+import {getAction, restController} from '@e22m4u/ts-rest-router';
+import {AuthSession, requireRole} from '@e22m4u/ts-repository-auth-service';
+
+@restController('users')
+class UserController extends Service {
+  /**
+   * Получение данных текущего пользователя.
+   *
+   * GET /users/findMe
+   */
+  @getAction('findMe')
+  findMe() {
     // получение request-scoped экземпляра AuthSession
-    const session = container.getRegistered(AuthSession);
+    const session = this.getRegisteredService(AuthSession);
     // возврат данных пользователя из сессии
     return session.getUser();
-  },
-});
+  }
+}
 ```
 
-### Обновление профиля
+#### Обновление профиля
 
 Обновление данных пользователя выполняется методом `authService.updateUser`.
 В качестве первого аргумента данный метод принимает идентификатор пользователя,
@@ -263,22 +357,34 @@ router.defineRoute({
 правильного владельца.
 
 ```js
-// PATCH /users/profile
-router.defineRoute({
-  method: HttpMethod.PATCH,
-  path: '/users/profile',
-  async handler({container, body}) {
-    const session = container.getRegistered(AuthSession);
-    const authService = container.getRegistered(AuthService);
-    // проверка наличия хотя бы одного идентификатора входа (в режиме partial)
+import {Service} from '@e22m4u/js-service';
+import {WithoutId} from '@e22m4u/ts-repository';
+import {UserModel, AuthService, AuthSession} from '@e22m4u/ts-repository-auth-service';
+import {patchAction, requestBody, restController} from '@e22m4u/ts-rest-router';
+
+@restController('users')
+class UserController extends Service {
+  /**
+   * Обновление профиля текущего пользователя.
+   *
+   * PATCH /users/profile
+   */
+  @patchAction('profile')
+  patchProfile(
+    @requestBody()
+    body: Partial<WithoutId<UserModel>>,
+  ) {
+    const session = this.getRegisteredService(AuthSession);
+    const authService = this.getRegisteredService(AuthService);
+    // проверка наличия хотя бы одного идентификатора (в режиме partial)
     authService.requireAnyLoginId(body, true);
     // вызов метода обновления пользователя
     return authService.updateUser(session.getUserId(), body);
-  },
-});
+  }
+}
 ```
 
-### Выход из системы (завершение сессии)
+#### Выход из системы (завершение сессии)
 
 Процесс выхода из системы заключается в удалении текущего токена доступа
 из базы данных. Метод `authService.removeAccessTokenById` принимает
@@ -287,20 +393,28 @@ router.defineRoute({
 все последующие запросы с этим JWT будут недействительны.
 
 ```js
-// GET /users/logout
-router.defineRoute({
-  method: HttpMethod.GET,
-  path: '/users/logout',
-  async handler({container}) {
-    const session = container.getRegistered(AuthSession);
-    const authService = container.getRegistered(AuthService);
-    // получение идентификатора токена доступа из сессии
+import {Service} from '@e22m4u/js-service';
+import {getAction, restController} from '@e22m4u/ts-rest-router';
+import {AuthService, AuthSession} from '@e22m4u/ts-repository-auth-service';
+
+@restController('users')
+class UserController extends Service {
+  /**
+   * Выход из системы (инвалидация токена).
+   *
+   * GET /users/logout
+   */
+  @getAction('logout')
+  async logout() {
+    const session = this.getRegisteredService(AuthSession);
+    const authService = this.getRegisteredService(AuthService);
+    // получение ID токена доступа из сессии
     const accessTokenId = session.getAccessTokenId();
     // удаление токена из базы данных
     const result = await authService.removeAccessTokenById(accessTokenId);
     return {success: result};
-  },
-});
+  }
+}
 ```
 
 ## Конфигурация AuthService
@@ -313,7 +427,7 @@ router.defineRoute({
 ```js
 
 import {TrieRouter} from '@e22m4u/js-trie-router';
-import {AuthServiceOptions} from '@e22m4u/js-repository-auth-service';
+import {AuthServiceOptions} from '@e22m4u/ts-repository-auth-service';
 
 const app = new ServiceContainer();
 // const router = app.get(...
@@ -329,10 +443,10 @@ app.use(AuthServiceOptions, {
 
 **Способ 2. Передача объекта опций в конструктор**
 
-Настройки можно определить в хуке (middleware) маршрутизатора.
+Настройки можно определить в *pre-handler* хуке (middleware) маршрутизатора.
 
 ```js
-router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
+router.addPreHandler(ctx => {
   // второй аргумент метода `container.get` будет
   // передан в конструктор AuthService
   const authService = ctx.container.get(AuthService, {
@@ -561,29 +675,6 @@ hashPassword(password: string): Promise<string>;
 const hashedPassword = await authService.hashPassword(newPassword);
 ```
 
-### authService.hashPassword
-
-Хеширует пароль с использованием `bcrypt`. Этот метод полезен для
-пользовательских сценариев, таких как миграция данных или сброс пароля,
-когда требуется вручную хешировать пароль перед сохранением.
-
-Сигнатура:
-
-```ts
-hashPassword(password: string): Promise<string>;
-```
-
-Параметры:
-
-- `password`  
-  *пароль в открытом виде для хеширования;*
-
-Пример:
-
-```ts
-const hashedPassword = await authService.hashPassword(newPassword);
-```
-
 ### authService.createAccessToken
 
 Создает запись о токене доступа в базе данных. Это необходимо для управления
@@ -682,7 +773,7 @@ try {
 findAccessTokenById<T extends BaseAccessTokenModel>(
   tokenId: string,
   include?: IncludeClause<T>,
-): Promise<T | undefined>;
+): Promise<T>;
 ```
 
 Параметры:
@@ -703,10 +794,6 @@ const accessToken = await authService.findAccessTokenById(
   payload.tid, 
   {relation: 'owner'}
 );
-
-if (accessToken && accessToken.owner) {
-  console.log('Access token owner:', accessToken.owner.username);
-}
 ```
 
 ### authService.updateUser
@@ -869,7 +956,7 @@ if (accessToken) {
 findAccessTokenOwner<T extends BaseUserModel>(
   accessToken: BaseAccessTokenModel,
   include?: IncludeClause<T>,
-): Promise<T | undefined>;
+): Promise<T>;
 ```
 
 Параметры:
@@ -888,9 +975,6 @@ if (accessToken) {
     accessToken,
     {relation: 'roles'},
   );
-  if (user) {
-    console.log('User roles:', user.roles);
-  }
 }
 ```
 
@@ -954,7 +1038,7 @@ accessGuard.requireRole();
 accessGuard.requireRole('$authenticated');
 
 // аналогично, с использованием константы
-import {AccessRule} from '@e22m4u/js-repository-auth-service';
+import {AccessRule} from '@e22m4u/ts-repository-auth-service';
 
 accessGuard.requireRole(AccessRule.AUTHENTICATED);
 ```

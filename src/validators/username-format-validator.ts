@@ -1,8 +1,8 @@
 import HttpErrors from 'http-errors';
+import {AuthLocalizer} from '../auth-localizer.js';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {createError} from '../utils/create-error.js';
 import {DataFormatValidator} from '../auth-service.js';
-import {AuthLocalizer} from '../auth-localizer.js';
 
 export const MIN_USERNAME_LENGTH = 4;
 export const MAX_USERNAME_LENGTH = 30;

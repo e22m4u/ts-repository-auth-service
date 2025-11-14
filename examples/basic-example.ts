@@ -1,18 +1,6 @@
 import http from 'http';
 import {Service, ServiceContainer} from '@e22m4u/js-service';
-import {DatabaseSchema, WithoutId} from '@e22m4u/ts-repository';
-import {requestBodyWithModel} from '@e22m4u/ts-rest-router-repository';
-
-import {
-  UserModel,
-  AuthService,
-  AuthSession,
-  USER_MODE_DEF,
-  ROLE_MODEL_DEF,
-  ACCESS_TOKEN_MODEL_DEF,
-  UserLookupWithPassword,
-  USER_LOOKUP_WITH_PASSWORD_SCHEMA,
-} from '../src/index.js'; // @e22m4u/js-repository-auth-service
+import {model, DatabaseSchema, WithoutId} from '@e22m4u/ts-repository';
 
 import {
   getAction,
@@ -21,23 +9,45 @@ import {
   requestBody,
   restController,
   RestRouter,
-  RouterHookType,
 } from '@e22m4u/ts-rest-router';
 
-const app = new ServiceContainer();
-const router = app.get(RestRouter);
-const dbs = app.get(DatabaseSchema);
+import {
+  AuthService,
+  AuthSession,
+  BaseUserModel,
+  BaseRoleModel,
+  BaseAccessTokenModel,
+  UserLookupWithPassword,
+} from '../src/index.js'; // @e22m4u/ts-repository-auth-service
 
+// инициализация основных сервисов
+const app = new ServiceContainer();  // сервис-контейнер
+const router = app.get(RestRouter);  // маршрутизатор
+const dbs = app.get(DatabaseSchema); // схема баз данных
+
+// определение источник данных
 dbs.defineDatasource({
   name: 'main',
   adapter: 'memory',
 });
 
-dbs.defineModel({...ACCESS_TOKEN_MODEL_DEF, datasource: 'main'});
-dbs.defineModel({...ROLE_MODEL_DEF, datasource: 'main'});
-dbs.defineModel({...USER_MODE_DEF, datasource: 'main'});
+// создание моделей на основе базовых классов с указанием
+// названия источника данных 'main' в декораторе @model
+@model({datasource: 'main'})
+class RoleModel extends BaseRoleModel {}
+@model({datasource: 'main'})
+class UserModel extends BaseUserModel {}
+@model({datasource: 'main'})
+class AccessTokenModel extends BaseAccessTokenModel {}
 
-router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
+// регистрация моделей в схеме баз данных
+dbs.defineModelByClass(RoleModel);
+dbs.defineModelByClass(UserModel);
+dbs.defineModelByClass(AccessTokenModel);
+
+// добавление pre-handler хука, который будет
+// создавать сессию для каждого запроса
+router.addPreHandler(async ctx => {
   const authService = ctx.container.get(AuthService);
   const authSession = await authService.createAuthSession(ctx.request);
   ctx.container.set(AuthSession, authSession);
@@ -56,7 +66,7 @@ class UserController extends Service {
   // POST /users/register
   @postAction('register')
   register(
-    @requestBodyWithModel(UserModel, {required: true})
+    @requestBody()
     body: WithoutId<UserModel>,
   ) {
     const authService = this.getRegisteredService(AuthService);
@@ -67,7 +77,7 @@ class UserController extends Service {
   // POST /users/login
   @postAction('login')
   async login(
-    @requestBody(USER_LOOKUP_WITH_PASSWORD_SCHEMA)
+    @requestBody()
     body: UserLookupWithPassword,
   ) {
     const authService = this.getRegisteredService(AuthService);
@@ -91,7 +101,7 @@ class UserController extends Service {
   // PATCH /users/profile
   @patchAction('profile')
   patchProfile(
-    @requestBodyWithModel(UserModel, {required: true})
+    @requestBody()
     body: WithoutId<UserModel>,
   ) {
     const session = this.getRegisteredService(AuthSession);
