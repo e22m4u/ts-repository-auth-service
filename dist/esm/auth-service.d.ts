@@ -2,33 +2,13 @@ import { IncomingMessage } from 'http';
 import { AuthSession } from './auth-session.js';
 import { ServiceContainer } from '@e22m4u/js-service';
 import { DebuggableService } from './debuggable-service.js';
-import { IncludeClause, WithOptionalId, ItemFilterClause } from '@e22m4u/js-repository';
+import { IncludeClause, WithOptionalId, ItemFilterClause, WhereClause } from '@e22m4u/js-repository';
 import { BaseUserModel, AccessTokenModel, BaseAccessTokenModel } from './models/index.js';
-/**
- * Login id names.
- */
-export declare const LOGIN_ID_NAMES: readonly ["username", "email", "phone"];
-/**
- * Login id.
- */
-export type LoginIdName = (typeof LOGIN_ID_NAMES)[number];
-/**
- * Case insensitive login ids.
- */
-export declare const CASE_INSENSITIVE_LOGIN_IDS: LoginIdName[];
-/**
- * Data format validator.
- */
-export type DataFormatValidator = (value: unknown, container: ServiceContainer) => void;
 /**
  * Auth service options.
  */
 export declare class AuthServiceOptions {
     passwordHashRounds: number;
-    usernameFormatValidator: DataFormatValidator;
-    emailFormatValidator: DataFormatValidator;
-    phoneFormatValidator: DataFormatValidator;
-    passwordFormatValidator: DataFormatValidator;
     jwtSecret: string;
     jwtTtl: number;
     jwtHeaderName: string;
@@ -42,20 +22,6 @@ export declare class AuthServiceOptions {
      */
     constructor(options?: Partial<AuthServiceOptions>);
 }
-/**
- * Login ids clause.
- */
-export type LoginIdsClause = {
-    username?: string;
-    email?: string;
-    phone?: string;
-};
-/**
- * User lookup with password.
- */
-export type UserLookupWithPassword = LoginIdsClause & {
-    password?: string;
-};
 /**
  * Jwt payload.
  */
@@ -155,60 +121,17 @@ export declare class AuthService extends DebuggableService {
      */
     verifyPassword(password: string | undefined, hash: string | undefined, silent?: boolean): Promise<boolean>;
     /**
-     * Find user by login ids.
+     * Find user before login.
      *
-     * @param loginIdsClause
-     * @param include
-     * @param silent
+     * @param where
      */
-    findUserByLoginIds<T extends BaseUserModel>(loginIdsClause: LoginIdsClause, include?: IncludeClause<T>): Promise<T>;
+    findUserBeforeLogin<T extends BaseUserModel = BaseUserModel>(where: WhereClause<T>): Promise<{ [k in keyof T]: T[k]; }>;
     /**
-     * Find user by login ids.
+     * Find user before login.
      *
-     * @param loginIdsClause
-     * @param include
-     * @param silent
+     * @param where
      */
-    findUserByLoginIds<T extends BaseUserModel>(loginIdsClause: LoginIdsClause, include: IncludeClause<T> | undefined, silent: false): Promise<T>;
-    /**
-     * Find user by login ids.
-     *
-     * @param loginIdsClause
-     * @param include
-     * @param silent
-     */
-    findUserByLoginIds<T extends BaseUserModel>(loginIdsClause: LoginIdsClause, include: IncludeClause<T> | undefined, silent: true): Promise<T | undefined>;
-    /**
-     * Find user by login ids.
-     *
-     * @param loginIdsClause
-     * @param include
-     * @param silent
-     */
-    findUserByLoginIds<T extends BaseUserModel>(loginIdsClause: LoginIdsClause, include?: IncludeClause<T>, silent?: boolean): Promise<T | undefined>;
-    /**
-     * Validate login id format.
-     *
-     * @param idName
-     * @param idValue
-     * @param ownerId
-     */
-    protected validateLoginIdFormat(idName: LoginIdName, idValue: unknown): void;
-    /**
-     * Validate login id duplicates.
-     *
-     * @param idName
-     * @param idValue
-     * @param ownerId
-     */
-    protected validateLoginIdDuplicates(idName: LoginIdName, idValue: unknown, ownerId?: unknown): Promise<void>;
-    /**
-     * Require any login id.
-     *
-     * @param inputData
-     * @param partial
-     */
-    requireAnyLoginId(data: Record<string, unknown>, partial?: boolean): void;
+    ensureUserDoesNotExist<T extends BaseUserModel>(where: WhereClause<T>, excludeUserId?: T['id']): Promise<{ [k in keyof T]: T[k]; } | undefined>;
     /**
      * Create user.
      *

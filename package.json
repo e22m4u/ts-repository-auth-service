@@ -49,6 +49,7 @@
     "bcrypt": "~6.0.0",
     "http-errors": "~2.0.0",
     "jsonwebtoken": "~9.0.2",
+    "libphonenumber-js": "~1.12.26",
     "uuid": "~13.0.0"
   },
   "peerDependencies": {
@@ -58,7 +59,7 @@
     "@commitlint/cli": "~20.1.0",
     "@commitlint/config-conventional": "~20.0.0",
     "@e22m4u/ts-rest-router": "~0.6.11",
-    "@e22m4u/ts-rest-router-repository": "~0.4.3",
+    "@e22m4u/ts-rest-router-repository": "~0.4.7",
     "@eslint/js": "~9.39.1",
     "@types/bcrypt": "~6.0.0",
     "@types/chai": "~5.2.3",

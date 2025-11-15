@@ -9,15 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { noInput, noOutput } from '@e22m4u/ts-projection';
 import { RoleModel } from './role-model.js';
-import { model, property, relation, DataType, RelationType, PropertyUniqueness, } from '@e22m4u/ts-repository';
+import { model, property, relation, DataType, RelationType, } from '@e22m4u/ts-repository';
 /**
  * Base user model.
  */
 let BaseUserModel = class BaseUserModel {
     id;
-    username;
-    email;
-    phone;
     password;
     createdAt;
     updatedAt;
@@ -31,30 +28,6 @@ __decorate([
     }),
     __metadata("design:type", Object)
 ], BaseUserModel.prototype, "id", void 0);
-__decorate([
-    property({
-        type: DataType.STRING,
-        unique: PropertyUniqueness.SPARSE,
-        default: '',
-    }),
-    __metadata("design:type", String)
-], BaseUserModel.prototype, "username", void 0);
-__decorate([
-    property({
-        type: DataType.STRING,
-        unique: PropertyUniqueness.SPARSE,
-        default: '',
-    }),
-    __metadata("design:type", String)
-], BaseUserModel.prototype, "email", void 0);
-__decorate([
-    property({
-        type: DataType.STRING,
-        unique: PropertyUniqueness.SPARSE,
-        default: '',
-    }),
-    __metadata("design:type", String)
-], BaseUserModel.prototype, "phone", void 0);
 __decorate([
     property({
         type: DataType.STRING,

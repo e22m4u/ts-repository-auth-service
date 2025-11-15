@@ -7,7 +7,6 @@ import {
   relation,
   DataType,
   RelationType,
-  PropertyUniqueness,
 } from '@e22m4u/ts-repository';
 
 /**
@@ -23,27 +22,6 @@ export class BaseUserModel<
     primaryKey: true,
   })
   id!: IdType;
-
-  @property({
-    type: DataType.STRING,
-    unique: PropertyUniqueness.SPARSE,
-    default: '',
-  })
-  username?: string;
-
-  @property({
-    type: DataType.STRING,
-    unique: PropertyUniqueness.SPARSE,
-    default: '',
-  })
-  email?: string;
-
-  @property({
-    type: DataType.STRING,
-    unique: PropertyUniqueness.SPARSE,
-    default: '',
-  })
-  phone?: string;
 
   @property({
     type: DataType.STRING,

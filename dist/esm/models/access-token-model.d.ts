@@ -4,7 +4,6 @@ import { BaseUserModel } from './user-model.js';
  */
 export declare class BaseAccessTokenModel<IdType = number | string, UserType extends BaseUserModel = BaseUserModel> {
     id: IdType;
-    userAgent?: string;
     createdAt?: string;
     ownerId?: UserType['id'];
     owner?: UserType;

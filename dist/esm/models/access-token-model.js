@@ -14,7 +14,6 @@ import { model, property, relation, DataType, RelationType, } from '@e22m4u/ts-r
  */
 let BaseAccessTokenModel = class BaseAccessTokenModel {
     id;
-    userAgent;
     createdAt;
     ownerId;
     owner;
@@ -26,13 +25,6 @@ __decorate([
     }),
     __metadata("design:type", Object)
 ], BaseAccessTokenModel.prototype, "id", void 0);
-__decorate([
-    property({
-        type: DataType.STRING,
-        default: '',
-    }),
-    __metadata("design:type", String)
-], BaseAccessTokenModel.prototype, "userAgent", void 0);
 __decorate([
     property({
         type: DataType.STRING,

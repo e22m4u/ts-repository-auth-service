@@ -7692,12 +7692,10 @@ __export(index_exports, {
   BaseAccessTokenModel: () => BaseAccessTokenModel,
   BaseRoleModel: () => BaseRoleModel,
   BaseUserModel: () => BaseUserModel,
-  CASE_INSENSITIVE_LOGIN_IDS: () => CASE_INSENSITIVE_LOGIN_IDS,
+  EMAIL_FORMAT_REGEX: () => EMAIL_FORMAT_REGEX,
   JWT_ISSUE_RESULT_SCHEMA: () => JWT_ISSUE_RESULT_SCHEMA,
-  LOGIN_ID_NAMES: () => LOGIN_ID_NAMES,
   RoleModel: () => RoleModel,
-  USER_LOOKUP_SCHEMA: () => USER_LOOKUP_SCHEMA,
-  USER_LOOKUP_WITH_PASSWORD_SCHEMA: () => USER_LOOKUP_WITH_PASSWORD_SCHEMA,
+  UserDataService: () => UserDataService,
   UserModel: () => UserModel
 });
 module.exports = __toCommonJS(index_exports);
@@ -7764,24 +7762,18 @@ var import_ts_localizer = require("@e22m4u/ts-localizer");
 
 // dist/esm/locales/en.json
 var en_default = {
-  "validators.dataFormatValidator.invalidUsernameFormatError": "Username can only contain Latin letters (a-z) and numbers (0-9)",
-  "validators.dataFormatValidator.minUsernameLengthError": "Username must be at least %d characters long",
-  "validators.dataFormatValidator.maxUsernameLengthError": "Username must not exceed %d characters",
-  "validators.dataFormatValidator.usernameStartLetterError": "Username must start with a Latin letter",
-  "validators.dataFormatValidator.invalidEmailFormatError": "Invalid email address format",
-  "validators.dataFormatValidator.invalidPhoneFormatError": "Invalid phone number format",
-  "validators.dataFormatValidator.invalidPasswordFormatError": "Password must contain at least one letter and one number",
-  "validators.dataFormatValidator.minPasswordLengthError": "Password must be at least %d characters long",
-  "validators.dataFormatValidator.maxPasswordLengthError": "Password must not exceed %d characters",
-  "authService.validateLoginIdDuplicates.duplicateUsernameError": "Username is already taken",
-  "authService.validateLoginIdDuplicates.duplicateEmailError": "Email address is already in use",
-  "authService.validateLoginIdDuplicates.duplicatePhoneError": "Phone number is already in use",
-  "authService.requireAnyLoginId.identifierRequiredError": "A username, email address or phone number is required",
-  "authService.requireAnyLoginId.usernameRequiredError": "Please enter username",
-  "authService.requireAnyLoginId.emailRequiredError": "Please enter email",
-  "authService.requireAnyLoginId.phoneRequiredError": "Please enter phone",
-  "authService.updateUser.userNotFoundError": "User not found",
-  "authService.findUserByLoginIds.loginFailedError": "Invalid login or password",
+  "userDataService.validateUsername.invalidFormatError": "Username can only contain Latin letters (a-z) and numbers (0-9)",
+  "userDataService.validateUsername.minLengthError": "Username must be at least %d characters long",
+  "userDataService.validateUsername.maxLengthError": "Username must not exceed %d characters",
+  "userDataService.validateUsername.startLetterError": "Username must start with a Latin letter",
+  "userDataService.validateEmail.invalidFormatError": "Invalid email address format",
+  "userDataService.validatePhone.invalidFormatError": "Invalid phone number format",
+  "userDataService.validatePassword.invalidFormatError": "Password must contain at least one letter and number",
+  "userDataService.validatePassword.minLengthError": "Password must be at least %d characters long",
+  "userDataService.validatePassword.maxLengthError": "Password must not exceed %d characters",
+  "authService.findUserBeforeLogin.notFoundError": "Invalid login or password",
+  "authService.ensureUserDoesNotExist.duplicateError": "A user with these credentials already exists",
+  "authService.updateUser.userNotFoundError": "User is not found",
   "authService.verifyPassword.invalidPasswordError": "Invalid login or password",
   "accessGuard.requireRole.authenticationRequired": "Authentication is required",
   "accessGuard.requireRole.roleNotAllowed": "You do not have permissions to perform this action",
@@ -7791,24 +7783,18 @@ var en_default = {
 
 // dist/esm/locales/ru.json
 var ru_default = {
-  "validators.dataFormatValidator.invalidUsernameFormatError": "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u043C\u043E\u0436\u0435\u0442 \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u0442\u043E\u043B\u044C\u043A\u043E \u043B\u0430\u0442\u0438\u043D\u0441\u043A\u0438\u0435 \u0431\u0443\u043A\u0432\u044B (a-z) \u0438 \u0446\u0438\u0444\u0440\u044B (0-9)",
-  "validators.dataFormatValidator.minUsernameLengthError": "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0434\u043E\u043B\u0436\u043D\u043E \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u043D\u0435 \u043C\u0435\u043D\u0435\u0435 %d \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432",
-  "validators.dataFormatValidator.maxUsernameLengthError": "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u043D\u0435 \u0434\u043E\u043B\u0436\u043D\u043E \u043F\u0440\u0435\u0432\u044B\u0448\u0430\u0442\u044C %d \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432",
-  "validators.dataFormatValidator.usernameStartLetterError": "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0434\u043E\u043B\u0436\u043D\u043E \u043D\u0430\u0447\u0438\u043D\u0430\u0442\u044C\u0441\u044F \u0441 \u043B\u0430\u0442\u0438\u043D\u0441\u043A\u043E\u0439 \u0431\u0443\u043A\u0432\u044B",
-  "validators.dataFormatValidator.invalidEmailFormatError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u0444\u043E\u0440\u043C\u0430\u0442 \u0430\u0434\u0440\u0435\u0441\u0430 \u044D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u043D\u043E\u0439 \u043F\u043E\u0447\u0442\u044B",
-  "validators.dataFormatValidator.invalidPhoneFormatError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u0444\u043E\u0440\u043C\u0430\u0442 \u043D\u043E\u043C\u0435\u0440\u0430 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430",
-  "validators.dataFormatValidator.invalidPasswordFormatError": "\u041F\u0430\u0440\u043E\u043B\u044C \u0434\u043E\u043B\u0436\u0435\u043D \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u043A\u0430\u043A \u043C\u0438\u043D\u0438\u043C\u0443\u043C \u043E\u0434\u043D\u0443 \u0431\u0443\u043A\u0432\u0443 \u0438 \u043E\u0434\u043D\u0443 \u0446\u0438\u0444\u0440\u0443",
-  "validators.dataFormatValidator.minPasswordLengthError": "\u041F\u0430\u0440\u043E\u043B\u044C \u0434\u043E\u043B\u0436\u0435\u043D \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u043D\u0435 \u043C\u0435\u043D\u0435\u0435 %d \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432",
-  "validators.dataFormatValidator.maxPasswordLengthError": "\u041F\u0430\u0440\u043E\u043B\u044C \u043D\u0435 \u0434\u043E\u043B\u0436\u0435\u043D \u043F\u0440\u0435\u0432\u044B\u0448\u0430\u0442\u044C %d \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432",
-  "authService.validateLoginIdDuplicates.duplicateUsernameError": "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0443\u0436\u0435 \u0437\u0430\u043D\u044F\u0442\u043E",
-  "authService.validateLoginIdDuplicates.duplicateEmailError": "\u0410\u0434\u0440\u0435\u0441 \u044D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u043D\u043E\u0439 \u043F\u043E\u0447\u0442\u044B \u0443\u0436\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442\u0441\u044F",
-  "authService.validateLoginIdDuplicates.duplicatePhoneError": "\u041D\u043E\u043C\u0435\u0440 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430 \u0443\u0436\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442\u0441\u044F",
-  "authService.requireAnyLoginId.identifierRequiredError": "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0438\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F, \u0430\u0434\u0440\u0435\u0441 \u044D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u043D\u043E\u0439 \u043F\u043E\u0447\u0442\u044B \u0438\u043B\u0438 \u043D\u043E\u043C\u0435\u0440 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430",
-  "authService.requireAnyLoginId.usernameRequiredError": "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0438\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F",
-  "authService.requireAnyLoginId.emailRequiredError": "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0430\u0434\u0440\u0435\u0441 \u044D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u043D\u043E\u0439 \u043F\u043E\u0447\u0442\u044B",
-  "authService.requireAnyLoginId.phoneRequiredError": "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u043E\u043C\u0435\u0440 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430",
+  "userDataService.validateUsername.invalidFormatError": "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u043C\u043E\u0436\u0435\u0442 \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u0442\u043E\u043B\u044C\u043A\u043E \u043B\u0430\u0442\u0438\u043D\u0441\u043A\u0438\u0435 \u0431\u0443\u043A\u0432\u044B (a-z) \u0438 \u0446\u0438\u0444\u0440\u044B (0-9)",
+  "userDataService.validateUsername.minLengthError": "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0434\u043E\u043B\u0436\u043D\u043E \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u043D\u0435 \u043C\u0435\u043D\u0435\u0435 %d \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432",
+  "userDataService.validateUsername.maxLengthError": "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u043D\u0435 \u0434\u043E\u043B\u0436\u043D\u043E \u043F\u0440\u0435\u0432\u044B\u0448\u0430\u0442\u044C %d \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432",
+  "userDataService.validateUsername.startLetterError": "\u0418\u043C\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0434\u043E\u043B\u0436\u043D\u043E \u043D\u0430\u0447\u0438\u043D\u0430\u0442\u044C\u0441\u044F \u0441 \u043B\u0430\u0442\u0438\u043D\u0441\u043A\u043E\u0439 \u0431\u0443\u043A\u0432\u044B",
+  "userDataService.validateEmail.invalidFormatError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u0444\u043E\u0440\u043C\u0430\u0442 \u0430\u0434\u0440\u0435\u0441\u0430 \u044D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u043D\u043E\u0439 \u043F\u043E\u0447\u0442\u044B",
+  "userDataService.validatePhone.invalidFormatError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u0444\u043E\u0440\u043C\u0430\u0442 \u043D\u043E\u043C\u0435\u0440\u0430 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430",
+  "userDataService.validatePassword.invalidFormatError": "\u041F\u0430\u0440\u043E\u043B\u044C \u0434\u043E\u043B\u0436\u0435\u043D \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u043A\u0430\u043A \u043C\u0438\u043D\u0438\u043C\u0443\u043C \u043E\u0434\u043D\u0443 \u0431\u0443\u043A\u0432\u0443 \u0438 \u0446\u0438\u0444\u0440\u0443",
+  "userDataService.validatePassword.minLengthError": "\u041F\u0430\u0440\u043E\u043B\u044C \u0434\u043E\u043B\u0436\u0435\u043D \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u043D\u0435 \u043C\u0435\u043D\u0435\u0435 %d \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432",
+  "userDataService.validatePassword.maxLengthError": "\u041F\u0430\u0440\u043E\u043B\u044C \u043D\u0435 \u0434\u043E\u043B\u0436\u0435\u043D \u043F\u0440\u0435\u0432\u044B\u0448\u0430\u0442\u044C %d \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432",
+  "authService.findUserBeforeLogin.notFoundError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u043B\u043E\u0433\u0438\u043D \u0438\u043B\u0438 \u043F\u0430\u0440\u043E\u043B\u044C",
+  "authService.ensureUserDoesNotExist.duplicateError": "\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u0441 \u0442\u0430\u043A\u0438\u043C\u0438 \u0434\u0430\u043D\u043D\u044B\u043C\u0438 \u0443\u0436\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442",
   "authService.updateUser.userNotFoundError": "\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D",
-  "authService.findUserByLoginIds.loginFailedError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u043B\u043E\u0433\u0438\u043D \u0438\u043B\u0438 \u043F\u0430\u0440\u043E\u043B\u044C",
   "authService.verifyPassword.invalidPasswordError": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u043B\u043E\u0433\u0438\u043D \u0438\u043B\u0438 \u043F\u0430\u0440\u043E\u043B\u044C",
   "accessGuard.requireRole.authenticationRequired": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F",
   "accessGuard.requireRole.roleNotAllowed": "\u0423 \u0432\u0430\u0441 \u043D\u0435\u0434\u043E\u0441\u0442\u0430\u0442\u043E\u0447\u043D\u043E \u043F\u0440\u0430\u0432 \u0434\u043B\u044F \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u0434\u0430\u043D\u043D\u043E\u0433\u043E \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
@@ -7965,7 +7951,7 @@ var AccessGuard = class extends import_js_service2.DebuggableService {
 var import_bcrypt = __toESM(require("bcrypt"), 1);
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"), 1);
 var import_uuid = require("uuid");
-var import_http_errors7 = __toESM(require("http-errors"), 1);
+var import_http_errors3 = __toESM(require("http-errors"), 1);
 
 // dist/esm/debuggable-service.js
 var import_js_service3 = require("@e22m4u/js-service");
@@ -8108,9 +8094,6 @@ var BaseUserModel = class BaseUserModel2 {
     __name(this, "BaseUserModel");
   }
   id;
-  username;
-  email;
-  phone;
   password;
   createdAt;
   updatedAt;
@@ -8124,30 +8107,6 @@ __decorate2([
   }),
   __metadata2("design:type", Object)
 ], BaseUserModel.prototype, "id", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.STRING,
-    unique: import_ts_repository2.PropertyUniqueness.SPARSE,
-    default: ""
-  }),
-  __metadata2("design:type", String)
-], BaseUserModel.prototype, "username", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.STRING,
-    unique: import_ts_repository2.PropertyUniqueness.SPARSE,
-    default: ""
-  }),
-  __metadata2("design:type", String)
-], BaseUserModel.prototype, "email", void 0);
-__decorate2([
-  (0, import_ts_repository2.property)({
-    type: import_ts_repository2.DataType.STRING,
-    unique: import_ts_repository2.PropertyUniqueness.SPARSE,
-    default: ""
-  }),
-  __metadata2("design:type", String)
-], BaseUserModel.prototype, "phone", void 0);
 __decorate2([
   (0, import_ts_repository2.property)({
     type: import_ts_repository2.DataType.STRING,
@@ -8215,7 +8174,6 @@ var BaseAccessTokenModel = class BaseAccessTokenModel2 {
     __name(this, "BaseAccessTokenModel");
   }
   id;
-  userAgent;
   createdAt;
   ownerId;
   owner;
@@ -8227,13 +8185,6 @@ __decorate3([
   }),
   __metadata3("design:type", Object)
 ], BaseAccessTokenModel.prototype, "id", void 0);
-__decorate3([
-  (0, import_ts_repository3.property)({
-    type: import_ts_repository3.DataType.STRING,
-    default: ""
-  }),
-  __metadata3("design:type", String)
-], BaseAccessTokenModel.prototype, "userAgent", void 0);
 __decorate3([
   (0, import_ts_repository3.property)({
     type: import_ts_repository3.DataType.STRING,
@@ -8268,93 +8219,13 @@ AccessTokenModel = __decorate3([
   (0, import_ts_repository3.model)()
 ], AccessTokenModel);
 
-// dist/esm/validators/email-format-validator.js
-var import_http_errors3 = __toESM(require("http-errors"), 1);
-var EMAIL_FORMAT_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-var emailFormatValidator = /* @__PURE__ */ __name(function(value, container) {
-  if (!value || typeof value !== "string" || !EMAIL_FORMAT_REGEX.test(value)) {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors3.default.BadRequest, "INVALID_EMAIL_FORMAT", localizer.t("validators.dataFormatValidator.invalidEmailFormatError"), { email: value });
-  }
-}, "emailFormatValidator");
-
-// dist/esm/validators/phone-format-validator.js
-var import_http_errors4 = __toESM(require("http-errors"), 1);
-var PHONE_FORMAT_REGEX = /^[+]?[0-9]{0,3}\W*[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
-var phoneFormatValidator = /* @__PURE__ */ __name(function(value, container) {
-  if (!value || typeof value !== "string" || !PHONE_FORMAT_REGEX.test(value)) {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors4.default.BadRequest, "INVALID_PHONE_FORMAT", localizer.t("validators.dataFormatValidator.invalidPhoneFormatError"), { phone: value });
-  }
-}, "phoneFormatValidator");
-
-// dist/esm/validators/username-format-validator.js
-var import_http_errors5 = __toESM(require("http-errors"), 1);
-var MIN_USERNAME_LENGTH = 4;
-var MAX_USERNAME_LENGTH = 30;
-var usernameFormatValidator = /* @__PURE__ */ __name(function(value, container) {
-  if (typeof value !== "string") {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.invalidUsernameFormatError"), { username: value });
-  }
-  if (value.length < MIN_USERNAME_LENGTH) {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.minUsernameLengthError"), { username: value }, MIN_USERNAME_LENGTH);
-  }
-  if (value.length > MAX_USERNAME_LENGTH) {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.maxUsernameLengthError"), { username: value }, MAX_USERNAME_LENGTH);
-  }
-  if (!/^[a-zA-Z]/.test(value)) {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.usernameStartLetterError"), { username: value });
-  }
-  if (!/^[a-zA-Z0-9]+$/.test(value)) {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors5.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("validators.dataFormatValidator.invalidUsernameFormatError"), { username: value });
-  }
-}, "usernameFormatValidator");
-
-// dist/esm/validators/password-format-validator.js
-var import_http_errors6 = __toESM(require("http-errors"), 1);
-var MIN_PASSWORD_LENGTH = 8;
-var MAX_PASSWORD_LENGTH = 80;
-var passwordFormatValidator = /* @__PURE__ */ __name(function(value, container) {
-  if (typeof value !== "string") {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.invalidPasswordFormatError"), { password: value });
-  }
-  if (value.length < MIN_PASSWORD_LENGTH) {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.minPasswordLengthError"), { password: value }, MIN_PASSWORD_LENGTH);
-  }
-  if (value.length > MAX_PASSWORD_LENGTH) {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.maxPasswordLengthError"), { password: value }, MAX_PASSWORD_LENGTH);
-  }
-  if (!new RegExp("\\p{L}", "u").test(value) || !new RegExp("\\p{N}", "u").test(value)) {
-    const localizer = container.get(AuthLocalizer);
-    throw createError(import_http_errors6.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("validators.dataFormatValidator.invalidPasswordFormatError"), { password: value });
-  }
-}, "passwordFormatValidator");
-
 // dist/esm/auth-service.js
 var { JsonWebTokenError, TokenExpiredError } = import_jsonwebtoken.default;
-var LOGIN_ID_NAMES = ["username", "email", "phone"];
-var CASE_INSENSITIVE_LOGIN_IDS = [
-  "username",
-  "email",
-  "phone"
-];
 var AuthServiceOptions = class {
   static {
     __name(this, "AuthServiceOptions");
   }
   passwordHashRounds = 12;
-  usernameFormatValidator = usernameFormatValidator;
-  emailFormatValidator = emailFormatValidator;
-  phoneFormatValidator = phoneFormatValidator;
-  passwordFormatValidator = passwordFormatValidator;
   jwtSecret = "REPLACE_ME!";
   jwtTtl = 14 * 86400;
   // 14 days
@@ -8457,7 +8328,7 @@ var AuthService = class extends DebuggableService3 {
       import_jsonwebtoken.default.sign(payload, this.options.jwtSecret, { algorithm: "HS256", expiresIn: this.options.jwtTtl }, (err, token) => {
         if (err || !token) {
           console.error(err);
-          return rej(createError(import_http_errors7.default.InternalServerError, "ACCESS_TOKEN_ENCODING_ERROR", "Unable to encode JSON web token (JWT)", payload));
+          return rej(createError(import_http_errors3.default.InternalServerError, "ACCESS_TOKEN_ENCODING_ERROR", "Unable to encode JSON web token (JWT)", payload));
         }
         debug("Token was %v.", token);
         debug("Token created.");
@@ -8485,16 +8356,16 @@ var AuthService = class extends DebuggableService3 {
       });
     } catch (err) {
       if (err instanceof TokenExpiredError) {
-        throw createError(import_http_errors7.default.Unauthorized, "JWT_EXPIRED", "JWT is expired", { token: jwToken, reason: err.message });
+        throw createError(import_http_errors3.default.Unauthorized, "JWT_EXPIRED", "JWT is expired", { token: jwToken, reason: err.message });
       }
       if (err instanceof JsonWebTokenError) {
-        throw createError(import_http_errors7.default.Unauthorized, "INVALID_JWT_SIGNATURE", "JWT signature is invalid", { token: jwToken, reason: err.message });
+        throw createError(import_http_errors3.default.Unauthorized, "INVALID_JWT_SIGNATURE", "JWT signature is invalid", { token: jwToken, reason: err.message });
       }
       error = err;
     }
     if (error || !payload || typeof payload !== "object" || !("uid" in payload) || !("tid" in payload) || !payload.uid || !payload.tid) {
       console.error(error);
-      throw createError(import_http_errors7.default.Unauthorized, "INVALID_JWT_PAYLOAD", "JWT payload is invalid", { token: jwToken, payload });
+      throw createError(import_http_errors3.default.Unauthorized, "INVALID_JWT_PAYLOAD", "JWT payload is invalid", { token: jwToken, payload });
     }
     debug.inspect("Payload:", payload);
     debug("JWT decoded successfully.");
@@ -8514,7 +8385,7 @@ var AuthService = class extends DebuggableService3 {
     const rep = dbs.getRepository(AccessTokenModel.name);
     const accessToken = await rep.findOne({ where: { id: tokenId }, include });
     if (!accessToken) {
-      throw createError(import_http_errors7.default.Unauthorized, "ACCESS_TOKEN_NOT_FOUND", "Access token is not found in the database", { tokenId });
+      throw createError(import_http_errors3.default.Unauthorized, "ACCESS_TOKEN_NOT_FOUND", "Access token is not found in the database", { tokenId });
     }
     debug("Access token found.");
     return accessToken;
@@ -8534,7 +8405,7 @@ var AuthService = class extends DebuggableService3 {
       if (!reason) {
         console.error(error);
       }
-      throw createError(import_http_errors7.default.InternalServerError, "PASSWORD_HASHING_ERROR", "Unable to hash the given password", { reason });
+      throw createError(import_http_errors3.default.InternalServerError, "PASSWORD_HASHING_ERROR", "Unable to hash the given password", { reason });
     }
   }
   /**
@@ -8554,139 +8425,52 @@ var AuthService = class extends DebuggableService3 {
       return true;
     }
     if (typeof password !== "string" || typeof hash !== "string") {
-      throw createError(import_http_errors7.default.Unauthorized, "INVALID_PASSWORD", localizer.t(`${errorKeyPrefix}.invalidPasswordError`));
+      throw createError(import_http_errors3.default.Unauthorized, "INVALID_PASSWORD", localizer.t(`${errorKeyPrefix}.invalidPasswordError`));
     }
     let isValid = false;
     try {
       isValid = await import_bcrypt.default.compare(password, hash);
     } catch (error) {
       console.error(error);
-      throw createError(import_http_errors7.default.Unauthorized, "INVALID_PASSWORD", "Unable to verify the given password");
+      throw createError(import_http_errors3.default.Unauthorized, "INVALID_PASSWORD", "Unable to verify the given password");
     }
     if (!isValid) {
       if (silent)
         return false;
-      throw createError(import_http_errors7.default.Unauthorized, "INVALID_PASSWORD", localizer.t(`${errorKeyPrefix}.invalidPasswordError`));
+      throw createError(import_http_errors3.default.Unauthorized, "INVALID_PASSWORD", localizer.t(`${errorKeyPrefix}.invalidPasswordError`));
     }
     debug("Password verified.");
     return true;
   }
   /**
-   * Find user by login ids.
+   * Find user before login.
    *
-   * @param loginIdsClause
-   * @param include
-   * @param silent
+   * @param where
    */
-  async findUserByLoginIds(loginIdsClause, include, silent = false) {
-    const debug = this.getDebuggerFor(this.findUserByLoginIds);
-    debug("Finding user by login identifiers.");
+  async findUserBeforeLogin(where) {
     const localizer = this.getService(AuthLocalizer);
-    const errorKeyPrefix = "authService.findUserByLoginIds";
-    const where = {};
-    let hasAnyLoginId = false;
-    LOGIN_ID_NAMES.forEach((name) => {
-      if (loginIdsClause[name] && String(loginIdsClause[name]).trim()) {
-        debug("Given %s was %v.", name, loginIdsClause[name]);
-        hasAnyLoginId = true;
-        const idValue = String(loginIdsClause[name]).trim();
-        const idRegex = `^${idValue}$`;
-        const isCaseInsensitive = CASE_INSENSITIVE_LOGIN_IDS.includes(name);
-        where[name] = isCaseInsensitive ? { regexp: idRegex, flags: "i" } : idValue;
-      }
-    });
-    if (!hasAnyLoginId) {
-      if (silent)
-        return;
-      this.requireAnyLoginId(loginIdsClause);
-    }
     const dbs = this.getRegisteredService(DatabaseSchema);
     const userRep = dbs.getRepository(UserModel.name);
-    const user = await userRep.findOne({ where, include });
+    const user = await userRep.findOne({ where });
     if (!user) {
-      debug("User not found.");
-      if (silent)
-        return;
-      throw createError(import_http_errors7.default.BadRequest, "USER_NOT_FOUND", localizer.t(`${errorKeyPrefix}.loginFailedError`));
+      throw createError(import_http_errors3.default.Unauthorized, "USER_NOT_FOUND", localizer.t(`authService.findUserBeforeLogin.notFoundError`));
     }
-    debug("User found with id %v.", user.id);
     return user;
   }
   /**
-   * Validate login id format.
+   * Find user before login.
    *
-   * @param idName
-   * @param idValue
-   * @param ownerId
+   * @param where
    */
-  validateLoginIdFormat(idName, idValue) {
-    const debug = this.getDebuggerFor(this.validateLoginIdFormat);
-    debug("Validating login identifier format.");
-    debug("Given id name was %v.", idName);
-    debug("Given id value was %v.", idValue);
-    if (idValue) {
-      const validator = this.options[`${idName}FormatValidator`];
-      validator(idValue, this.container);
-      debug("Value format validated.");
-      return;
-    }
-    debug("Validation skipped.");
-  }
-  /**
-   * Validate login id duplicates.
-   *
-   * @param idName
-   * @param idValue
-   * @param ownerId
-   */
-  async validateLoginIdDuplicates(idName, idValue, ownerId) {
-    const debug = this.getDebuggerFor(this.validateLoginIdDuplicates);
-    debug("Validating login identifier duplicates.");
+  async ensureUserDoesNotExist(where, excludeUserId) {
     const localizer = this.getService(AuthLocalizer);
-    const titledIdName = idName.charAt(0).toUpperCase() + idName.slice(1);
-    const errorKeyPrefix = "authService.validateLoginIdDuplicates";
-    debug("Given id name was %v.", idName);
-    debug("Given id value was %v.", idValue);
-    if (idValue) {
-      debug("Checking identifier duplicates.");
-      const duplicate = await this.findUserByLoginIds({ [idName]: idValue }, void 0, true);
-      if (duplicate && duplicate.id !== ownerId) {
-        const errorKey = `${errorKeyPrefix}.duplicate${titledIdName}Error`;
-        throw createError(import_http_errors7.default.BadRequest, "DUPLICATE_LOGIN_IDENTIFIER", localizer.t(errorKey));
-      }
-      debug("No duplicates found.");
-      return;
+    const dbs = this.getRegisteredService(DatabaseSchema);
+    const userRep = dbs.getRepository(UserModel.name);
+    const user = await userRep.findOne({ where });
+    if (user && user.id !== excludeUserId) {
+      throw createError(import_http_errors3.default.Unauthorized, "USER_NOT_FOUND", localizer.t(`authService.ensureUserDoesNotExist.duplicateError`));
     }
-    debug("Validation skipped.");
-  }
-  /**
-   * Require any login id.
-   *
-   * @param inputData
-   * @param partial
-   */
-  requireAnyLoginId(data, partial = false) {
-    const debug = this.getDebuggerFor(this.requireAnyLoginId);
-    debug("Require any login identifier.");
-    const localizer = this.getService(AuthLocalizer);
-    const errorKeyPrefix = "authService.requireAnyLoginId";
-    if (partial) {
-      debug("Partial mode was enabled.");
-    }
-    const loginIds = partial ? LOGIN_ID_NAMES.filter((idName) => idName in data) : LOGIN_ID_NAMES;
-    if (partial && !loginIds.length) {
-      debug("No login identifier was given.");
-      return;
-    }
-    debug("Looking for any value in %l.", loginIds);
-    if (loginIds.every((idName) => !data[idName])) {
-      debug("No login identifier was given.");
-      const idFields = LOGIN_ID_NAMES.filter((id) => id in data);
-      const singleIdField = idFields.length === 1 ? idFields[0] : void 0;
-      if (singleIdField && data[singleIdField] === "")
-        throw createError(import_http_errors7.default.BadRequest, singleIdField.toUpperCase() + "_REQUIRED", localizer.t(`${errorKeyPrefix}.${singleIdField}RequiredError`));
-      throw createError(import_http_errors7.default.BadRequest, "LOGIN_IDENTIFIER_REQUIRED", localizer.t(`${errorKeyPrefix}.identifierRequiredError`));
-    }
+    return user;
   }
   /**
    * Create user.
@@ -8699,17 +8483,7 @@ var AuthService = class extends DebuggableService3 {
     const debug = this.getDebuggerFor(this.createUser);
     debug("Creating user.");
     inputData = { ...inputData };
-    LOGIN_ID_NAMES.forEach((idName) => {
-      if (typeof inputData[idName] === "string")
-        inputData[idName] = inputData[idName].trim();
-    });
-    this.requireAnyLoginId(inputData);
-    for (const idName of LOGIN_ID_NAMES) {
-      this.validateLoginIdFormat(idName, inputData[idName]);
-      await this.validateLoginIdDuplicates(idName, inputData[idName]);
-    }
     if (inputData.password) {
-      this.options.passwordFormatValidator(inputData.password, this.container);
       inputData.password = await this.hashPassword(inputData.password || "");
       debug("Password hashed.");
     }
@@ -8741,22 +8515,8 @@ var AuthService = class extends DebuggableService3 {
     delete inputData.id;
     const existingUser = await userRep.findOne({ where: { id: userId } });
     if (!existingUser)
-      throw createError(import_http_errors7.default.BadRequest, "USER_NOT_FOUND", localizer.t(`${errorKeyPrefix}.userNotFoundError`));
-    LOGIN_ID_NAMES.forEach((idName) => {
-      if (typeof inputData[idName] === "string")
-        inputData[idName] = inputData[idName].trim();
-    });
-    this.requireAnyLoginId(inputData, true);
-    for (const idName of LOGIN_ID_NAMES) {
-      this.validateLoginIdFormat(idName, inputData[idName]);
-      await this.validateLoginIdDuplicates(idName, inputData[idName], existingUser.id);
-    }
-    LOGIN_ID_NAMES.forEach((idName) => {
-      if (inputData[idName] == null)
-        delete inputData[idName];
-    });
+      throw createError(import_http_errors3.default.BadRequest, "USER_NOT_FOUND", localizer.t(`${errorKeyPrefix}.userNotFoundError`));
     if (inputData.password) {
-      this.options.passwordFormatValidator(inputData.password, this.container);
       inputData.password = await this.hashPassword(inputData.password || "");
       debug("Password hashed.");
     }
@@ -8788,7 +8548,7 @@ var AuthService = class extends DebuggableService3 {
     const payload = await this.decodeJwt(jwToken);
     const accessToken = await this.findAccessTokenById(payload.tid, include);
     if (accessToken.ownerId !== payload.uid)
-      throw createError(import_http_errors7.default.BadRequest, "INVALID_ACCESS_TOKEN_OWNER", "JWT does not match its access token owner", payload);
+      throw createError(import_http_errors3.default.BadRequest, "INVALID_ACCESS_TOKEN_OWNER", "JWT does not match its access token owner", payload);
     debug("Access token found.");
     debug("Token id was %v.", accessToken.id);
     debug("Owner id was %v.", accessToken.ownerId);
@@ -8803,7 +8563,7 @@ var AuthService = class extends DebuggableService3 {
     const debug = this.getDebuggerFor(this.findAccessTokenOwner);
     debug("Finding access token owner.");
     if (!accessToken.ownerId) {
-      throw createError(import_http_errors7.default.InternalServerError, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token does not have an owner", { accessTokenId: accessToken.id });
+      throw createError(import_http_errors3.default.InternalServerError, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token does not have an owner", { accessTokenId: accessToken.id });
     }
     debug("Owner id was %v.", accessToken.ownerId);
     const dbs = this.getRegisteredService(DatabaseSchema);
@@ -8813,7 +8573,7 @@ var AuthService = class extends DebuggableService3 {
       include
     });
     if (!owner) {
-      throw createError(import_http_errors7.default.InternalServerError, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token owner is not found in the database", { accessTokenId: accessToken.id, ownerId: accessToken.ownerId });
+      throw createError(import_http_errors3.default.InternalServerError, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token owner is not found in the database", { accessTokenId: accessToken.id, ownerId: accessToken.ownerId });
     }
     debug("Owner found successfully.");
     return owner;
@@ -9133,23 +8893,6 @@ var import_js_format13 = require("@e22m4u/js-format");
 // node_modules/@e22m4u/ts-data-schema/dist/esm/default-values-applier.js
 init_src();
 
-// dist/esm/schemas/user-lookup-schema.js
-var USER_LOOKUP_SCHEMA = {
-  type: DataType6.OBJECT,
-  properties: {
-    username: {
-      type: DataType6.STRING
-    },
-    email: {
-      type: DataType6.STRING
-    },
-    phone: {
-      type: DataType6.STRING
-    }
-  },
-  required: true
-};
-
 // dist/esm/schemas/jwt-issue-result-schema.js
 var JWT_ISSUE_RESULT_SCHEMA = {
   type: DataType6.OBJECT,
@@ -9163,24 +8906,94 @@ var JWT_ISSUE_RESULT_SCHEMA = {
   }
 };
 
-// dist/esm/schemas/user-lookup-with-password-schema.js
-var USER_LOOKUP_WITH_PASSWORD_SCHEMA = {
-  type: DataType6.OBJECT,
-  properties: {
-    username: {
-      type: DataType6.STRING
-    },
-    email: {
-      type: DataType6.STRING
-    },
-    phone: {
-      type: DataType6.STRING
-    },
-    password: {
-      type: DataType6.STRING
+// dist/esm/user-data-service.js
+var import_http_errors4 = __toESM(require("http-errors"), 1);
+var import_js_service42 = require("@e22m4u/js-service");
+var import_libphonenumber_js = require("libphonenumber-js");
+var EMAIL_FORMAT_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+var UserDataService = class extends import_js_service42.Service {
+  static {
+    __name(this, "UserDataService");
+  }
+  /**
+   * Validate username.
+   *
+   * @param value
+   * @param options
+   */
+  validateUsername(value, options) {
+    const minUsernameLength = options?.minLength || 4;
+    const maxUsernameLength = options?.maxLength || 30;
+    if (typeof value !== "string") {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("userDataService.validateUsername.invalidFormatError"), { username: value });
     }
-  },
-  required: true
+    if (value.length < minUsernameLength) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("userDataService.validateUsername.minLengthError"), { username: value }, minUsernameLength);
+    }
+    if (value.length > maxUsernameLength) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("userDataService.validateUsername.maxLengthError"), { username: value }, maxUsernameLength);
+    }
+    if (!/^[a-zA-Z]/.test(value)) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("userDataService.validateUsername.startLetterError"), { username: value });
+    }
+    if (!/^[a-zA-Z0-9]+$/.test(value)) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_USERNAME_FORMAT", localizer.t("userDataService.validateUsername.invalidFormatError"), { username: value });
+    }
+  }
+  /**
+   * Validate email.
+   *
+   * @param value
+   */
+  validateEmail(value) {
+    if (!value || typeof value !== "string" || !EMAIL_FORMAT_REGEX.test(value)) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_EMAIL_FORMAT", localizer.t("userDataService.validateEmail.invalidFormatError"), { email: value });
+    }
+  }
+  /**
+   * Validate phone.
+   *
+   * @param value
+   * @param country
+   */
+  validatePhone(value, country) {
+    if (!value || typeof value !== "string" || !(0, import_libphonenumber_js.isValidPhoneNumber)(value, country)) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_PHONE_FORMAT", localizer.t("userDataService.validatePhone.invalidFormatError"), { phone: value });
+    }
+  }
+  /**
+   * Validate password.
+   *
+   * @param value
+   * @param options
+   */
+  validatePassword(value, options) {
+    const minPasswordLength = options?.minLength || 8;
+    const maxPasswordLength = options?.maxLength || 80;
+    if (typeof value !== "string") {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("userDataService.validatePassword.invalidFormatError"), { password: value });
+    }
+    if (value.length < minPasswordLength) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("userDataService.validatePassword.minLengthError"), { password: value }, minPasswordLength);
+    }
+    if (value.length > maxPasswordLength) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("userDataService.validatePassword.maxLengthError"), { password: value }, maxPasswordLength);
+    }
+    if (!new RegExp("\\p{L}", "u").test(value) || !new RegExp("\\p{N}", "u").test(value)) {
+      const localizer = this.getService(AuthLocalizer);
+      throw createError(import_http_errors4.default.BadRequest, "INVALID_PASSWORD_FORMAT", localizer.t("userDataService.validatePassword.invalidFormatError"), { password: value });
+    }
+  }
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
@@ -9194,12 +9007,10 @@ var USER_LOOKUP_WITH_PASSWORD_SCHEMA = {
   BaseAccessTokenModel,
   BaseRoleModel,
   BaseUserModel,
-  CASE_INSENSITIVE_LOGIN_IDS,
+  EMAIL_FORMAT_REGEX,
   JWT_ISSUE_RESULT_SCHEMA,
-  LOGIN_ID_NAMES,
   RoleModel,
-  USER_LOOKUP_SCHEMA,
-  USER_LOOKUP_WITH_PASSWORD_SCHEMA,
+  UserDataService,
   UserModel
 });
 /*! Bundled license information:

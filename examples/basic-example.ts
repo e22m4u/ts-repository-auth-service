@@ -1,15 +1,27 @@
 import http from 'http';
 import {Service, ServiceContainer} from '@e22m4u/js-service';
-import {model, DatabaseSchema, WithoutId} from '@e22m4u/ts-repository';
+
+import {
+  model,
+  property,
+  DataType,
+  WithoutId,
+  DatabaseSchema,
+} from '@e22m4u/ts-repository';
 
 import {
   getAction,
-  patchAction,
   postAction,
-  requestBody,
+  patchAction,
+  requestField,
   restController,
   RestRouter,
 } from '@e22m4u/ts-rest-router';
+
+import {
+  requestBodyWithModel,
+  responseBodyWithModel,
+} from '@e22m4u/ts-rest-router-repository';
 
 import {
   AuthService,
@@ -17,12 +29,12 @@ import {
   BaseUserModel,
   BaseRoleModel,
   BaseAccessTokenModel,
-  UserLookupWithPassword,
+  UserDataService,
 } from '../src/index.js'; // @e22m4u/ts-repository-auth-service
 
 // инициализация основных сервисов
-const app = new ServiceContainer();  // сервис-контейнер
-const router = app.get(RestRouter);  // маршрутизатор
+const app = new ServiceContainer(); // сервис-контейнер
+const router = app.get(RestRouter); // маршрутизатор
 const dbs = app.get(DatabaseSchema); // схема баз данных
 
 // определение источник данных
@@ -33,10 +45,24 @@ dbs.defineDatasource({
 
 // создание моделей на основе базовых классов с указанием
 // названия источника данных 'main' в декораторе @model
+// и дополнительного поля `username` в модели UserModel
+
+// модель роли остается без изменений
 @model({datasource: 'main'})
 class RoleModel extends BaseRoleModel {}
+
+// модель пользователя расширяется полем `username`
 @model({datasource: 'main'})
-class UserModel extends BaseUserModel {}
+class UserModel extends BaseUserModel {
+  @property({
+    type: DataType.STRING,
+    required: true,
+    unique: true,
+  })
+  username!: string;
+}
+
+// модель токена также без изменений
 @model({datasource: 'main'})
 class AccessTokenModel extends BaseAccessTokenModel {}
 
@@ -65,31 +91,47 @@ class UserController extends Service {
 
   // POST /users/create
   @postAction('create')
-  create(
-    @requestBody()
+  @responseBodyWithModel(UserModel)
+  async create(
+    @requestBodyWithModel(UserModel, {required: true})
     body: WithoutId<UserModel>,
   ) {
     const authService = this.getRegisteredService(AuthService);
+    const userDataService = this.getService(UserDataService);
+    userDataService.validateUsername(body.username);
+    userDataService.validatePassword(body.password);
+    await authService.ensureUserDoesNotExist<UserModel>({
+      username: body.username,
+    });
     return authService.createUser(body);
   }
 
   // POST /users/login
   @postAction('login')
   async login(
-    @requestBody()
-    body: UserLookupWithPassword,
+    @requestField('username', {
+      type: DataType.STRING,
+      required: true,
+    })
+    username: string,
+    @requestField('password', {
+      type: DataType.STRING,
+      required: true,
+    })
+    password: string,
   ) {
     const authService = this.getRegisteredService(AuthService);
-    const user = await authService.findUserByLoginIds(body);
-    await authService.verifyPassword(body.password, user.password);
+    const user = await authService.findUserBeforeLogin<UserModel>({username});
+    await authService.verifyPassword(password, user.password);
     const accessToken = await authService.createAccessToken(user.id);
     const {token, expiresAt} = await authService.issueJwt(accessToken);
-    const {password, ...userDto} = user;
-    return {token, expiresAt, user: userDto};
+    delete user.password;
+    return {token, expiresAt, user};
   }
 
   // GET /users/findMe
   @getAction('findMe')
+  @responseBodyWithModel(UserModel)
   findMe() {
     const session = this.getRegisteredService(AuthSession);
     return session.getUser();
@@ -97,13 +139,26 @@ class UserController extends Service {
 
   // PATCH /users/profile
   @patchAction('profile')
-  patchProfile(
-    @requestBody()
+  @responseBodyWithModel(UserModel)
+  async patchProfile(
+    @requestBodyWithModel(UserModel, {
+      required: true,
+      partial: true,
+    })
     body: WithoutId<UserModel>,
   ) {
     const session = this.getRegisteredService(AuthSession);
     const authService = this.getRegisteredService(AuthService);
-    return authService.updateUser(session.getUserId(), body);
+    const userId = session.getUserId();
+    if ('username' in body) {
+      const userDataService = this.getService(UserDataService);
+      userDataService.validateUsername(body.username);
+      await authService.ensureUserDoesNotExist<UserModel>(
+        {username: body.username},
+        userId,
+      );
+    }
+    return authService.updateUser(userId, body);
   }
 
   // GET /users/logout

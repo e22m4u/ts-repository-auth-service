@@ -24,12 +24,6 @@ export class BaseAccessTokenModel<
 
   @property({
     type: DataType.STRING,
-    default: '',
-  })
-  userAgent?: string;
-
-  @property({
-    type: DataType.STRING,
     default: () => new Date().toISOString(),
   })
   createdAt?: string;

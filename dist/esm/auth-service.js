@@ -8,29 +8,12 @@ import { DebuggableService } from './debuggable-service.js';
 import { DatabaseSchema, } from '@e22m4u/js-repository';
 import { createError, parseUrlQuery, removeEmptyKeys, parseCookieHeader, } from './utils/index.js';
 import { UserModel, AccessTokenModel, } from './models/index.js';
-import { emailFormatValidator, phoneFormatValidator, passwordFormatValidator, usernameFormatValidator, } from './validators/index.js';
 const { JsonWebTokenError, TokenExpiredError } = jwt;
-/**
- * Login id names.
- */
-export const LOGIN_ID_NAMES = ['username', 'email', 'phone'];
-/**
- * Case insensitive login ids.
- */
-export const CASE_INSENSITIVE_LOGIN_IDS = [
-    'username',
-    'email',
-    'phone',
-];
 /**
  * Auth service options.
  */
 export class AuthServiceOptions {
     passwordHashRounds = 12;
-    usernameFormatValidator = usernameFormatValidator;
-    emailFormatValidator = emailFormatValidator;
-    phoneFormatValidator = phoneFormatValidator;
-    passwordFormatValidator = passwordFormatValidator;
     jwtSecret = 'REPLACE_ME!';
     jwtTtl = 14 * 86400; // 14 days
     jwtHeaderName = 'authorization';
@@ -261,137 +244,34 @@ export class AuthService extends DebuggableService {
         return true;
     }
     /**
-     * Find user by login ids.
+     * Find user before login.
      *
-     * @param loginIdsClause
-     * @param include
-     * @param silent
+     * @param where
      */
-    async findUserByLoginIds(loginIdsClause, include, silent = false) {
-        const debug = this.getDebuggerFor(this.findUserByLoginIds);
-        debug('Finding user by login identifiers.');
+    async findUserBeforeLogin(where) {
         const localizer = this.getService(AuthLocalizer);
-        const errorKeyPrefix = 'authService.findUserByLoginIds';
-        // формирование условий выборки
-        const where = {};
-        let hasAnyLoginId = false;
-        LOGIN_ID_NAMES.forEach(name => {
-            if (loginIdsClause[name] && String(loginIdsClause[name]).trim()) {
-                debug('Given %s was %v.', name, loginIdsClause[name]);
-                hasAnyLoginId = true;
-                const idValue = String(loginIdsClause[name]).trim();
-                const idRegex = `^${idValue}$`;
-                const isCaseInsensitive = CASE_INSENSITIVE_LOGIN_IDS.includes(name);
-                where[name] = isCaseInsensitive
-                    ? { regexp: idRegex, flags: 'i' }
-                    : idValue;
-            }
-        });
-        // если ни один идентификатор не определен,
-        // то выбрасывается ошибка
-        if (!hasAnyLoginId) {
-            if (silent)
-                return;
-            this.requireAnyLoginId(loginIdsClause);
-        }
         const dbs = this.getRegisteredService(DatabaseSchema);
         const userRep = dbs.getRepository(UserModel.name);
-        const user = await userRep.findOne({ where, include });
+        const user = await userRep.findOne({ where });
         if (!user) {
-            debug('User not found.');
-            if (silent)
-                return;
-            throw createError(HttpErrors.BadRequest, 'USER_NOT_FOUND', localizer.t(`${errorKeyPrefix}.loginFailedError`));
+            throw createError(HttpErrors.Unauthorized, 'USER_NOT_FOUND', localizer.t(`authService.findUserBeforeLogin.notFoundError`));
         }
-        debug('User found with id %v.', user.id);
         return user;
     }
     /**
-     * Validate login id format.
+     * Find user before login.
      *
-     * @param idName
-     * @param idValue
-     * @param ownerId
+     * @param where
      */
-    validateLoginIdFormat(idName, idValue) {
-        const debug = this.getDebuggerFor(this.validateLoginIdFormat);
-        debug('Validating login identifier format.');
-        debug('Given id name was %v.', idName);
-        debug('Given id value was %v.', idValue);
-        // проверка формата при наличии значения
-        if (idValue) {
-            const validator = this.options[`${idName}FormatValidator`];
-            validator(idValue, this.container);
-            debug('Value format validated.');
-            return;
-        }
-        debug('Validation skipped.');
-    }
-    /**
-     * Validate login id duplicates.
-     *
-     * @param idName
-     * @param idValue
-     * @param ownerId
-     */
-    async validateLoginIdDuplicates(idName, idValue, ownerId) {
-        const debug = this.getDebuggerFor(this.validateLoginIdDuplicates);
-        debug('Validating login identifier duplicates.');
+    async ensureUserDoesNotExist(where, excludeUserId) {
         const localizer = this.getService(AuthLocalizer);
-        const titledIdName = idName.charAt(0).toUpperCase() + idName.slice(1);
-        const errorKeyPrefix = 'authService.validateLoginIdDuplicates';
-        debug('Given id name was %v.', idName);
-        debug('Given id value was %v.', idValue);
-        if (idValue) {
-            // если найден дубликат идентификатора другого
-            // пользователя, то выбрасывается ошибка
-            debug('Checking identifier duplicates.');
-            const duplicate = await this.findUserByLoginIds({ [idName]: idValue }, undefined, true);
-            if (duplicate && duplicate.id !== ownerId) {
-                const errorKey = `${errorKeyPrefix}.duplicate${titledIdName}Error`;
-                throw createError(HttpErrors.BadRequest, 'DUPLICATE_LOGIN_IDENTIFIER', localizer.t(errorKey));
-            }
-            debug('No duplicates found.');
-            return;
+        const dbs = this.getRegisteredService(DatabaseSchema);
+        const userRep = dbs.getRepository(UserModel.name);
+        const user = await userRep.findOne({ where });
+        if (user && user.id !== excludeUserId) {
+            throw createError(HttpErrors.Unauthorized, 'USER_NOT_FOUND', localizer.t(`authService.ensureUserDoesNotExist.duplicateError`));
         }
-        debug('Validation skipped.');
-    }
-    /**
-     * Require any login id.
-     *
-     * @param inputData
-     * @param partial
-     */
-    requireAnyLoginId(data, partial = false) {
-        const debug = this.getDebuggerFor(this.requireAnyLoginId);
-        debug('Require any login identifier.');
-        const localizer = this.getService(AuthLocalizer);
-        const errorKeyPrefix = 'authService.requireAnyLoginId';
-        if (partial) {
-            debug('Partial mode was enabled.');
-        }
-        // если метод запущен в режиме "partial", то для проверки наличия
-        // идентификаторов используются только те идентификаторы, ключи
-        // которых определены в полученном объекте, а если объект
-        // не содержит ключей, то проверка завершается
-        const loginIds = partial
-            ? LOGIN_ID_NAMES.filter(idName => idName in data)
-            : LOGIN_ID_NAMES;
-        if (partial && !loginIds.length) {
-            debug('No login identifier was given.');
-            return;
-        }
-        debug('Looking for any value in %l.', loginIds);
-        // если ни один идентификатор не определен,
-        // то выбрасывается ошибка
-        if (loginIds.every(idName => !data[idName])) {
-            debug('No login identifier was given.');
-            const idFields = LOGIN_ID_NAMES.filter(id => id in data);
-            const singleIdField = idFields.length === 1 ? idFields[0] : undefined;
-            if (singleIdField && data[singleIdField] === '')
-                throw createError(HttpErrors.BadRequest, singleIdField.toUpperCase() + '_REQUIRED', localizer.t(`${errorKeyPrefix}.${singleIdField}RequiredError`));
-            throw createError(HttpErrors.BadRequest, 'LOGIN_IDENTIFIER_REQUIRED', localizer.t(`${errorKeyPrefix}.identifierRequiredError`));
-        }
+        return user;
     }
     /**
      * Create user.
@@ -404,21 +284,8 @@ export class AuthService extends DebuggableService {
         const debug = this.getDebuggerFor(this.createUser);
         debug('Creating user.');
         inputData = { ...inputData };
-        // обрезка пробелов в идентификаторах
-        LOGIN_ID_NAMES.forEach(idName => {
-            if (typeof inputData[idName] === 'string')
-                inputData[idName] = inputData[idName].trim();
-        });
-        // проверка наличия по крайней мере одного идентификатора
-        this.requireAnyLoginId(inputData);
-        // проверка формата идентификаторов и отсутствия дубликатов
-        for (const idName of LOGIN_ID_NAMES) {
-            this.validateLoginIdFormat(idName, inputData[idName]);
-            await this.validateLoginIdDuplicates(idName, inputData[idName]);
-        }
         // хэширование пароля
         if (inputData.password) {
-            this.options.passwordFormatValidator(inputData.password, this.container);
             inputData.password = await this.hashPassword(inputData.password || '');
             debug('Password hashed.');
         }
@@ -455,31 +322,12 @@ export class AuthService extends DebuggableService {
         const existingUser = await userRep.findOne({ where: { id: userId } });
         if (!existingUser)
             throw createError(HttpErrors.BadRequest, 'USER_NOT_FOUND', localizer.t(`${errorKeyPrefix}.userNotFoundError`));
-        // обрезка пробелов в идентификаторах
-        LOGIN_ID_NAMES.forEach(idName => {
-            if (typeof inputData[idName] === 'string')
-                inputData[idName] = inputData[idName].trim();
-        });
-        // проверка наличия по крайней мере одного идентификатора
-        // (в режиме partial, проверяются только переданные свойства)
-        this.requireAnyLoginId(inputData, true);
-        // проверка формата идентификаторов и отсутствия дубликатов
-        for (const idName of LOGIN_ID_NAMES) {
-            this.validateLoginIdFormat(idName, inputData[idName]);
-            await this.validateLoginIdDuplicates(idName, inputData[idName], existingUser.id);
-        }
-        // удаление ключей идентификаторов содержащих null и undefined
-        LOGIN_ID_NAMES.forEach(idName => {
-            if (inputData[idName] == null)
-                delete inputData[idName];
-        });
         // хэширование пароля (при наличии)
         if (inputData.password) {
-            this.options.passwordFormatValidator(inputData.password, this.container);
             inputData.password = await this.hashPassword(inputData.password || '');
             debug('Password hashed.');
         }
-        // удаление даты создания
+        // удаление даты создания из новых данных
         // и формирование даты обновления
         delete inputData.createdAt;
         inputData.updatedAt = new Date().toISOString();
