@@ -3,7 +3,7 @@ import { AuthSession } from './auth-session.js';
 import { ServiceContainer } from '@e22m4u/js-service';
 import { DebuggableService } from './debuggable-service.js';
 import { IncludeClause, WithOptionalId, ItemFilterClause } from '@e22m4u/js-repository';
-import { AccessTokenModel, BaseAccessTokenModel, BaseUserModel } from './models/index.js';
+import { BaseUserModel, AccessTokenModel, BaseAccessTokenModel } from './models/index.js';
 /**
  * Login id names.
  */
@@ -43,9 +43,9 @@ export declare class AuthServiceOptions {
     constructor(options?: Partial<AuthServiceOptions>);
 }
 /**
- * Login ids filter.
+ * Login ids clause.
  */
-export type LoginIdsFilter = {
+export type LoginIdsClause = {
     username?: string;
     email?: string;
     phone?: string;
@@ -53,7 +53,7 @@ export type LoginIdsFilter = {
 /**
  * User lookup with password.
  */
-export type UserLookupWithPassword = LoginIdsFilter & {
+export type UserLookupWithPassword = LoginIdsClause & {
     password?: string;
 };
 /**
@@ -129,7 +129,7 @@ export declare class AuthService extends DebuggableService {
      * @param hash
      * @param silent
      */
-    verifyPassword(password: string, hash: string): Promise<true>;
+    verifyPassword(password: string | undefined, hash: string | undefined): Promise<true>;
     /**
      * Verify password.
      *
@@ -137,7 +137,7 @@ export declare class AuthService extends DebuggableService {
      * @param hash
      * @param silent
      */
-    verifyPassword(password: string, hash: string, silent: false): Promise<true>;
+    verifyPassword(password: string | undefined, hash: string | undefined, silent: false): Promise<true>;
     /**
      * Verify password.
      *
@@ -145,7 +145,7 @@ export declare class AuthService extends DebuggableService {
      * @param hash
      * @param silent
      */
-    verifyPassword(password: string, hash: string, silent: true): Promise<boolean>;
+    verifyPassword(password: string | undefined, hash: string | undefined, silent: true): Promise<boolean>;
     /**
      * Verify password.
      *
@@ -153,39 +153,39 @@ export declare class AuthService extends DebuggableService {
      * @param hash
      * @param silent
      */
-    verifyPassword(password: string, hash: string, silent?: boolean): Promise<boolean>;
+    verifyPassword(password: string | undefined, hash: string | undefined, silent?: boolean): Promise<boolean>;
     /**
      * Find user by login ids.
      *
-     * @param idsFilter
+     * @param loginIdsClause
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(idsFilter: LoginIdsFilter, include?: IncludeClause<T>): Promise<T>;
+    findUserByLoginIds<T extends BaseUserModel>(loginIdsClause: LoginIdsClause, include?: IncludeClause<T>): Promise<T>;
     /**
      * Find user by login ids.
      *
-     * @param idsFilter
+     * @param loginIdsClause
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(idsFilter: LoginIdsFilter, include: IncludeClause<T> | undefined, silent: false): Promise<T>;
+    findUserByLoginIds<T extends BaseUserModel>(loginIdsClause: LoginIdsClause, include: IncludeClause<T> | undefined, silent: false): Promise<T>;
     /**
      * Find user by login ids.
      *
-     * @param idsFilter
+     * @param loginIdsClause
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(idsFilter: LoginIdsFilter, include: IncludeClause<T> | undefined, silent: true): Promise<T | undefined>;
+    findUserByLoginIds<T extends BaseUserModel>(loginIdsClause: LoginIdsClause, include: IncludeClause<T> | undefined, silent: true): Promise<T | undefined>;
     /**
      * Find user by login ids.
      *
-     * @param idsFilter
+     * @param loginIdsClause
      * @param include
      * @param silent
      */
-    findUserByLoginIds<T extends BaseUserModel>(idsFilter: LoginIdsFilter, include?: IncludeClause<T>, silent?: boolean): Promise<T | undefined>;
+    findUserByLoginIds<T extends BaseUserModel>(loginIdsClause: LoginIdsClause, include?: IncludeClause<T>, silent?: boolean): Promise<T | undefined>;
     /**
      * Validate login id format.
      *

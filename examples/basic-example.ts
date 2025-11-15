@@ -63,14 +63,13 @@ class UserController extends Service {
     return userRep.find();
   }
 
-  // POST /users/register
-  @postAction('register')
-  register(
+  // POST /users/create
+  @postAction('create')
+  create(
     @requestBody()
     body: WithoutId<UserModel>,
   ) {
     const authService = this.getRegisteredService(AuthService);
-    authService.requireAnyLoginId(body);
     return authService.createUser(body);
   }
 
@@ -82,9 +81,7 @@ class UserController extends Service {
   ) {
     const authService = this.getRegisteredService(AuthService);
     const user = await authService.findUserByLoginIds(body);
-    if (user.password) {
-      await authService.verifyPassword(body.password || '', user.password);
-    }
+    await authService.verifyPassword(body.password, user.password);
     const accessToken = await authService.createAccessToken(user.id);
     const {token, expiresAt} = await authService.issueJwt(accessToken);
     const {password, ...userDto} = user;
@@ -106,7 +103,6 @@ class UserController extends Service {
   ) {
     const session = this.getRegisteredService(AuthSession);
     const authService = this.getRegisteredService(AuthService);
-    authService.requireAnyLoginId(body, true);
     return authService.updateUser(session.getUserId(), body);
   }
 
@@ -140,10 +136,10 @@ server.listen(port, host, function () {
   console.log('');
   console.log(cyan, 'List users:');
   console.log(`  curl http://${host}:${port}/users | jq`);
-  // Register user
+  // Create user
   console.log('');
-  console.log(cyan, 'Register user:');
-  console.log(`  curl -X POST http://${host}:${port}/users/register \\`);
+  console.log(cyan, 'Create user:');
+  console.log(`  curl -X POST http://${host}:${port}/users/create \\`);
   console.log(`    -H "content-type: application/json" \\`);
   console.log(
     `    -d '{"username": "andrew", "password": "andrewPass123"}' \\`,

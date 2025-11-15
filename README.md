@@ -14,7 +14,7 @@
     - [4. Определение контроллера](#4-определение-контроллера)
     - [5. Запуск HTTP-сервера](#5-запуск-http-сервера)
   - [Реализация методов](#реализация-методов)
-    - [Регистрация пользователя](#регистрация-пользователя)
+    - [Создание пользователя](#создание-пользователя)
     - [Аутентификация (вход в систему)](#аутентификация-вход-в-систему)
     - [Получение данных текущего пользователя](#получение-данных-текущего-пользователя)
     - [Обновление профиля](#обновление-профиля)
@@ -151,13 +151,13 @@ dbs.defineModelByClass(AccessTokenModel);
 
 Для определения статуса аутентификации пользователя каждый входящий запрос
 должен проверяться на наличие корректного *JWT (JSON Web Token)*. Эта задача
-решается добавлением глобального `PRE_HANDLER` (перехватчика). Данный хук
+решается добавлением глобального *pre-handler* хука (перехватчика). Данный хук
 выполняется перед каждым маршрутом, создает экземпляр `AuthSession` и помещает
 его в *request-scoped* контейнер. Таким образом, объект сессии становится
 доступным внутри любого контроллера во время обработки запроса.
 
 ```ts
-router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
+router.addPreHandler(async ctx => {
   // для каждого запроса извлекается request-scoped экземпляр AuthService
   // (экземпляр создается автоматически в методе `container.get`)
   const authService = ctx.container.get(AuthService);
@@ -220,16 +220,16 @@ server.listen(port, host, function () {
 
 В следующих подразделах последовательно формируются методы контроллера
 `UserController` для выполнения ключевых операций. Примеры демонстрируют,
-как использовать `AuthService` для бизнес-логики, такой как регистрация,
-аутентификация, обновление профиля и выход из системы.
+как использовать `AuthService` для бизнес-логики, такой как создание
+пользователя, аутентификация, обновление профиля и выход из системы.
 
-#### Регистрация пользователя
+#### Создание пользователя
 
 Создание новых пользователей выполняется методом `createUser` сервиса
 `AuthService`. Метод реализует логику проверки формата идентификаторов
 входа (`username`, `email` и `phone`), их проверку на дубликаты
 и хеширование пароля (при наличии). Ниже приводится пример реализации
-маршрута для регистрации нового пользователя.
+маршрута для создания нового пользователя.
 
 ```ts
 import {Service} from '@e22m4u/js-service';
@@ -242,26 +242,20 @@ class UserController extends Service {
   /**
    * Создание нового пользователя.
    * 
-   * POST /users/register
+   * POST /users/create
    */
-  @postAction('register')
-  register(
+  @postAction('create')
+  create(
     @requestBody()
     body: WithOptionalId<UserModel>,
   ) {
     // получение request-scoped экземпляра AuthService
     const authService = this.getRegisteredService(AuthService);
-    // проверка наличия хотя бы одного идентификатора входа
-    authService.requireAnyLoginId(body);
     // вызов метода создания пользователя
     return authService.createUser(body);
   }
 }
 ```
-
-Перед созданием пользователя рекомендуется вызвать метод `requireAnyLoginId`
-сервиса `AuthService`, чтобы убедиться в наличии, по крайней мере, одного
-идентификатора входа.
 
 #### Аутентификация (вход в систему)
 
@@ -299,12 +293,10 @@ class UserController extends Service {
   ) {
     // получение request-scoped экземпляра AuthService
     const authService = this.getRegisteredService(AuthService);
-    // поиск пользователя по одному из идентификаторов
+    // поиск пользователя по указанным идентификаторам
     const user = await authService.findUserByLoginIds(body);
     // проверка пароля
-    if (user.password) {
-      await authService.verifyPassword(body.password || '', user.password);
-    }
+    await authService.verifyPassword(body.password, user.password);
     // создание токена доступа (в базе данных)
     const accessToken = await authService.createAccessToken(user.id);
     // генерация JWT
@@ -327,8 +319,8 @@ class UserController extends Service {
 
 ```js
 import {Service} from '@e22m4u/js-service';
+import {AuthSession} from '@e22m4u/ts-repository-auth-service';
 import {getAction, restController} from '@e22m4u/ts-rest-router';
-import {AuthSession, requireRole} from '@e22m4u/ts-repository-auth-service';
 
 @restController('users')
 class UserController extends Service {
@@ -375,8 +367,6 @@ class UserController extends Service {
   ) {
     const session = this.getRegisteredService(AuthSession);
     const authService = this.getRegisteredService(AuthService);
-    // проверка наличия хотя бы одного идентификатора (в режиме partial)
-    authService.requireAnyLoginId(body, true);
     // вызов метода обновления пользователя
     return authService.updateUser(session.getUserId(), body);
   }
@@ -592,15 +582,20 @@ const newUser = await authService.createUser({
 
 ```ts
 findUserByLoginIds<T extends BaseUserModel>(
-  idsFilter: LoginIdsFilter,
+  loginIdsClause: LoginIdsClause,
   include?: IncludeClause<T>,
-  silent?: boolean,
+): Promise<T>;
+
+findUserByLoginIds<T extends BaseUserModel>(
+  loginIdsClause: LoginIdsClause,
+  include: IncludeClause<T> | undefined,
+  silent: true,
 ): Promise<T | undefined>;
 ```
 
 Параметры:
 
-- `lookup`  
+- `loginIdsClause`  
   *объект полем `username`, `email` или `phone`;*
 
 - `silent` (опционально, по умолчанию `false`)  
@@ -628,9 +623,14 @@ const maybeUser = await authService.findUserByLoginIds(
 Сигнатура:
 ```ts
 verifyPassword(
-  password: string,
-  hash: string,
-  silent?: boolean,
+  password: string | undefined,
+  hash: string | undefined,
+): Promise<true>;
+
+verifyPassword(
+  password: string | undefined,
+  hash: string | undefined,
+  silent: true,
 ): Promise<boolean>;
 ```
 
@@ -901,7 +901,7 @@ createAuthSession(req: IncomingMessage): Promise<AuthSession>;
 
 ```ts
 // обычно используется в middleware или хуке
-router.addHook(RouterHookType.PRE_HANDLER, async ctx => {
+router.addPreHandler(async ctx => {
   const authService = ctx.container.get(AuthService);
   const authSession = await authService.createAuthSession(ctx.request);
   ctx.container.set(AuthSession, authSession);

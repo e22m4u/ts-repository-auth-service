@@ -5,7 +5,6 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 var __glob = (map) => (path) => {
   var fn = map[path];
@@ -39,7 +38,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
 // node_modules/@e22m4u/js-repository/src/utils/is-ctor.js
 var init_is_ctor = __esm({
@@ -197,35 +195,40 @@ var init_get_ctor_name = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/errors/not-implemented-error.js
-var import_js_format2, _NotImplementedError, NotImplementedError;
+var import_js_format2, NotImplementedError;
 var init_not_implemented_error = __esm({
   "node_modules/@e22m4u/js-repository/src/errors/not-implemented-error.js"() {
     import_js_format2 = require("@e22m4u/js-format");
-    _NotImplementedError = class _NotImplementedError extends import_js_format2.Errorf {
+    NotImplementedError = class extends import_js_format2.Errorf {
+      static {
+        __name(this, "NotImplementedError");
+      }
     };
-    __name(_NotImplementedError, "NotImplementedError");
-    NotImplementedError = _NotImplementedError;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/errors/invalid-argument-error.js
-var import_js_format3, _InvalidArgumentError, InvalidArgumentError;
+var import_js_format3, InvalidArgumentError;
 var init_invalid_argument_error = __esm({
   "node_modules/@e22m4u/js-repository/src/errors/invalid-argument-error.js"() {
     import_js_format3 = require("@e22m4u/js-format");
-    _InvalidArgumentError = class _InvalidArgumentError extends import_js_format3.Errorf {
+    InvalidArgumentError = class extends import_js_format3.Errorf {
+      static {
+        __name(this, "InvalidArgumentError");
+      }
     };
-    __name(_InvalidArgumentError, "InvalidArgumentError");
-    InvalidArgumentError = _InvalidArgumentError;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/errors/invalid-operator-value-error.js
-var import_js_format4, _InvalidOperatorValueError, InvalidOperatorValueError;
+var import_js_format4, InvalidOperatorValueError;
 var init_invalid_operator_value_error = __esm({
   "node_modules/@e22m4u/js-repository/src/errors/invalid-operator-value-error.js"() {
     import_js_format4 = require("@e22m4u/js-format");
-    _InvalidOperatorValueError = class _InvalidOperatorValueError extends Error {
+    InvalidOperatorValueError = class extends Error {
+      static {
+        __name(this, "InvalidOperatorValueError");
+      }
       /**
        * Constructor.
        *
@@ -244,8 +247,6 @@ var init_invalid_operator_value_error = __esm({
         );
       }
     };
-    __name(_InvalidOperatorValueError, "InvalidOperatorValueError");
-    InvalidOperatorValueError = _InvalidOperatorValueError;
   }
 });
 
@@ -455,12 +456,15 @@ var init_utils = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/filter/slice-clause-tool.js
-var import_js_service4, _SliceClauseTool, SliceClauseTool;
+var import_js_service4, SliceClauseTool;
 var init_slice_clause_tool = __esm({
   "node_modules/@e22m4u/js-repository/src/filter/slice-clause-tool.js"() {
     import_js_service4 = require("@e22m4u/js-service");
     init_errors();
-    _SliceClauseTool = class _SliceClauseTool extends import_js_service4.Service {
+    SliceClauseTool = class extends import_js_service4.Service {
+      static {
+        __name(this, "SliceClauseTool");
+      }
       /**
        * Slice.
        *
@@ -516,8 +520,6 @@ var init_slice_clause_tool = __esm({
           );
       }
     };
-    __name(_SliceClauseTool, "SliceClauseTool");
-    SliceClauseTool = _SliceClauseTool;
   }
 });
 
@@ -537,13 +539,16 @@ function compareFn(a, b) {
   }
   return 0;
 }
-var import_js_service5, _OrderClauseTool, OrderClauseTool;
+var import_js_service5, OrderClauseTool;
 var init_order_clause_tool = __esm({
   "node_modules/@e22m4u/js-repository/src/filter/order-clause-tool.js"() {
     import_js_service5 = require("@e22m4u/js-service");
     init_utils();
     init_errors();
-    _OrderClauseTool = class _OrderClauseTool extends import_js_service5.Service {
+    OrderClauseTool = class extends import_js_service5.Service {
+      static {
+        __name(this, "OrderClauseTool");
+      }
       /**
        * Sort.
        *
@@ -608,20 +613,21 @@ var init_order_clause_tool = __esm({
         return clause;
       }
     };
-    __name(_OrderClauseTool, "OrderClauseTool");
-    OrderClauseTool = _OrderClauseTool;
     __name(compareFn, "compareFn");
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/filter/operator-clause-tool.js
-var import_js_service6, _OperatorClauseTool, OperatorClauseTool;
+var import_js_service6, OperatorClauseTool;
 var init_operator_clause_tool = __esm({
   "node_modules/@e22m4u/js-repository/src/filter/operator-clause-tool.js"() {
     import_js_service6 = require("@e22m4u/js-service");
     init_utils();
     init_errors();
-    _OperatorClauseTool = class _OperatorClauseTool extends import_js_service6.Service {
+    OperatorClauseTool = class extends import_js_service6.Service {
+      static {
+        __name(this, "OperatorClauseTool");
+      }
       /**
        * Compare.
        *
@@ -1070,20 +1076,21 @@ var init_operator_clause_tool = __esm({
         }
       }
     };
-    __name(_OperatorClauseTool, "OperatorClauseTool");
-    OperatorClauseTool = _OperatorClauseTool;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/filter/where-clause-tool.js
-var import_js_service7, _WhereClauseTool, WhereClauseTool;
+var import_js_service7, WhereClauseTool;
 var init_where_clause_tool = __esm({
   "node_modules/@e22m4u/js-repository/src/filter/where-clause-tool.js"() {
     import_js_service7 = require("@e22m4u/js-service");
     init_errors();
     init_operator_clause_tool();
     init_utils();
-    _WhereClauseTool = class _WhereClauseTool extends import_js_service7.Service {
+    WhereClauseTool = class extends import_js_service7.Service {
+      static {
+        __name(this, "WhereClauseTool");
+      }
       /**
        * Filter by where clause.
        *
@@ -1215,8 +1222,6 @@ var init_where_clause_tool = __esm({
           );
       }
     };
-    __name(_WhereClauseTool, "WhereClauseTool");
-    WhereClauseTool = _WhereClauseTool;
   }
 });
 
@@ -1240,14 +1245,17 @@ var init_relation_definition = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/relations/relations-definition-validator.js
-var import_js_service8, _RelationsDefinitionValidator, RelationsDefinitionValidator;
+var import_js_service8, RelationsDefinitionValidator;
 var init_relations_definition_validator = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/relations/relations-definition-validator.js"() {
     import_js_service8 = require("@e22m4u/js-service");
     init_relation_type();
     init_relation_type();
     init_errors();
-    _RelationsDefinitionValidator = class _RelationsDefinitionValidator extends import_js_service8.Service {
+    RelationsDefinitionValidator = class extends import_js_service8.Service {
+      static {
+        __name(this, "RelationsDefinitionValidator");
+      }
       /**
        * Validate.
        *
@@ -1624,8 +1632,6 @@ var init_relations_definition_validator = __esm({
           );
       }
     };
-    __name(_RelationsDefinitionValidator, "RelationsDefinitionValidator");
-    RelationsDefinitionValidator = _RelationsDefinitionValidator;
   }
 });
 
@@ -1762,7 +1768,7 @@ var init_builtin = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/properties/property-validator/property-validator-registry.js
-var import_js_service9, _PropertyValidatorRegistry, PropertyValidatorRegistry;
+var import_js_service9, PropertyValidatorRegistry;
 var init_property_validator_registry = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/properties/property-validator/property-validator-registry.js"() {
     import_js_service9 = require("@e22m4u/js-service");
@@ -1770,7 +1776,10 @@ var init_property_validator_registry = __esm({
     init_builtin();
     init_builtin();
     init_errors();
-    _PropertyValidatorRegistry = class _PropertyValidatorRegistry extends import_js_service9.Service {
+    PropertyValidatorRegistry = class extends import_js_service9.Service {
+      static {
+        __name(this, "PropertyValidatorRegistry");
+      }
       /**
        * Validators.
        *
@@ -1833,8 +1842,6 @@ var init_property_validator_registry = __esm({
         return validator;
       }
     };
-    __name(_PropertyValidatorRegistry, "PropertyValidatorRegistry");
-    PropertyValidatorRegistry = _PropertyValidatorRegistry;
   }
 });
 
@@ -1913,7 +1920,7 @@ var init_builtin2 = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/properties/property-transformer/property-transformer-registry.js
-var import_js_service10, _PropertyTransformerRegistry, PropertyTransformerRegistry;
+var import_js_service10, PropertyTransformerRegistry;
 var init_property_transformer_registry = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/properties/property-transformer/property-transformer-registry.js"() {
     import_js_service10 = require("@e22m4u/js-service");
@@ -1921,7 +1928,10 @@ var init_property_transformer_registry = __esm({
     init_builtin2();
     init_builtin2();
     init_errors();
-    _PropertyTransformerRegistry = class _PropertyTransformerRegistry extends import_js_service10.Service {
+    PropertyTransformerRegistry = class extends import_js_service10.Service {
+      static {
+        __name(this, "PropertyTransformerRegistry");
+      }
       /**
        * Transformers.
        *
@@ -1984,8 +1994,6 @@ var init_property_transformer_registry = __esm({
         return transformer;
       }
     };
-    __name(_PropertyTransformerRegistry, "PropertyTransformerRegistry");
-    PropertyTransformerRegistry = _PropertyTransformerRegistry;
   }
 });
 
@@ -2092,7 +2100,7 @@ var init_utils2 = __esm({
 });
 
 // node_modules/@e22m4u/js-empty-values/src/empty-values-service.js
-var import_js_format5, import_js_service11, _EmptyValuesService, EmptyValuesService;
+var import_js_format5, import_js_service11, EmptyValuesService;
 var init_empty_values_service = __esm({
   "node_modules/@e22m4u/js-empty-values/src/empty-values-service.js"() {
     init_data_type2();
@@ -2100,7 +2108,10 @@ var init_empty_values_service = __esm({
     import_js_service11 = require("@e22m4u/js-service");
     init_utils2();
     init_utils2();
-    _EmptyValuesService = class _EmptyValuesService extends import_js_service11.Service {
+    EmptyValuesService = class extends import_js_service11.Service {
+      static {
+        __name(this, "EmptyValuesService");
+      }
       /**
        * Empty values map.
        *
@@ -2163,8 +2174,6 @@ var init_empty_values_service = __esm({
         return this._emptyValuesMap.get(dataType).some((v) => isDeepEqual2(v, value));
       }
     };
-    __name(_EmptyValuesService, "EmptyValuesService");
-    EmptyValuesService = _EmptyValuesService;
   }
 });
 
@@ -2176,7 +2185,7 @@ var init_src = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/definition-registry.js
-var import_js_service12, _DefinitionRegistry, DefinitionRegistry;
+var import_js_service12, DefinitionRegistry;
 var init_definition_registry = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/definition-registry.js"() {
     import_js_service12 = require("@e22m4u/js-service");
@@ -2184,7 +2193,10 @@ var init_definition_registry = __esm({
     init_errors();
     init_model();
     init_definition();
-    _DefinitionRegistry = class _DefinitionRegistry extends import_js_service12.Service {
+    DefinitionRegistry = class extends import_js_service12.Service {
+      static {
+        __name(this, "DefinitionRegistry");
+      }
       /**
        * Datasources.
        *
@@ -2272,13 +2284,11 @@ var init_definition_registry = __esm({
         return modelDef;
       }
     };
-    __name(_DefinitionRegistry, "DefinitionRegistry");
-    DefinitionRegistry = _DefinitionRegistry;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/model-definition-utils.js
-var import_js_service13, DEFAULT_PRIMARY_KEY_PROPERTY_NAME, _ModelDefinitionUtils, ModelDefinitionUtils;
+var import_js_service13, DEFAULT_PRIMARY_KEY_PROPERTY_NAME, ModelDefinitionUtils;
 var init_model_definition_utils = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/model-definition-utils.js"() {
     import_js_service13 = require("@e22m4u/js-service");
@@ -2289,7 +2299,10 @@ var init_model_definition_utils = __esm({
     init_errors();
     init_definition_registry();
     DEFAULT_PRIMARY_KEY_PROPERTY_NAME = "id";
-    _ModelDefinitionUtils = class _ModelDefinitionUtils extends import_js_service13.Service {
+    ModelDefinitionUtils = class extends import_js_service13.Service {
+      static {
+        __name(this, "ModelDefinitionUtils");
+      }
       /**
        * Get primary key as property name.
        *
@@ -2340,9 +2353,8 @@ var init_model_definition_utils = __esm({
        * @returns {string}
        */
       getTableNameByModelName(modelName) {
-        var _a7;
         const modelDef = this.getService(DefinitionRegistry).getModel(modelName);
-        return (_a7 = modelDef.tableName) != null ? _a7 : modelName;
+        return modelDef.tableName ?? modelName;
       }
       /**
        * Get column name by property name.
@@ -2352,7 +2364,6 @@ var init_model_definition_utils = __esm({
        * @returns {string}
        */
       getColumnNameByPropertyName(modelName, propertyName) {
-        var _a7;
         const propDefs = this.getPropertiesDefinitionInBaseModelHierarchy(modelName);
         const propDef = propDefs[propertyName];
         if (!propDef)
@@ -2362,7 +2373,7 @@ var init_model_definition_utils = __esm({
             propertyName
           );
         if (propDef && typeof propDef === "object")
-          return (_a7 = propDef.columnName) != null ? _a7 : propertyName;
+          return propDef.columnName ?? propertyName;
         return propertyName;
       }
       /**
@@ -2528,9 +2539,8 @@ var init_model_definition_utils = __esm({
        * @returns {object}
        */
       getOwnPropertiesDefinitionOfPrimaryKeys(modelName) {
-        var _a7;
         const modelDef = this.getService(DefinitionRegistry).getModel(modelName);
-        const propDefs = (_a7 = modelDef.properties) != null ? _a7 : {};
+        const propDefs = modelDef.properties ?? {};
         const pkPropNames = Object.keys(propDefs).filter((propName) => {
           const propDef = propDefs[propName];
           return typeof propDef === "object" && propDef.primaryKey;
@@ -2544,9 +2554,8 @@ var init_model_definition_utils = __esm({
        * @returns {object}
        */
       getOwnPropertiesDefinitionWithoutPrimaryKeys(modelName) {
-        var _a7;
         const modelDef = this.getService(DefinitionRegistry).getModel(modelName);
-        const propDefs = (_a7 = modelDef.properties) != null ? _a7 : {};
+        const propDefs = modelDef.properties ?? {};
         return Object.keys(propDefs).reduce((result, propName) => {
           const propDef = propDefs[propName];
           if (typeof propDef === "object" && propDef.primaryKey) return result;
@@ -2587,9 +2596,8 @@ var init_model_definition_utils = __esm({
        * @returns {object}
        */
       getOwnRelationsDefinition(modelName) {
-        var _a7;
         const modelDef = this.getService(DefinitionRegistry).getModel(modelName);
-        return (_a7 = modelDef.relations) != null ? _a7 : {};
+        return modelDef.relations ?? {};
       }
       /**
        * Get relations definition in base model hierarchy.
@@ -2600,14 +2608,13 @@ var init_model_definition_utils = __esm({
       getRelationsDefinitionInBaseModelHierarchy(modelName) {
         let result = {};
         const recursion = /* @__PURE__ */ __name((currModelName, prevModelName = void 0) => {
-          var _a7;
           if (currModelName === prevModelName)
             throw new InvalidArgumentError(
               "The model %v has a circular inheritance.",
               currModelName
             );
           const modelDef = this.getService(DefinitionRegistry).getModel(currModelName);
-          const ownRelDefs = (_a7 = modelDef.relations) != null ? _a7 : {};
+          const ownRelDefs = modelDef.relations ?? {};
           result = { ...ownRelDefs, ...result };
           if (modelDef.base) recursion(modelDef.base, currModelName);
         }, "recursion");
@@ -2685,13 +2692,11 @@ var init_model_definition_utils = __esm({
         return void 0;
       }
     };
-    __name(_ModelDefinitionUtils, "ModelDefinitionUtils");
-    ModelDefinitionUtils = _ModelDefinitionUtils;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/properties/property-uniqueness-validator.js
-var import_js_service14, _PropertyUniquenessValidator, PropertyUniquenessValidator;
+var import_js_service14, PropertyUniquenessValidator;
 var init_property_uniqueness_validator = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/properties/property-uniqueness-validator.js"() {
     init_data_type();
@@ -2701,7 +2706,10 @@ var init_property_uniqueness_validator = __esm({
     init_property_uniqueness();
     init_errors();
     init_model_definition_utils();
-    _PropertyUniquenessValidator = class _PropertyUniquenessValidator extends import_js_service14.Service {
+    PropertyUniquenessValidator = class extends import_js_service14.Service {
+      static {
+        __name(this, "PropertyUniquenessValidator");
+      }
       /**
        * Validate.
        *
@@ -2804,19 +2812,20 @@ var init_property_uniqueness_validator = __esm({
         }
       }
     };
-    __name(_PropertyUniquenessValidator, "PropertyUniquenessValidator");
-    PropertyUniquenessValidator = _PropertyUniquenessValidator;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/properties/primary-keys-definition-validator.js
-var import_js_service15, _PrimaryKeysDefinitionValidator, PrimaryKeysDefinitionValidator;
+var import_js_service15, PrimaryKeysDefinitionValidator;
 var init_primary_keys_definition_validator = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/properties/primary-keys-definition-validator.js"() {
     import_js_service15 = require("@e22m4u/js-service");
     init_errors();
     init_model_definition_utils();
-    _PrimaryKeysDefinitionValidator = class _PrimaryKeysDefinitionValidator extends import_js_service15.Service {
+    PrimaryKeysDefinitionValidator = class extends import_js_service15.Service {
+      static {
+        __name(this, "PrimaryKeysDefinitionValidator");
+      }
       /**
        * Validate.
        *
@@ -2855,13 +2864,11 @@ var init_primary_keys_definition_validator = __esm({
         }
       }
     };
-    __name(_PrimaryKeysDefinitionValidator, "PrimaryKeysDefinitionValidator");
-    PrimaryKeysDefinitionValidator = _PrimaryKeysDefinitionValidator;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/properties/properties-definition-validator.js
-var import_js_service16, _PropertiesDefinitionValidator, PropertiesDefinitionValidator;
+var import_js_service16, PropertiesDefinitionValidator;
 var init_properties_definition_validator = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/properties/properties-definition-validator.js"() {
     import_js_service16 = require("@e22m4u/js-service");
@@ -2872,7 +2879,10 @@ var init_properties_definition_validator = __esm({
     init_property_validator2();
     init_property_transformer2();
     init_primary_keys_definition_validator();
-    _PropertiesDefinitionValidator = class _PropertiesDefinitionValidator extends import_js_service16.Service {
+    PropertiesDefinitionValidator = class extends import_js_service16.Service {
+      static {
+        __name(this, "PropertiesDefinitionValidator");
+      }
       /**
        * Validate.
        *
@@ -3173,8 +3183,6 @@ var init_properties_definition_validator = __esm({
           );
       }
     };
-    __name(_PropertiesDefinitionValidator, "PropertiesDefinitionValidator");
-    PropertiesDefinitionValidator = _PropertiesDefinitionValidator;
   }
 });
 
@@ -3199,7 +3207,7 @@ var init_model_definition = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/model-data-validator.js
-var import_js_service17, _ModelDataValidator, ModelDataValidator;
+var import_js_service17, ModelDataValidator;
 var init_model_data_validator = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/model-data-validator.js"() {
     import_js_service17 = require("@e22m4u/js-service");
@@ -3210,7 +3218,10 @@ var init_model_data_validator = __esm({
     init_errors();
     init_properties();
     init_model_definition_utils();
-    _ModelDataValidator = class _ModelDataValidator extends import_js_service17.Service {
+    ModelDataValidator = class extends import_js_service17.Service {
+      static {
+        __name(this, "ModelDataValidator");
+      }
       /**
        * Validate.
        *
@@ -3287,11 +3298,10 @@ var init_model_data_validator = __esm({
        * @returns {undefined}
        */
       _validateValueByPropertyType(modelName, propName, propDef, propValue, isArrayValue = false) {
-        var _a7;
         let expectingType;
         if (isArrayValue) {
           if (typeof propDef === "object") {
-            expectingType = (_a7 = propDef.itemType) != null ? _a7 : DataType.ANY;
+            expectingType = propDef.itemType ?? DataType.ANY;
           } else {
             expectingType = DataType.ANY;
           }
@@ -3301,7 +3311,7 @@ var init_model_data_validator = __esm({
         const createError2 = /* @__PURE__ */ __name((expected) => {
           const pattern = isArrayValue ? "The array property %v of the model %v must have %s element, but %s was given." : "The property %v of the model %v must have %s, but %s was given.";
           const ctorName = getCtorName(propValue);
-          const givenStr = ctorName != null ? ctorName : typeof propValue;
+          const givenStr = ctorName ?? typeof propValue;
           return new InvalidArgumentError(
             pattern,
             propName,
@@ -3445,19 +3455,20 @@ var init_model_data_validator = __esm({
         }
       }
     };
-    __name(_ModelDataValidator, "ModelDataValidator");
-    ModelDataValidator = _ModelDataValidator;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/model-data-sanitizer.js
-var import_js_service18, _ModelDataSanitizer, ModelDataSanitizer;
+var import_js_service18, ModelDataSanitizer;
 var init_model_data_sanitizer = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/model-data-sanitizer.js"() {
     import_js_service18 = require("@e22m4u/js-service");
     init_errors();
     init_model_definition_utils();
-    _ModelDataSanitizer = class _ModelDataSanitizer extends import_js_service18.Service {
+    ModelDataSanitizer = class extends import_js_service18.Service {
+      static {
+        __name(this, "ModelDataSanitizer");
+      }
       /**
        * Validate.
        *
@@ -3481,13 +3492,11 @@ var init_model_data_sanitizer = __esm({
         ).excludeObjectKeysByRelationNames(modelName, modelData);
       }
     };
-    __name(_ModelDataSanitizer, "ModelDataSanitizer");
-    ModelDataSanitizer = _ModelDataSanitizer;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/model-data-transformer.js
-var import_js_service19, _ModelDataTransformer, ModelDataTransformer;
+var import_js_service19, ModelDataTransformer;
 var init_model_data_transformer = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/model-data-transformer.js"() {
     import_js_service19 = require("@e22m4u/js-service");
@@ -3498,7 +3507,10 @@ var init_model_data_transformer = __esm({
     init_errors();
     init_model_definition_utils();
     init_properties();
-    _ModelDataTransformer = class _ModelDataTransformer extends import_js_service19.Service {
+    ModelDataTransformer = class extends import_js_service19.Service {
+      static {
+        __name(this, "ModelDataTransformer");
+      }
       /**
        * Transform.
        *
@@ -3611,20 +3623,21 @@ var init_model_data_transformer = __esm({
         }
       }
     };
-    __name(_ModelDataTransformer, "ModelDataTransformer");
-    ModelDataTransformer = _ModelDataTransformer;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/model/model-definition-validator.js
-var import_js_service20, _ModelDefinitionValidator, ModelDefinitionValidator;
+var import_js_service20, ModelDefinitionValidator;
 var init_model_definition_validator = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/model/model-definition-validator.js"() {
     import_js_service20 = require("@e22m4u/js-service");
     init_errors();
     init_relations();
     init_properties();
-    _ModelDefinitionValidator = class _ModelDefinitionValidator extends import_js_service20.Service {
+    ModelDefinitionValidator = class extends import_js_service20.Service {
+      static {
+        __name(this, "ModelDefinitionValidator");
+      }
       /**
        * Validate.
        *
@@ -3687,8 +3700,6 @@ var init_model_definition_validator = __esm({
         }
       }
     };
-    __name(_ModelDefinitionValidator, "ModelDefinitionValidator");
-    ModelDefinitionValidator = _ModelDefinitionValidator;
   }
 });
 
@@ -3707,12 +3718,15 @@ var init_model = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/definition/datasource/datasource-definition-validator.js
-var import_js_service21, _DatasourceDefinitionValidator, DatasourceDefinitionValidator;
+var import_js_service21, DatasourceDefinitionValidator;
 var init_datasource_definition_validator = __esm({
   "node_modules/@e22m4u/js-repository/src/definition/datasource/datasource-definition-validator.js"() {
     import_js_service21 = require("@e22m4u/js-service");
     init_errors();
-    _DatasourceDefinitionValidator = class _DatasourceDefinitionValidator extends import_js_service21.Service {
+    DatasourceDefinitionValidator = class extends import_js_service21.Service {
+      static {
+        __name(this, "DatasourceDefinitionValidator");
+      }
       /**
        * Validate.
        *
@@ -3737,8 +3751,6 @@ var init_datasource_definition_validator = __esm({
           );
       }
     };
-    __name(_DatasourceDefinitionValidator, "DatasourceDefinitionValidator");
-    DatasourceDefinitionValidator = _DatasourceDefinitionValidator;
   }
 });
 
@@ -3759,14 +3771,17 @@ var init_definition = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/filter/fields-clause-tool.js
-var import_js_service22, _FieldsClauseTool, FieldsClauseTool;
+var import_js_service22, FieldsClauseTool;
 var init_fields_clause_tool = __esm({
   "node_modules/@e22m4u/js-repository/src/filter/fields-clause-tool.js"() {
     import_js_service22 = require("@e22m4u/js-service");
     init_utils();
     init_errors();
     init_definition();
-    _FieldsClauseTool = class _FieldsClauseTool extends import_js_service22.Service {
+    FieldsClauseTool = class extends import_js_service22.Service {
+      static {
+        __name(this, "FieldsClauseTool");
+      }
       /**
        * Filter.
        *
@@ -3844,20 +3859,21 @@ var init_fields_clause_tool = __esm({
         return fields;
       }
     };
-    __name(_FieldsClauseTool, "FieldsClauseTool");
-    FieldsClauseTool = _FieldsClauseTool;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/adapter/decorator/inclusion-decorator.js
-var import_js_service23, _InclusionDecorator, InclusionDecorator;
+var import_js_service23, InclusionDecorator;
 var init_inclusion_decorator = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/decorator/inclusion-decorator.js"() {
     init_adapter();
     import_js_service23 = require("@e22m4u/js-service");
     init_filter();
     init_errors();
-    _InclusionDecorator = class _InclusionDecorator extends import_js_service23.Service {
+    InclusionDecorator = class extends import_js_service23.Service {
+      static {
+        __name(this, "InclusionDecorator");
+      }
       /**
        * Decorate.
        *
@@ -3932,20 +3948,21 @@ var init_inclusion_decorator = __esm({
         };
       }
     };
-    __name(_InclusionDecorator, "InclusionDecorator");
-    InclusionDecorator = _InclusionDecorator;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/adapter/decorator/default-values-decorator.js
-var import_js_service24, _DefaultValuesDecorator, DefaultValuesDecorator;
+var import_js_service24, DefaultValuesDecorator;
 var init_default_values_decorator = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/decorator/default-values-decorator.js"() {
     init_adapter();
     import_js_service24 = require("@e22m4u/js-service");
     init_errors();
     init_definition();
-    _DefaultValuesDecorator = class _DefaultValuesDecorator extends import_js_service24.Service {
+    DefaultValuesDecorator = class extends import_js_service24.Service {
+      static {
+        __name(this, "DefaultValuesDecorator");
+      }
       /**
        * Decorate.
        *
@@ -3996,20 +4013,21 @@ var init_default_values_decorator = __esm({
         };
       }
     };
-    __name(_DefaultValuesDecorator, "DefaultValuesDecorator");
-    DefaultValuesDecorator = _DefaultValuesDecorator;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/adapter/decorator/data-sanitizing-decorator.js
-var import_js_service25, _DataSanitizingDecorator, DataSanitizingDecorator;
+var import_js_service25, DataSanitizingDecorator;
 var init_data_sanitizing_decorator = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/decorator/data-sanitizing-decorator.js"() {
     init_adapter();
     import_js_service25 = require("@e22m4u/js-service");
     init_errors();
     init_definition();
-    _DataSanitizingDecorator = class _DataSanitizingDecorator extends import_js_service25.Service {
+    DataSanitizingDecorator = class extends import_js_service25.Service {
+      static {
+        __name(this, "DataSanitizingDecorator");
+      }
       /**
        * Decorate.
        *
@@ -4050,20 +4068,21 @@ var init_data_sanitizing_decorator = __esm({
         };
       }
     };
-    __name(_DataSanitizingDecorator, "DataSanitizingDecorator");
-    DataSanitizingDecorator = _DataSanitizingDecorator;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/adapter/decorator/data-validation-decorator.js
-var import_js_service26, _DataValidationDecorator, DataValidationDecorator;
+var import_js_service26, DataValidationDecorator;
 var init_data_validation_decorator = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/decorator/data-validation-decorator.js"() {
     init_adapter();
     import_js_service26 = require("@e22m4u/js-service");
     init_errors();
     init_definition();
-    _DataValidationDecorator = class _DataValidationDecorator extends import_js_service26.Service {
+    DataValidationDecorator = class extends import_js_service26.Service {
+      static {
+        __name(this, "DataValidationDecorator");
+      }
       /**
        * Decorate.
        *
@@ -4103,20 +4122,21 @@ var init_data_validation_decorator = __esm({
         };
       }
     };
-    __name(_DataValidationDecorator, "DataValidationDecorator");
-    DataValidationDecorator = _DataValidationDecorator;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/adapter/decorator/fields-filtering-decorator.js
-var import_js_service27, _FieldsFilteringDecorator, FieldsFilteringDecorator;
+var import_js_service27, FieldsFilteringDecorator;
 var init_fields_filtering_decorator = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/decorator/fields-filtering-decorator.js"() {
     init_adapter();
     import_js_service27 = require("@e22m4u/js-service");
     init_filter();
     init_errors();
-    _FieldsFilteringDecorator = class _FieldsFilteringDecorator extends import_js_service27.Service {
+    FieldsFilteringDecorator = class extends import_js_service27.Service {
+      static {
+        __name(this, "FieldsFilteringDecorator");
+      }
       /**
        * Decorate.
        *
@@ -4185,20 +4205,21 @@ var init_fields_filtering_decorator = __esm({
         };
       }
     };
-    __name(_FieldsFilteringDecorator, "FieldsFilteringDecorator");
-    FieldsFilteringDecorator = _FieldsFilteringDecorator;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/adapter/decorator/data-transformation-decorator.js
-var import_js_service28, _DataTransformationDecorator, DataTransformationDecorator;
+var import_js_service28, DataTransformationDecorator;
 var init_data_transformation_decorator = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/decorator/data-transformation-decorator.js"() {
     init_adapter();
     import_js_service28 = require("@e22m4u/js-service");
     init_errors();
     init_definition();
-    _DataTransformationDecorator = class _DataTransformationDecorator extends import_js_service28.Service {
+    DataTransformationDecorator = class extends import_js_service28.Service {
+      static {
+        __name(this, "DataTransformationDecorator");
+      }
       /**
        * Decorate.
        *
@@ -4238,20 +4259,21 @@ var init_data_transformation_decorator = __esm({
         };
       }
     };
-    __name(_DataTransformationDecorator, "DataTransformationDecorator");
-    DataTransformationDecorator = _DataTransformationDecorator;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/adapter/decorator/property-uniqueness-decorator.js
-var import_js_service29, _PropertyUniquenessDecorator, PropertyUniquenessDecorator;
+var import_js_service29, PropertyUniquenessDecorator;
 var init_property_uniqueness_decorator = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/decorator/property-uniqueness-decorator.js"() {
     init_adapter();
     import_js_service29 = require("@e22m4u/js-service");
     init_errors();
     init_definition();
-    _PropertyUniquenessDecorator = class _PropertyUniquenessDecorator extends import_js_service29.Service {
+    PropertyUniquenessDecorator = class extends import_js_service29.Service {
+      static {
+        __name(this, "PropertyUniquenessDecorator");
+      }
       /**
        * Decorate.
        *
@@ -4313,8 +4335,6 @@ var init_property_uniqueness_decorator = __esm({
         };
       }
     };
-    __name(_PropertyUniquenessDecorator, "PropertyUniquenessDecorator");
-    PropertyUniquenessDecorator = _PropertyUniquenessDecorator;
   }
 });
 
@@ -4332,7 +4352,7 @@ var init_decorator = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/adapter/adapter.js
-var import_js_service30, ADAPTER_CLASS_NAME, _Adapter, Adapter;
+var import_js_service30, ADAPTER_CLASS_NAME, Adapter;
 var init_adapter = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/adapter.js"() {
     import_js_service30 = require("@e22m4u/js-service");
@@ -4345,7 +4365,16 @@ var init_adapter = __esm({
     init_decorator();
     init_decorator();
     ADAPTER_CLASS_NAME = "Adapter";
-    _Adapter = class _Adapter extends import_js_service30.Service {
+    Adapter = class _Adapter extends import_js_service30.Service {
+      static {
+        __name(this, "Adapter");
+      }
+      /**
+       * Kind.
+       *
+       * @type {string}
+       */
+      static kinds = [...import_js_service30.Service.kinds, ADAPTER_CLASS_NAME];
       /**
        * Settings.
        *
@@ -4531,14 +4560,6 @@ var init_adapter = __esm({
         );
       }
     };
-    __name(_Adapter, "Adapter");
-    /**
-     * Kind.
-     *
-     * @type {string}
-     */
-    __publicField(_Adapter, "kinds", [...import_js_service30.Service.kinds, ADAPTER_CLASS_NAME]);
-    Adapter = _Adapter;
   }
 });
 
@@ -4547,7 +4568,7 @@ var memory_adapter_exports = {};
 __export(memory_adapter_exports, {
   MemoryAdapter: () => MemoryAdapter
 });
-var _MemoryAdapter, MemoryAdapter;
+var MemoryAdapter;
 var init_memory_adapter = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/builtin/memory-adapter.js"() {
     init_adapter();
@@ -4559,7 +4580,10 @@ var init_memory_adapter = __esm({
     init_filter();
     init_errors();
     init_definition();
-    _MemoryAdapter = class _MemoryAdapter extends Adapter {
+    MemoryAdapter = class extends Adapter {
+      static {
+        __name(this, "MemoryAdapter");
+      }
       /**
        * Tables.
        *
@@ -4594,7 +4618,6 @@ var init_memory_adapter = __esm({
        * @returns {number}
        */
       _genNextIdValue(modelName, propName) {
-        var _a7;
         const propType = this.getService(
           ModelDefinitionUtils
         ).getDataTypeByPropertyName(modelName, propName);
@@ -4607,7 +4630,7 @@ var init_memory_adapter = __esm({
             propName
           );
         const tableName = this.getService(ModelDefinitionUtils).getTableNameByModelName(modelName);
-        const lastId = (_a7 = this._lastIds.get(tableName)) != null ? _a7 : 0;
+        const lastId = this._lastIds.get(tableName) ?? 0;
         const nextId = lastId + 1;
         this._lastIds.set(tableName, nextId);
         const table = this._getTableOrCreate(modelName);
@@ -4918,8 +4941,6 @@ var init_memory_adapter = __esm({
         return modelItems.length;
       }
     };
-    __name(_MemoryAdapter, "MemoryAdapter");
-    MemoryAdapter = _MemoryAdapter;
   }
 });
 
@@ -4945,7 +4966,7 @@ function findAdapterCtorInModule(module2) {
   }
   return adapterCtor;
 }
-var import_js_service31, _AdapterLoader, AdapterLoader;
+var import_js_service31, AdapterLoader;
 var init_adapter_loader = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/adapter-loader.js"() {
     init_adapter();
@@ -4953,7 +4974,10 @@ var init_adapter_loader = __esm({
     init_adapter();
     init_errors();
     init_();
-    _AdapterLoader = class _AdapterLoader extends import_js_service31.Service {
+    AdapterLoader = class extends import_js_service31.Service {
+      static {
+        __name(this, "AdapterLoader");
+      }
       /**
        * Load by name.
        *
@@ -4975,7 +4999,7 @@ var init_adapter_loader = __esm({
         }
         if (!adapterCtor)
           try {
-            const module2 = await Promise.resolve().then(() => __toESM(require(`@e22m4u/js-repository-${adapterName}-adapter`)));
+            const module2 = await import(`@e22m4u/js-repository-${adapterName}-adapter`);
             adapterCtor = findAdapterCtorInModule(module2);
           } catch (e) {
           }
@@ -4987,21 +5011,22 @@ var init_adapter_loader = __esm({
         return new adapterCtor(this.container, settings);
       }
     };
-    __name(_AdapterLoader, "AdapterLoader");
-    AdapterLoader = _AdapterLoader;
     __name(findAdapterCtorInModule, "findAdapterCtorInModule");
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/adapter/adapter-registry.js
-var import_js_service32, _AdapterRegistry, AdapterRegistry;
+var import_js_service32, AdapterRegistry;
 var init_adapter_registry = __esm({
   "node_modules/@e22m4u/js-repository/src/adapter/adapter-registry.js"() {
     init_adapter();
     import_js_service32 = require("@e22m4u/js-service");
     init_adapter_loader();
     init_definition();
-    _AdapterRegistry = class _AdapterRegistry extends import_js_service32.Service {
+    AdapterRegistry = class extends import_js_service32.Service {
+      static {
+        __name(this, "AdapterRegistry");
+      }
       /**
        * Adapters.
        *
@@ -5027,8 +5052,6 @@ var init_adapter_registry = __esm({
         return adapter;
       }
     };
-    __name(_AdapterRegistry, "AdapterRegistry");
-    AdapterRegistry = _AdapterRegistry;
   }
 });
 
@@ -5042,7 +5065,7 @@ var init_adapter2 = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/repository/repository.js
-var import_js_service33, _Repository, Repository;
+var import_js_service33, Repository;
 var init_repository = __esm({
   "node_modules/@e22m4u/js-repository/src/repository/repository.js"() {
     import_js_service33 = require("@e22m4u/js-service");
@@ -5050,7 +5073,10 @@ var init_repository = __esm({
     init_adapter2();
     init_errors();
     init_definition();
-    _Repository = class _Repository extends import_js_service33.Service {
+    Repository = class extends import_js_service33.Service {
+      static {
+        __name(this, "Repository");
+      }
       /**
        * Model name.
        *
@@ -5181,7 +5207,7 @@ var init_repository = __esm({
        */
       async findOne(filter = void 0) {
         const adapter = await this.getAdapter();
-        filter = filter != null ? filter : {};
+        filter = filter ?? {};
         filter.limit = 1;
         const result = await adapter.find(this.modelName, filter);
         return result.length ? result[0] : void 0;
@@ -5238,20 +5264,21 @@ var init_repository = __esm({
         return adapter.count(this.modelName, where);
       }
     };
-    __name(_Repository, "Repository");
-    Repository = _Repository;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/repository/repository-registry.js
-var import_js_service34, _RepositoryRegistry, RepositoryRegistry;
+var import_js_service34, RepositoryRegistry;
 var init_repository_registry = __esm({
   "node_modules/@e22m4u/js-repository/src/repository/repository-registry.js"() {
     import_js_service34 = require("@e22m4u/js-service");
     init_repository();
     init_utils();
     init_errors();
-    _RepositoryRegistry = class _RepositoryRegistry extends import_js_service34.Service {
+    RepositoryRegistry = class extends import_js_service34.Service {
+      static {
+        __name(this, "RepositoryRegistry");
+      }
       /**
        * Repositories.
        *
@@ -5294,8 +5321,6 @@ var init_repository_registry = __esm({
         return repository;
       }
     };
-    __name(_RepositoryRegistry, "RepositoryRegistry");
-    RepositoryRegistry = _RepositoryRegistry;
   }
 });
 
@@ -5308,7 +5333,7 @@ var init_repository2 = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/relations/has-one-resolver.js
-var import_js_service35, _HasOneResolver, HasOneResolver;
+var import_js_service35, HasOneResolver;
 var init_has_one_resolver = __esm({
   "node_modules/@e22m4u/js-repository/src/relations/has-one-resolver.js"() {
     import_js_service35 = require("@e22m4u/js-service");
@@ -5317,7 +5342,10 @@ var init_has_one_resolver = __esm({
     init_errors();
     init_repository2();
     init_definition();
-    _HasOneResolver = class _HasOneResolver extends import_js_service35.Service {
+    HasOneResolver = class extends import_js_service35.Service {
+      static {
+        __name(this, "HasOneResolver");
+      }
       /**
        * Include to.
        *
@@ -5556,13 +5584,11 @@ var init_has_one_resolver = __esm({
         );
       }
     };
-    __name(_HasOneResolver, "HasOneResolver");
-    HasOneResolver = _HasOneResolver;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/relations/has-many-resolver.js
-var import_js_service36, _HasManyResolver, HasManyResolver;
+var import_js_service36, HasManyResolver;
 var init_has_many_resolver = __esm({
   "node_modules/@e22m4u/js-repository/src/relations/has-many-resolver.js"() {
     import_js_service36 = require("@e22m4u/js-service");
@@ -5571,7 +5597,10 @@ var init_has_many_resolver = __esm({
     init_errors();
     init_repository2();
     init_definition();
-    _HasManyResolver = class _HasManyResolver extends import_js_service36.Service {
+    HasManyResolver = class extends import_js_service36.Service {
+      static {
+        __name(this, "HasManyResolver");
+      }
       /**
        * Include to.
        *
@@ -5639,9 +5668,8 @@ var init_has_many_resolver = __esm({
           };
           promises.push(
             targetRepository.find(filter).then((result) => {
-              var _a7;
               if (result.length) {
-                let targets = (_a7 = targetsBySourceId.get(sourceId)) != null ? _a7 : [];
+                let targets = targetsBySourceId.get(sourceId) ?? [];
                 targets = [...targets, ...result];
                 targetsBySourceId.set(sourceId, targets);
               }
@@ -5650,9 +5678,8 @@ var init_has_many_resolver = __esm({
         });
         await Promise.all(promises);
         entities.forEach((entity) => {
-          var _a7;
           const sourceId = entity[sourcePkPropName];
-          entity[relationName] = (_a7 = targetsBySourceId.get(sourceId)) != null ? _a7 : [];
+          entity[relationName] = targetsBySourceId.get(sourceId) ?? [];
         });
       }
       /**
@@ -5731,9 +5758,8 @@ var init_has_many_resolver = __esm({
           };
           promises.push(
             targetRepository.find(filter).then((result) => {
-              var _a7;
               if (result.length) {
-                let targets = (_a7 = targetsBySourceId.get(sourceId)) != null ? _a7 : [];
+                let targets = targetsBySourceId.get(sourceId) ?? [];
                 targets = [...targets, ...result];
                 targetsBySourceId.set(sourceId, targets);
               }
@@ -5742,9 +5768,8 @@ var init_has_many_resolver = __esm({
         });
         await Promise.all(promises);
         entities.forEach((entity) => {
-          var _a7;
           const sourceId = entity[sourcePkPropName];
-          entity[relationName] = (_a7 = targetsBySourceId.get(sourceId)) != null ? _a7 : [];
+          entity[relationName] = targetsBySourceId.get(sourceId) ?? [];
         });
       }
       /**
@@ -5820,13 +5845,11 @@ var init_has_many_resolver = __esm({
         );
       }
     };
-    __name(_HasManyResolver, "HasManyResolver");
-    HasManyResolver = _HasManyResolver;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/relations/belongs-to-resolver.js
-var import_js_service37, _BelongsToResolver, BelongsToResolver;
+var import_js_service37, BelongsToResolver;
 var init_belongs_to_resolver = __esm({
   "node_modules/@e22m4u/js-repository/src/relations/belongs-to-resolver.js"() {
     import_js_service37 = require("@e22m4u/js-service");
@@ -5835,7 +5858,10 @@ var init_belongs_to_resolver = __esm({
     init_errors();
     init_repository2();
     init_definition();
-    _BelongsToResolver = class _BelongsToResolver extends import_js_service37.Service {
+    BelongsToResolver = class extends import_js_service37.Service {
+      static {
+        __name(this, "BelongsToResolver");
+      }
       /**
        * Include to.
        *
@@ -6002,9 +6028,8 @@ var init_belongs_to_resolver = __esm({
             ]
           };
           const promise = targetRepository.find(targetFilter).then((result) => {
-            var _a7;
             targetEntitiesByTargetNames[targetName] = [
-              ...(_a7 = targetEntitiesByTargetNames[targetName]) != null ? _a7 : [],
+              ...targetEntitiesByTargetNames[targetName] ?? [],
               ...result
             ];
           });
@@ -6012,13 +6037,12 @@ var init_belongs_to_resolver = __esm({
         });
         await Promise.all(promises);
         entities.forEach((entity) => {
-          var _a7;
           const targetId = entity[foreignKey];
           const targetName = entity[discriminator];
           if (targetId == null || targetName == null || targetEntitiesByTargetNames[targetName] == null) {
             return;
           }
-          const targetEntities = (_a7 = targetEntitiesByTargetNames[targetName]) != null ? _a7 : [];
+          const targetEntities = targetEntitiesByTargetNames[targetName] ?? [];
           const targetPkPropName = this.getService(ModelDefinitionUtils).getPrimaryKeyAsPropertyName(
             targetName
           );
@@ -6027,13 +6051,11 @@ var init_belongs_to_resolver = __esm({
         });
       }
     };
-    __name(_BelongsToResolver, "BelongsToResolver");
-    BelongsToResolver = _BelongsToResolver;
   }
 });
 
 // node_modules/@e22m4u/js-repository/src/relations/references-many-resolver.js
-var import_js_service38, _ReferencesManyResolver, ReferencesManyResolver;
+var import_js_service38, ReferencesManyResolver;
 var init_references_many_resolver = __esm({
   "node_modules/@e22m4u/js-repository/src/relations/references-many-resolver.js"() {
     import_js_service38 = require("@e22m4u/js-service");
@@ -6042,7 +6064,10 @@ var init_references_many_resolver = __esm({
     init_errors();
     init_repository2();
     init_definition();
-    _ReferencesManyResolver = class _ReferencesManyResolver extends import_js_service38.Service {
+    ReferencesManyResolver = class extends import_js_service38.Service {
+      static {
+        __name(this, "ReferencesManyResolver");
+      }
       /**
        * Include to.
        *
@@ -6127,8 +6152,6 @@ var init_references_many_resolver = __esm({
         });
       }
     };
-    __name(_ReferencesManyResolver, "ReferencesManyResolver");
-    ReferencesManyResolver = _ReferencesManyResolver;
   }
 });
 
@@ -6143,7 +6166,7 @@ var init_relations2 = __esm({
 });
 
 // node_modules/@e22m4u/js-repository/src/filter/include-clause-tool.js
-var import_js_service39, _IncludeClauseTool, IncludeClauseTool;
+var import_js_service39, IncludeClauseTool;
 var init_include_clause_tool = __esm({
   "node_modules/@e22m4u/js-repository/src/filter/include-clause-tool.js"() {
     import_js_service39 = require("@e22m4u/js-service");
@@ -6158,7 +6181,10 @@ var init_include_clause_tool = __esm({
     init_fields_clause_tool();
     init_definition();
     init_relations2();
-    _IncludeClauseTool = class _IncludeClauseTool extends import_js_service39.Service {
+    IncludeClauseTool = class _IncludeClauseTool extends import_js_service39.Service {
+      static {
+        __name(this, "IncludeClauseTool");
+      }
       /**
        * Include to.
        *
@@ -6476,8 +6502,6 @@ var init_include_clause_tool = __esm({
         return void 0;
       }
     };
-    __name(_IncludeClauseTool, "IncludeClauseTool");
-    IncludeClauseTool = _IncludeClauseTool;
   }
 });
 
@@ -6788,8 +6812,8 @@ var require_Reflect = __commonJS({
               keys.push(key);
             }
           }
-          for (var _a7 = 0, parentKeys_1 = parentKeys; _a7 < parentKeys_1.length; _a7++) {
-            var key = parentKeys_1[_a7];
+          for (var _a = 0, parentKeys_1 = parentKeys; _a < parentKeys_1.length; _a++) {
+            var key = parentKeys_1[_a];
             var hasKey = set.has(key);
             if (!hasKey) {
               set.add(key);
@@ -7724,7 +7748,7 @@ function parseCookieHeader(cookieHeader) {
     }
     try {
       value = decodeURIComponent(value);
-    } catch (e) {
+    } catch {
     }
     acc[key] = value;
     return acc;
@@ -7793,7 +7817,10 @@ var ru_default = {
 };
 
 // dist/esm/auth-localizer.js
-var _AuthLocalizer = class _AuthLocalizer extends import_ts_localizer.Localizer {
+var AuthLocalizer = class extends import_ts_localizer.Localizer {
+  static {
+    __name(this, "AuthLocalizer");
+  }
   constructor(container, options) {
     super(container, {
       dictionaries: { en: en_default, ru: ru_default },
@@ -7801,12 +7828,13 @@ var _AuthLocalizer = class _AuthLocalizer extends import_ts_localizer.Localizer 
     });
   }
 };
-__name(_AuthLocalizer, "AuthLocalizer");
-var AuthLocalizer = _AuthLocalizer;
 
 // dist/esm/auth-session.js
 var import_js_service = require("@e22m4u/js-service");
-var _AuthSession = class _AuthSession extends import_js_service.DebuggableService {
+var AuthSession = class extends import_js_service.DebuggableService {
+  static {
+    __name(this, "AuthSession");
+  }
   /**
    * Http request.
    */
@@ -7893,15 +7921,16 @@ var _AuthSession = class _AuthSession extends import_js_service.DebuggableServic
     return this.getAccessToken().id;
   }
 };
-__name(_AuthSession, "AuthSession");
-var AuthSession = _AuthSession;
 
 // dist/esm/access-guard.js
 var import_js_service2 = require("@e22m4u/js-service");
 var AccessRule = {
   AUTHENTICATED: "$authenticated"
 };
-var _AccessGuard = class _AccessGuard extends import_js_service2.DebuggableService {
+var AccessGuard = class extends import_js_service2.DebuggableService {
+  static {
+    __name(this, "AccessGuard");
+  }
   /**
    * Require role.
    */
@@ -7931,8 +7960,6 @@ var _AccessGuard = class _AccessGuard extends import_js_service2.DebuggableServi
     debug("Access allowed.");
   }
 };
-__name(_AccessGuard, "AccessGuard");
-var AccessGuard = _AccessGuard;
 
 // dist/esm/auth-service.js
 var import_bcrypt = __toESM(require("bcrypt"), 1);
@@ -7943,7 +7970,10 @@ var import_http_errors7 = __toESM(require("http-errors"), 1);
 // dist/esm/debuggable-service.js
 var import_js_service3 = require("@e22m4u/js-service");
 var MODULE_DEBUGGER_NAMESPACE = "tsRepositoryAuthService";
-var _DebuggableService = class _DebuggableService extends import_js_service3.DebuggableService {
+var DebuggableService3 = class extends import_js_service3.DebuggableService {
+  static {
+    __name(this, "DebuggableService");
+  }
   /**
    * Constructor.
    *
@@ -7956,8 +7986,6 @@ var _DebuggableService = class _DebuggableService extends import_js_service3.Deb
     });
   }
 };
-__name(_DebuggableService, "DebuggableService");
-var DebuggableService3 = _DebuggableService;
 
 // node_modules/@e22m4u/js-repository/src/index.js
 init_utils();
@@ -7970,7 +7998,10 @@ var import_js_service40 = require("@e22m4u/js-service");
 init_repository2();
 init_definition();
 init_repository2();
-var _DatabaseSchema = class _DatabaseSchema extends import_js_service40.Service {
+var DatabaseSchema = class extends import_js_service40.Service {
+  static {
+    __name(this, "DatabaseSchema");
+  }
   /**
    * Define datasource.
    *
@@ -8001,8 +8032,6 @@ var _DatabaseSchema = class _DatabaseSchema extends import_js_service40.Service 
     return this.getService(RepositoryRegistry).getRepository(modelName);
   }
 };
-__name(_DatabaseSchema, "DatabaseSchema");
-var DatabaseSchema = _DatabaseSchema;
 
 // node_modules/@e22m4u/js-repository/src/index.js
 init_relations2();
@@ -8020,12 +8049,14 @@ var __decorate = function(decorators, target, key, desc) {
 var __metadata = function(k, v) {
   if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
-var BaseRoleModel = (_a = class {
+var BaseRoleModel = class BaseRoleModel2 {
+  static {
+    __name(this, "BaseRoleModel");
+  }
   id;
   name;
   createdAt;
-}, __name(_a, "BaseRoleModel"), _a);
+};
 __decorate([
   (0, import_ts_repository.property)({
     type: import_ts_repository.DataType.ANY,
@@ -8051,9 +8082,11 @@ __decorate([
 BaseRoleModel = __decorate([
   (0, import_ts_repository.model)()
 ], BaseRoleModel);
-var _a2;
-var RoleModel = (_a2 = class extends BaseRoleModel {
-}, __name(_a2, "RoleModel"), _a2);
+var RoleModel = class RoleModel2 extends BaseRoleModel {
+  static {
+    __name(this, "RoleModel");
+  }
+};
 RoleModel = __decorate([
   (0, import_ts_repository.model)()
 ], RoleModel);
@@ -8070,8 +8103,10 @@ var __decorate2 = function(decorators, target, key, desc) {
 var __metadata2 = function(k, v) {
   if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a3;
-var BaseUserModel = (_a3 = class {
+var BaseUserModel = class BaseUserModel2 {
+  static {
+    __name(this, "BaseUserModel");
+  }
   id;
   username;
   email;
@@ -8081,7 +8116,7 @@ var BaseUserModel = (_a3 = class {
   updatedAt;
   roleIds;
   roles;
-}, __name(_a3, "BaseUserModel"), _a3);
+};
 __decorate2([
   (0, import_ts_repository2.property)({
     type: import_ts_repository2.DataType.ANY,
@@ -8155,9 +8190,11 @@ __decorate2([
 BaseUserModel = __decorate2([
   (0, import_ts_repository2.model)()
 ], BaseUserModel);
-var _a4;
-var UserModel = (_a4 = class extends BaseUserModel {
-}, __name(_a4, "UserModel"), _a4);
+var UserModel = class UserModel2 extends BaseUserModel {
+  static {
+    __name(this, "UserModel");
+  }
+};
 UserModel = __decorate2([
   (0, import_ts_repository2.model)()
 ], UserModel);
@@ -8173,14 +8210,16 @@ var __decorate3 = function(decorators, target, key, desc) {
 var __metadata3 = function(k, v) {
   if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a5;
-var BaseAccessTokenModel = (_a5 = class {
+var BaseAccessTokenModel = class BaseAccessTokenModel2 {
+  static {
+    __name(this, "BaseAccessTokenModel");
+  }
   id;
   userAgent;
   createdAt;
   ownerId;
   owner;
-}, __name(_a5, "BaseAccessTokenModel"), _a5);
+};
 __decorate3([
   (0, import_ts_repository3.property)({
     type: import_ts_repository3.DataType.ANY,
@@ -8220,9 +8259,11 @@ __decorate3([
 BaseAccessTokenModel = __decorate3([
   (0, import_ts_repository3.model)()
 ], BaseAccessTokenModel);
-var _a6;
-var AccessTokenModel = (_a6 = class extends BaseAccessTokenModel {
-}, __name(_a6, "AccessTokenModel"), _a6);
+var AccessTokenModel = class AccessTokenModel2 extends BaseAccessTokenModel {
+  static {
+    __name(this, "AccessTokenModel");
+  }
+};
 AccessTokenModel = __decorate3([
   (0, import_ts_repository3.model)()
 ], AccessTokenModel);
@@ -8305,7 +8346,10 @@ var CASE_INSENSITIVE_LOGIN_IDS = [
   "email",
   "phone"
 ];
-var _AuthServiceOptions = class _AuthServiceOptions {
+var AuthServiceOptions = class {
+  static {
+    __name(this, "AuthServiceOptions");
+  }
   passwordHashRounds = 12;
   usernameFormatValidator = usernameFormatValidator;
   emailFormatValidator = emailFormatValidator;
@@ -8330,9 +8374,10 @@ var _AuthServiceOptions = class _AuthServiceOptions {
     }
   }
 };
-__name(_AuthServiceOptions, "AuthServiceOptions");
-var AuthServiceOptions = _AuthServiceOptions;
-var _AuthService = class _AuthService extends DebuggableService3 {
+var AuthService = class extends DebuggableService3 {
+  static {
+    __name(this, "AuthService");
+  }
   /**
    * Options.
    */
@@ -8440,16 +8485,16 @@ var _AuthService = class _AuthService extends DebuggableService3 {
       });
     } catch (err) {
       if (err instanceof TokenExpiredError) {
-        throw createError(import_http_errors7.default.Unauthorized, "ACCESS_TOKEN_EXPIRED", "Access token is expired", { token: jwToken, error: err.message });
+        throw createError(import_http_errors7.default.Unauthorized, "JWT_EXPIRED", "JWT is expired", { token: jwToken, reason: err.message });
       }
       if (err instanceof JsonWebTokenError) {
-        throw createError(import_http_errors7.default.Unauthorized, "INVALID_ACCESS_TOKEN", "Access token signature is invalid", { token: jwToken, error: err.message });
+        throw createError(import_http_errors7.default.Unauthorized, "INVALID_JWT_SIGNATURE", "JWT signature is invalid", { token: jwToken, reason: err.message });
       }
       error = err;
     }
     if (error || !payload || typeof payload !== "object" || !("uid" in payload) || !("tid" in payload) || !payload.uid || !payload.tid) {
       console.error(error);
-      throw createError(import_http_errors7.default.InternalServerError, "INVALID_ACCESS_TOKEN", "Access token payload is invalid", { token: jwToken, payload });
+      throw createError(import_http_errors7.default.Unauthorized, "INVALID_JWT_PAYLOAD", "JWT payload is invalid", { token: jwToken, payload });
     }
     debug.inspect("Payload:", payload);
     debug("JWT decoded successfully.");
@@ -8485,8 +8530,11 @@ var _AuthService = class _AuthService extends DebuggableService3 {
     try {
       return import_bcrypt.default.hash(password, this.options.passwordHashRounds);
     } catch (error) {
-      console.error(error);
-      throw createError(import_http_errors7.default.InternalServerError, "PASSWORD_HASHING_ERROR", "Unable to hash the given password");
+      const reason = error && typeof error === "object" && "message" in error && error.message;
+      if (!reason) {
+        console.error(error);
+      }
+      throw createError(import_http_errors7.default.InternalServerError, "PASSWORD_HASHING_ERROR", "Unable to hash the given password", { reason });
     }
   }
   /**
@@ -8501,17 +8549,24 @@ var _AuthService = class _AuthService extends DebuggableService3 {
     const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = "authService.verifyPassword";
     debug("Verifying password");
+    if (!password && !hash) {
+      debug("No password or hash specified.");
+      return true;
+    }
+    if (typeof password !== "string" || typeof hash !== "string") {
+      throw createError(import_http_errors7.default.Unauthorized, "INVALID_PASSWORD", localizer.t(`${errorKeyPrefix}.invalidPasswordError`));
+    }
     let isValid = false;
     try {
       isValid = await import_bcrypt.default.compare(password, hash);
     } catch (error) {
       console.error(error);
-      throw createError(import_http_errors7.default.InternalServerError, "PASSWORD_VERIFYING_ERROR", "Unable to verify the given password");
+      throw createError(import_http_errors7.default.Unauthorized, "INVALID_PASSWORD", "Unable to verify the given password");
     }
     if (!isValid) {
       if (silent)
         return false;
-      throw createError(import_http_errors7.default.Unauthorized, "PASSWORD_VERIFYING_ERROR", localizer.t(`${errorKeyPrefix}.invalidPasswordError`));
+      throw createError(import_http_errors7.default.Unauthorized, "INVALID_PASSWORD", localizer.t(`${errorKeyPrefix}.invalidPasswordError`));
     }
     debug("Password verified.");
     return true;
@@ -8519,32 +8574,31 @@ var _AuthService = class _AuthService extends DebuggableService3 {
   /**
    * Find user by login ids.
    *
-   * @param idsFilter
+   * @param loginIdsClause
    * @param include
    * @param silent
    */
-  async findUserByLoginIds(idsFilter, include, silent = false) {
+  async findUserByLoginIds(loginIdsClause, include, silent = false) {
     const debug = this.getDebuggerFor(this.findUserByLoginIds);
     debug("Finding user by login identifiers.");
     const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = "authService.findUserByLoginIds";
-    const where = { or: [] };
+    const where = {};
     let hasAnyLoginId = false;
     LOGIN_ID_NAMES.forEach((name) => {
-      if (idsFilter[name] && String(idsFilter[name]).trim()) {
-        debug("Given %s was %v.", name, idsFilter[name]);
+      if (loginIdsClause[name] && String(loginIdsClause[name]).trim()) {
+        debug("Given %s was %v.", name, loginIdsClause[name]);
         hasAnyLoginId = true;
-        const idValue = String(idsFilter[name]).trim();
+        const idValue = String(loginIdsClause[name]).trim();
         const idRegex = `^${idValue}$`;
         const isCaseInsensitive = CASE_INSENSITIVE_LOGIN_IDS.includes(name);
-        const lookingValue = isCaseInsensitive ? { regexp: idRegex, flags: "i" } : idValue;
-        where.or.push({ [name]: lookingValue });
+        where[name] = isCaseInsensitive ? { regexp: idRegex, flags: "i" } : idValue;
       }
     });
     if (!hasAnyLoginId) {
       if (silent)
         return;
-      this.requireAnyLoginId(idsFilter);
+      this.requireAnyLoginId(loginIdsClause);
     }
     const dbs = this.getRegisteredService(DatabaseSchema);
     const userRep = dbs.getRepository(UserModel.name);
@@ -8649,6 +8703,7 @@ var _AuthService = class _AuthService extends DebuggableService3 {
       if (typeof inputData[idName] === "string")
         inputData[idName] = inputData[idName].trim();
     });
+    this.requireAnyLoginId(inputData);
     for (const idName of LOGIN_ID_NAMES) {
       this.validateLoginIdFormat(idName, inputData[idName]);
       await this.validateLoginIdDuplicates(idName, inputData[idName]);
@@ -8678,11 +8733,12 @@ var _AuthService = class _AuthService extends DebuggableService3 {
     const debug = this.getDebuggerFor(this.updateUser);
     debug("Updating user.");
     debug("User id was %v.", userId);
-    inputData = { ...inputData };
     const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = "authService.updateUser";
     const dbs = this.getRegisteredService(DatabaseSchema);
     const userRep = dbs.getRepository(UserModel.name);
+    inputData = { ...inputData };
+    delete inputData.id;
     const existingUser = await userRep.findOne({ where: { id: userId } });
     if (!existingUser)
       throw createError(import_http_errors7.default.BadRequest, "USER_NOT_FOUND", localizer.t(`${errorKeyPrefix}.userNotFoundError`));
@@ -8690,6 +8746,7 @@ var _AuthService = class _AuthService extends DebuggableService3 {
       if (typeof inputData[idName] === "string")
         inputData[idName] = inputData[idName].trim();
     });
+    this.requireAnyLoginId(inputData, true);
     for (const idName of LOGIN_ID_NAMES) {
       this.validateLoginIdFormat(idName, inputData[idName]);
       await this.validateLoginIdDuplicates(idName, inputData[idName], existingUser.id);
@@ -8731,7 +8788,7 @@ var _AuthService = class _AuthService extends DebuggableService3 {
     const payload = await this.decodeJwt(jwToken);
     const accessToken = await this.findAccessTokenById(payload.tid, include);
     if (accessToken.ownerId !== payload.uid)
-      throw createError(import_http_errors7.default.BadRequest, "INVALID_ACCESS_TOKEN_OWNER", "Access token does not match its owner", payload);
+      throw createError(import_http_errors7.default.BadRequest, "INVALID_ACCESS_TOKEN_OWNER", "JWT does not match its access token owner", payload);
     debug("Access token found.");
     debug("Token id was %v.", accessToken.id);
     debug("Owner id was %v.", accessToken.ownerId);
@@ -8746,7 +8803,7 @@ var _AuthService = class _AuthService extends DebuggableService3 {
     const debug = this.getDebuggerFor(this.findAccessTokenOwner);
     debug("Finding access token owner.");
     if (!accessToken.ownerId) {
-      throw createError(import_http_errors7.default.BadRequest, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token does not have an owner", { accessTokenId: accessToken.id });
+      throw createError(import_http_errors7.default.InternalServerError, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token does not have an owner", { accessTokenId: accessToken.id });
     }
     debug("Owner id was %v.", accessToken.ownerId);
     const dbs = this.getRegisteredService(DatabaseSchema);
@@ -8756,7 +8813,7 @@ var _AuthService = class _AuthService extends DebuggableService3 {
       include
     });
     if (!owner) {
-      throw createError(import_http_errors7.default.BadRequest, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token owner is not found in the database", { accessTokenId: accessToken.id, ownerId: accessToken.ownerId });
+      throw createError(import_http_errors7.default.InternalServerError, "ACCESS_TOKEN_OWNER_NOT_FOUND", "Access token owner is not found in the database", { accessTokenId: accessToken.id, ownerId: accessToken.ownerId });
     }
     debug("Owner found successfully.");
     return owner;
@@ -8776,8 +8833,6 @@ var _AuthService = class _AuthService extends DebuggableService3 {
     }
   }
 };
-__name(_AuthService, "AuthService");
-var AuthService = _AuthService;
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/data-schema.js
 var DataType6 = {
@@ -8797,7 +8852,10 @@ var import_js_format7 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/ts-reflector/dist/esm/reflector.js
 var import_reflect_metadata = __toESM(require_Reflect(), 1);
-var _Reflector = class _Reflector {
+var Reflector = class {
+  static {
+    __name(this, "Reflector");
+  }
   /**
    * Define metadata.
    *
@@ -8852,8 +8910,6 @@ var _Reflector = class _Reflector {
     return propertyName ? Reflect.getOwnMetadata(key, target, propertyName) : Reflect.getOwnMetadata(key, target);
   }
 };
-__name(_Reflector, "Reflector");
-var Reflector = _Reflector;
 
 // node_modules/@e22m4u/ts-reflector/dist/esm/utils/get-decorator-target-type.js
 var DecoratorTargetType;
@@ -8895,7 +8951,10 @@ function getDecoratorTargetType(target, propertyKey, descriptorOrIndex) {
 __name(getDecoratorTargetType, "getDecoratorTargetType");
 
 // node_modules/@e22m4u/ts-reflector/dist/esm/metadata-key.js
-var _MetadataKey = class _MetadataKey {
+var MetadataKey = class {
+  static {
+    __name(this, "MetadataKey");
+  }
   name;
   /**
    * Fix generic type validation.
@@ -8939,15 +8998,16 @@ var _MetadataKey = class _MetadataKey {
     return this.name ? this.constructor.name + `(${this.name})` : this.constructor.name;
   }
 };
-__name(_MetadataKey, "MetadataKey");
-var MetadataKey = _MetadataKey;
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/decorators/data-schema-metadata.js
 var DATA_SCHEMA_CLASS_METADATA_KEY = new MetadataKey("dataSchemaClassMetadataKey");
 var DATA_SCHEMA_PROPERTIES_METADATA_KEY = new MetadataKey("dataSchemaPropertiesMetadataKey");
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/decorators/data-schema-reflector.js
-var _DataSchemaReflector = class _DataSchemaReflector {
+var DataSchemaReflector = class {
+  static {
+    __name(this, "DataSchemaReflector");
+  }
   /**
    * Set metadata.
    *
@@ -8980,11 +9040,9 @@ var _DataSchemaReflector = class _DataSchemaReflector {
    */
   static getPropertiesMetadata(target) {
     const metadata = Reflector.getOwnMetadata(DATA_SCHEMA_PROPERTIES_METADATA_KEY, target);
-    return metadata != null ? metadata : /* @__PURE__ */ new Map();
+    return metadata ?? /* @__PURE__ */ new Map();
   }
 };
-__name(_DataSchemaReflector, "DataSchemaReflector");
-var DataSchemaReflector = _DataSchemaReflector;
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/decorators/data-schema-decorators.js
 var import_js_format6 = require("@e22m4u/js-format");
@@ -9038,10 +9096,11 @@ var import_js_format9 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/errors/decorator-target-error.js
 var import_js_format10 = require("@e22m4u/js-format");
-var _DecoratorTargetError = class _DecoratorTargetError extends import_js_format10.Errorf {
+var DecoratorTargetError = class extends import_js_format10.Errorf {
+  static {
+    __name(this, "DecoratorTargetError");
+  }
 };
-__name(_DecoratorTargetError, "DecoratorTargetError");
-var DecoratorTargetError = _DecoratorTargetError;
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/data-validator.js
 var import_js_format11 = require("@e22m4u/js-format");

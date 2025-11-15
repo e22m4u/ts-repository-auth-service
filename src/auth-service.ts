@@ -9,12 +9,11 @@ import {ServiceContainer} from '@e22m4u/js-service';
 import {DebuggableService} from './debuggable-service.js';
 
 import {
-  WhereClause,
   IncludeClause,
   WithOptionalId,
   DatabaseSchema,
   ItemFilterClause,
-  OrClause,
+  PropertiesClause,
 } from '@e22m4u/js-repository';
 
 import {
@@ -25,16 +24,16 @@ import {
 } from './utils/index.js';
 
 import {
+  UserModel,
+  BaseUserModel,
   AccessTokenModel,
   BaseAccessTokenModel,
-  BaseUserModel,
-  UserModel,
 } from './models/index.js';
 
 import {
   emailFormatValidator,
-  passwordFormatValidator,
   phoneFormatValidator,
+  passwordFormatValidator,
   usernameFormatValidator,
 } from './validators/index.js';
 
@@ -97,9 +96,9 @@ export class AuthServiceOptions {
 }
 
 /**
- * Login ids filter.
+ * Login ids clause.
  */
-export type LoginIdsFilter = {
+export type LoginIdsClause = {
   username?: string;
   email?: string;
   phone?: string;
@@ -108,7 +107,7 @@ export type LoginIdsFilter = {
 /**
  * User lookup with password.
  */
-export type UserLookupWithPassword = LoginIdsFilter & {
+export type UserLookupWithPassword = LoginIdsClause & {
   password?: string;
 };
 
@@ -272,17 +271,17 @@ export class AuthService extends DebuggableService {
       if (err instanceof TokenExpiredError) {
         throw createError(
           HttpErrors.Unauthorized,
-          'ACCESS_TOKEN_EXPIRED',
-          'Access token is expired',
-          {token: jwToken, error: err.message},
+          'JWT_EXPIRED',
+          'JWT is expired',
+          {token: jwToken, reason: err.message},
         );
       }
       if (err instanceof JsonWebTokenError) {
         throw createError(
           HttpErrors.Unauthorized,
-          'INVALID_ACCESS_TOKEN',
-          'Access token signature is invalid',
-          {token: jwToken, error: err.message},
+          'INVALID_JWT_SIGNATURE',
+          'JWT signature is invalid',
+          {token: jwToken, reason: err.message},
         );
       }
       error = err;
@@ -298,9 +297,9 @@ export class AuthService extends DebuggableService {
     ) {
       console.error(error);
       throw createError(
-        HttpErrors.InternalServerError,
-        'INVALID_ACCESS_TOKEN',
-        'Access token payload is invalid',
+        HttpErrors.Unauthorized,
+        'INVALID_JWT_PAYLOAD',
+        'JWT payload is invalid',
         {token: jwToken, payload},
       );
     }
@@ -347,11 +346,19 @@ export class AuthService extends DebuggableService {
     try {
       return bcrypt.hash(password, this.options.passwordHashRounds);
     } catch (error) {
-      console.error(error);
+      const reason =
+        error &&
+        typeof error === 'object' &&
+        'message' in error &&
+        error.message;
+      if (!reason) {
+        console.error(error);
+      }
       throw createError(
         HttpErrors.InternalServerError,
         'PASSWORD_HASHING_ERROR',
         'Unable to hash the given password',
+        {reason},
       );
     }
   }
@@ -363,16 +370,10 @@ export class AuthService extends DebuggableService {
    * @param hash
    * @param silent
    */
-  verifyPassword(password: string, hash: string): Promise<true>;
-
-  /**
-   * Verify password.
-   *
-   * @param password
-   * @param hash
-   * @param silent
-   */
-  verifyPassword(password: string, hash: string, silent: false): Promise<true>;
+  verifyPassword(
+    password: string | undefined,
+    hash: string | undefined,
+  ): Promise<true>;
 
   /**
    * Verify password.
@@ -382,8 +383,21 @@ export class AuthService extends DebuggableService {
    * @param silent
    */
   verifyPassword(
-    password: string,
-    hash: string,
+    password: string | undefined,
+    hash: string | undefined,
+    silent: false,
+  ): Promise<true>;
+
+  /**
+   * Verify password.
+   *
+   * @param password
+   * @param hash
+   * @param silent
+   */
+  verifyPassword(
+    password: string | undefined,
+    hash: string | undefined,
     silent: true,
   ): Promise<boolean>;
 
@@ -395,8 +409,8 @@ export class AuthService extends DebuggableService {
    * @param silent
    */
   verifyPassword(
-    password: string,
-    hash: string,
+    password: string | undefined,
+    hash: string | undefined,
     silent?: boolean,
   ): Promise<boolean>;
 
@@ -408,22 +422,33 @@ export class AuthService extends DebuggableService {
    * @param silent
    */
   async verifyPassword(
-    password: string,
-    hash: string,
+    password: string | undefined,
+    hash: string | undefined,
     silent = false,
   ): Promise<boolean> {
     const debug = this.getDebuggerFor(this.verifyPassword);
     const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = 'authService.verifyPassword';
     debug('Verifying password');
+    if (!password && !hash) {
+      debug('No password or hash specified.');
+      return true;
+    }
+    if (typeof password !== 'string' || typeof hash !== 'string') {
+      throw createError(
+        HttpErrors.Unauthorized,
+        'INVALID_PASSWORD',
+        localizer.t(`${errorKeyPrefix}.invalidPasswordError`),
+      );
+    }
     let isValid = false;
     try {
       isValid = await bcrypt.compare(password, hash);
     } catch (error) {
       console.error(error);
       throw createError(
-        HttpErrors.InternalServerError,
-        'PASSWORD_VERIFYING_ERROR',
+        HttpErrors.Unauthorized,
+        'INVALID_PASSWORD',
         'Unable to verify the given password',
       );
     }
@@ -431,7 +456,7 @@ export class AuthService extends DebuggableService {
       if (silent) return false;
       throw createError(
         HttpErrors.Unauthorized,
-        'PASSWORD_VERIFYING_ERROR',
+        'INVALID_PASSWORD',
         localizer.t(`${errorKeyPrefix}.invalidPasswordError`),
       );
     }
@@ -442,24 +467,24 @@ export class AuthService extends DebuggableService {
   /**
    * Find user by login ids.
    *
-   * @param idsFilter
+   * @param loginIdsClause
    * @param include
    * @param silent
    */
   findUserByLoginIds<T extends BaseUserModel>(
-    idsFilter: LoginIdsFilter,
+    loginIdsClause: LoginIdsClause,
     include?: IncludeClause<T>,
   ): Promise<T>;
 
   /**
    * Find user by login ids.
    *
-   * @param idsFilter
+   * @param loginIdsClause
    * @param include
    * @param silent
    */
   findUserByLoginIds<T extends BaseUserModel>(
-    idsFilter: LoginIdsFilter,
+    loginIdsClause: LoginIdsClause,
     include: IncludeClause<T> | undefined,
     silent: false,
   ): Promise<T>;
@@ -467,12 +492,12 @@ export class AuthService extends DebuggableService {
   /**
    * Find user by login ids.
    *
-   * @param idsFilter
+   * @param loginIdsClause
    * @param include
    * @param silent
    */
   findUserByLoginIds<T extends BaseUserModel>(
-    idsFilter: LoginIdsFilter,
+    loginIdsClause: LoginIdsClause,
     include: IncludeClause<T> | undefined,
     silent: true,
   ): Promise<T | undefined>;
@@ -480,12 +505,12 @@ export class AuthService extends DebuggableService {
   /**
    * Find user by login ids.
    *
-   * @param idsFilter
+   * @param loginIdsClause
    * @param include
    * @param silent
    */
   findUserByLoginIds<T extends BaseUserModel>(
-    idsFilter: LoginIdsFilter,
+    loginIdsClause: LoginIdsClause,
     include?: IncludeClause<T>,
     silent?: boolean,
   ): Promise<T | undefined>;
@@ -493,12 +518,12 @@ export class AuthService extends DebuggableService {
   /**
    * Find user by login ids.
    *
-   * @param idsFilter
+   * @param loginIdsClause
    * @param include
    * @param silent
    */
   async findUserByLoginIds<T extends BaseUserModel>(
-    idsFilter: LoginIdsFilter,
+    loginIdsClause: LoginIdsClause,
     include?: IncludeClause<T>,
     silent = false,
   ): Promise<T | undefined> {
@@ -507,26 +532,25 @@ export class AuthService extends DebuggableService {
     const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = 'authService.findUserByLoginIds';
     // формирование условий выборки
-    const where: WhereClause & OrClause = {or: []};
+    const where: PropertiesClause<T> = {};
     let hasAnyLoginId = false;
     LOGIN_ID_NAMES.forEach(name => {
-      if (idsFilter[name] && String(idsFilter[name]).trim()) {
-        debug('Given %s was %v.', name, idsFilter[name]);
+      if (loginIdsClause[name] && String(loginIdsClause[name]).trim()) {
+        debug('Given %s was %v.', name, loginIdsClause[name]);
         hasAnyLoginId = true;
-        const idValue = String(idsFilter[name]).trim();
+        const idValue = String(loginIdsClause[name]).trim();
         const idRegex = `^${idValue}$`;
         const isCaseInsensitive = CASE_INSENSITIVE_LOGIN_IDS.includes(name);
-        const lookingValue = isCaseInsensitive
+        where[name] = isCaseInsensitive
           ? {regexp: idRegex, flags: 'i'}
           : idValue;
-        where.or.push({[name]: lookingValue});
       }
     });
     // если ни один идентификатор не определен,
     // то выбрасывается ошибка
     if (!hasAnyLoginId) {
       if (silent) return;
-      this.requireAnyLoginId(idsFilter);
+      this.requireAnyLoginId(loginIdsClause);
     }
     const dbs = this.getRegisteredService(DatabaseSchema);
     const userRep = dbs.getRepository<T>(UserModel.name);
@@ -673,6 +697,8 @@ export class AuthService extends DebuggableService {
       if (typeof inputData[idName] === 'string')
         inputData[idName] = inputData[idName].trim();
     });
+    // проверка наличия по крайней мере одного идентификатора
+    this.requireAnyLoginId(inputData);
     // проверка формата идентификаторов и отсутствия дубликатов
     for (const idName of LOGIN_ID_NAMES) {
       this.validateLoginIdFormat(idName, inputData[idName]);
@@ -711,11 +737,14 @@ export class AuthService extends DebuggableService {
     const debug = this.getDebuggerFor(this.updateUser);
     debug('Updating user.');
     debug('User id was %v.', userId);
-    inputData = {...inputData};
     const localizer = this.getService(AuthLocalizer);
     const errorKeyPrefix = 'authService.updateUser';
     const dbs = this.getRegisteredService(DatabaseSchema);
     const userRep = dbs.getRepository<T>(UserModel.name);
+    // удаление идентификатора из новых данных
+    inputData = {...inputData};
+    delete inputData.id;
+    // проверка существования пользователя
     const existingUser = await userRep.findOne({where: {id: userId}});
     if (!existingUser)
       throw createError(
@@ -728,6 +757,9 @@ export class AuthService extends DebuggableService {
       if (typeof inputData[idName] === 'string')
         inputData[idName] = inputData[idName].trim();
     });
+    // проверка наличия по крайней мере одного идентификатора
+    // (в режиме partial, проверяются только переданные свойства)
+    this.requireAnyLoginId(inputData, true);
     // проверка формата идентификаторов и отсутствия дубликатов
     for (const idName of LOGIN_ID_NAMES) {
       this.validateLoginIdFormat(idName, inputData[idName]);
@@ -788,7 +820,7 @@ export class AuthService extends DebuggableService {
       throw createError(
         HttpErrors.BadRequest,
         'INVALID_ACCESS_TOKEN_OWNER',
-        'Access token does not match its owner',
+        'JWT does not match its access token owner',
         payload,
       );
     debug('Access token found.');
@@ -810,7 +842,7 @@ export class AuthService extends DebuggableService {
     debug('Finding access token owner.');
     if (!accessToken.ownerId) {
       throw createError(
-        HttpErrors.BadRequest,
+        HttpErrors.InternalServerError,
         'ACCESS_TOKEN_OWNER_NOT_FOUND',
         'Access token does not have an owner',
         {accessTokenId: accessToken.id},
@@ -825,7 +857,7 @@ export class AuthService extends DebuggableService {
     });
     if (!owner) {
       throw createError(
-        HttpErrors.BadRequest,
+        HttpErrors.InternalServerError,
         'ACCESS_TOKEN_OWNER_NOT_FOUND',
         'Access token owner is not found in the database',
         {accessTokenId: accessToken.id, ownerId: accessToken.ownerId},

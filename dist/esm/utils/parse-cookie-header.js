@@ -19,9 +19,8 @@ export function parseCookieHeader(cookieHeader) {
         }
         try {
             value = decodeURIComponent(value);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         }
-        catch (e) {
+        catch {
             // console.error(`Failed to decode cookie value: "${value}"`, e);
         }
         acc[key] = value;
