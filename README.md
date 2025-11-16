@@ -508,6 +508,10 @@ router.addPreHandler(ctx => {
 });
 ```
 
+### AuthServiceOptions
+
+Ниже приводится набор доступных опций сервиса авторизации.
+
 #### passwordHashRounds
 
 Количество раундов хеширования пароля модулем `bcrypt`.
