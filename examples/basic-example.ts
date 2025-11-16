@@ -37,8 +37,8 @@ import {
 } from '../src/index.js'; // @e22m4u/ts-repository-auth-service
 
 // инициализация основных сервисов
-const app = new ServiceContainer(); // сервис-контейнер
-const router = app.get(RestRouter); // маршрутизатор
+const app = new ServiceContainer();  // сервис-контейнер
+const router = app.get(RestRouter);  // REST-маршрутизатор
 const dbs = app.get(DatabaseSchema); // схема баз данных
 
 // определение in-memory источника данных "main"

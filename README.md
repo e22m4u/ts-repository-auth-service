@@ -91,16 +91,18 @@ import {RestRouter} from '@e22m4u/ts-rest-router';
 import {ServiceContainer} from '@e22m4u/js-service';
 import {DatabaseSchema} from '@e22m4u/ts-repository';
 
-const app = new ServiceContainer();
-const router = app.get(RestRouter);
-const dbs = app.get(DatabaseSchema);
+const app = new ServiceContainer();  // сервис-контейнер
+const router = app.get(RestRouter);  // REST-маршрутизатор
+const dbs = app.get(DatabaseSchema); // схема баз данных
 ```
 
 #### 2. Определение моделей
 
-Базовые модели библиотеки предоставляют минимально необходимый набор полей.
-Их следует расширить для соответствия требованиям проекта. В данном
-примере `BaseUserModel` расширяется полем `username`.
+В базовых моделях, поставляемых данным модулем, определен минимально
+необходимый набор полей, требуемый для реализации процесса аутентификации.
+Исключением являются *идентификаторы входа* (вроде имени пользователя или
+email), которые разработчик должен определить самостоятельно, как это
+демонстрируется в примере ниже.
 
 ```ts
 import {
