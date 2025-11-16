@@ -121,16 +121,27 @@ import {
   BaseAccessTokenModel,
 } from '@e22m4u/ts-repository-auth-service';
 
+// определение in-memory источника данных "main"
+// (см. раздел «Источник данных» модуля @e22m4u/ts-repository)
 dbs.defineDatasource({
   name: 'main',
   adapter: 'memory',
 });
 
+// определение модели роли, наследуемой от BaseRoleModel
+// и связанной с источником данных "main" (определен выше)
 @model({datasource: 'main'})
 class RoleModel extends BaseRoleModel {}
 
+// определение модели пользователя, также связанной
+// с источником 'main' и расширенной от базовой модели
 @model({datasource: 'main'})
 class UserModel extends BaseUserModel {
+  // стандартная модель BaseUserModel намеренно не содержит полей
+  // с идентификаторами входа (вроде имени пользователя или email),
+  // чтобы быть универсальной, и вручную добавляя поле `username`,
+  // мы определяем, что в данном приложении пользователи будут
+  // идентифицироваться именно по этому уникальному имени
   @property({
     type: DataType.STRING,
     required: true,
@@ -139,9 +150,13 @@ class UserModel extends BaseUserModel {
   username!: string;
 }
 
+// определение модели токенов доступа,
+// аналогично моделям выше
 @model({datasource: 'main'})
 class AccessTokenModel extends BaseAccessTokenModel {}
 
+// регистрация моделей в схеме баз данных,
+// что позволит работать с их репозиториями
 dbs.defineModelByClass(RoleModel);
 dbs.defineModelByClass(UserModel);
 dbs.defineModelByClass(AccessTokenModel);
@@ -187,6 +202,7 @@ class UserController extends Service {
   // см. далее
 }
 
+// регистрация контроллера
 router.addController(UserController);
 ```
 
@@ -492,49 +508,49 @@ router.addPreHandler(ctx => {
 });
 ```
 
-### passwordHashRounds
+#### passwordHashRounds
 
 Количество раундов хеширования пароля модулем `bcrypt`.
 
 - Тип: `number`
 - По умолчанию: `12`
 
-### jwtSecret
+#### jwtSecret
 
 Секретный ключ для подписи JWT.
 
 - Тип: `string`
 - По умолчанию: `'REPLACE_ME!'`
 
-### jwtTtl
+#### jwtTtl
 
 Время жизни JWT в секундах.
 
 - Тип: `number`
 - По умолчанию: `1209600` (14 дней)
 
-### jwtHeaderName
+#### jwtHeaderName
 
 Имя HTTP заголовка для поиска JWT.
 
 - Тип: `string`
 - По умолчанию: `'authorization'`
 
-### jwtCookieName
+#### jwtCookieName
 
 Имя cookie для поиска JWT.
 
 - Тип: `string`
 - По умолчанию: `'accessToken'`
 
-### jwtQueryParam
+#### jwtQueryParam
 
 Имя query параметра URL для поиска JWT.
 
 - Тип: `string`
 - По умолчанию: `'accessToken'`
 
-### sessionUserInclusion
+#### sessionUserInclusion
 
 Связанные данные пользователя для загрузки в сессию.
 
@@ -546,7 +562,7 @@ router.addPreHandler(ctx => {
 `AuthService` является центральным компонентом модуля.
 
 
-### authService.createUser
+#### authService.createUser
 
 Создает нового пользователя. Пароль автоматически хешируется.
 
@@ -557,7 +573,7 @@ createUser<T extends BaseUserModel>(
 ): Promise<T>;
 ```
 
-### authService.updateUser
+#### authService.updateUser
 
 Обновляет данные существующего пользователя. Если передан пароль, он
 будет хеширован.
@@ -570,7 +586,7 @@ updateUser<T extends BaseUserModel>(
 ): Promise<T>;
 ```
 
-### authService.findUserBeforeLogin
+#### authService.findUserBeforeLogin
 
 Осуществляет поиск пользователя по указанным критериям.
 
@@ -580,7 +596,7 @@ findUserBeforeLogin<T extends BaseUserModel>(
 ): Promise<T>;
 ```
 
-### authService.ensureUserDoesNotExist
+#### authService.ensureUserDoesNotExist
 
 Проверяет, что пользователь с указанными данными не существует. Если
 пользователь найден, выбрасывается ошибка `409 Conflict`.
@@ -592,7 +608,7 @@ ensureUserDoesNotExist<T extends BaseUserModel>(
 ): Promise<void>;
 ```
 
-### authService.verifyPassword
+#### authService.verifyPassword
 
 Сравнивает предоставленный пароль с хешем.
 
@@ -609,7 +625,7 @@ verifyPassword(
 ): Promise<boolean>;
 ```
 
-### authService.hashPassword
+#### authService.hashPassword
 
 Хеширует пароль с использованием `bcrypt`.
 
@@ -617,7 +633,7 @@ verifyPassword(
 hashPassword(password: string): Promise<string>;
 ```
 
-### authService.createAccessToken
+#### authService.createAccessToken
 
 Создает запись о токене доступа в базе данных.
 
@@ -628,7 +644,7 @@ createAccessToken<T extends BaseAccessTokenModel>(
 ): Promise<T>;
 ```
 
-### authService.issueJwt
+#### authService.issueJwt
 
 Генерирует JWT на основе `AccessToken`.
 
@@ -638,7 +654,7 @@ issueJwt(
 ): Promise<{token: string, expiresAt: string}>;
 ```
 
-### authService.decodeJwt
+#### authService.decodeJwt
 
 Проверяет и декодирует JWT, извлекая из него полезную нагрузку.
 
@@ -646,7 +662,7 @@ issueJwt(
 decodeJwt(jwToken: string): Promise<JwtPayload>;
 ```
 
-### authService.removeAccessTokenById
+#### authService.removeAccessTokenById
 
 Удаляет запись `AccessToken` из базы данных по идентификатору.
 
@@ -656,7 +672,7 @@ removeAccessTokenById(
 ): Promise<boolean>;
 ```
 
-### authService.createAuthSession
+#### authService.createAuthSession
 
 Создает экземпляр `AuthSession` на основе HTTP запроса.
 
@@ -664,7 +680,7 @@ removeAccessTokenById(
 createAuthSession(req: IncomingMessage): Promise<AuthSession>;
 ```
 
-### authService.findAccessTokenByHttpRequest
+#### authService.findAccessTokenByHttpRequest
 
 Извлекает JWT из HTTP запроса и находит `AccessToken` в базе данных.
 
@@ -675,7 +691,7 @@ findAccessTokenByHttpRequest<T extends BaseAccessTokenModel>(
 ): Promise<T | undefined>;
 ```
 
-### authService.findAccessTokenOwner
+#### authService.findAccessTokenOwner
 
 Находит пользователя, который является владельцем `AccessToken`.
 

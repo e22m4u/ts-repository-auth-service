@@ -7,6 +7,7 @@ import {
   DataType,
   WithoutId,
   DatabaseSchema,
+  PropertyUniqueness,
 } from '@e22m4u/ts-repository';
 
 import {
@@ -40,7 +41,8 @@ const app = new ServiceContainer(); // сервис-контейнер
 const router = app.get(RestRouter); // маршрутизатор
 const dbs = app.get(DatabaseSchema); // схема баз данных
 
-// определение источник данных
+// определение in-memory источника данных "main"
+// (см. раздел «Источник данных» модуля @e22m4u/ts-repository)
 dbs.defineDatasource({
   name: 'main',
   adapter: 'memory',
@@ -50,26 +52,35 @@ dbs.defineDatasource({
 // названия источника данных 'main' в декораторе @model
 // и дополнительного поля `username` в модели UserModel
 
-// модель роли остается без изменений
+// определение модели роли, наследуемой от `BaseRoleModel`
+// и связанной с источником данных "main" (определен выше)
 @model({datasource: 'main'})
 class RoleModel extends BaseRoleModel {}
 
-// модель пользователя расширяется полем `username`
+// определение модели пользователя, также связанной
+// с источником 'main' и расширенной от базовой модели
 @model({datasource: 'main'})
 class UserModel extends BaseUserModel {
+  // стандартная модель BaseUserModel намеренно не содержит полей
+  // с идентификаторами входа (вроде имени пользователя или email),
+  // чтобы быть универсальной, и вручную добавляя поле `username`,
+  // мы определяем, что в данном приложении пользователи будут
+  // идентифицироваться именно по этому уникальному имени
   @property({
     type: DataType.STRING,
     required: true,
-    unique: true,
+    unique: PropertyUniqueness.STRICT,
   })
   username!: string;
 }
 
-// модель токена также без изменений
+// определение модели токенов доступа,
+// аналогично моделям выше
 @model({datasource: 'main'})
 class AccessTokenModel extends BaseAccessTokenModel {}
 
-// регистрация моделей в схеме баз данных
+// регистрация моделей в схеме баз данных,
+// что позволит работать с их репозиториями
 dbs.defineModelByClass(RoleModel);
 dbs.defineModelByClass(UserModel);
 dbs.defineModelByClass(AccessTokenModel);
