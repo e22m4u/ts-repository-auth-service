@@ -219,6 +219,8 @@ server.listen(port, host, function () {
 уникальности и непосредственно создание пользователя `AuthService`.
 
 ```ts
+import {WithoutId} from '@e22m4u/ts-repository';
+
 import {
   postAction,
   restController,
@@ -277,14 +279,8 @@ import {
 } from '@e22m4u/ts-rest-router';
 
 import {
-  requestBodyWithModel,
-  responseBodyWithModel,
-} from '@e22m4u/ts-rest-router-repository';
-
-import {
   UserModel,
   AuthService,
-  UserDataService,
   JWT_ISSUE_RESULT_SCHEMA,
 } from '@e22m4u/ts-repository-auth-service';
 
@@ -303,9 +299,15 @@ class UserController extends Service {
   @postAction('login')
   @responseBody(JWT_ISSUE_RESULT_SCHEMA)
   async login(
-    @requestField('username', {required: true})
+    @requestField('username', {
+      type: DataType.STRING,
+      required: true,
+    })
     username: string,
-    @requestField('password', {required: true})
+    @requestField('password', {
+      type: DataType.STRING,
+      required: true,
+    })
     password: string,
   ) {
     const authService = this.getRegisteredService(AuthService);
@@ -319,7 +321,7 @@ class UserController extends Service {
 }
 ```
 
-#### Получение профиля
+#### Получение текущего пользователя
 
 Для получения информации о пользователе текущей сессии используется
 сервис `AuthSession`. Метод `session.getUser()` возвращает объект
@@ -339,20 +341,20 @@ class UserController extends Service {
   // ... методы create, login
 
   /**
-   * Get profile.
+   * Get me.
    * 
-   * GET /users/profile
+   * GET /users/me
    */
-  @getAction('profile')
+  @getAction('me')
   @responseBodyWithModel(UserModel)
-  getProfile() {
+  getMe() {
     const session = this.getRegisteredService(AuthSession);
     return session.getUser();
   }
 }
 ```
 
-#### Обновление профиля
+#### Обновление текущего пользователя
 
 Обновление данных пользователя выполняется методом `updateUser`.
 Идентификатор текущего пользователя извлекается из сессии с помощью
@@ -380,16 +382,16 @@ import {
  */
 @restController('users')
 class UserController extends Service {
-  // ... методы create, login, getProfile
+  // ... методы create, login, getMe
 
   /**
-   * Patch profile.
+   * Patch me.
    * 
-   * PATCH /users/profile
+   * PATCH /users/me
    */
-  @patchAction('profile')
+  @patchAction('me')
   @responseBodyWithModel(UserModel)
-  async patchProfile(
+  async patchMe(
     @requestBodyWithModel(UserModel, {partial: true, required: true})
     body: Partial<WithoutId<UserModel>>,
   ) {
@@ -423,15 +425,8 @@ import {
 } from '@e22m4u/ts-rest-router';
 
 import {
-  requestBodyWithModel,
-  responseBodyWithModel,
-} from '@e22m4u/ts-rest-router-repository';
-
-import {
-  UserModel,
   AuthService,
   AuthSession,
-  UserDataService,
   LOGOUT_RESULT_SCHEMA,
 } from '@e22m4u/ts-repository-auth-service';
 
@@ -440,12 +435,12 @@ import {
  */
 @restController('users')
 class UserController extends Service {
-  // ... методы create, login, getProfile, patchProfile
+  // ... методы create, login, getMe, patchMe
 
   /**
    * Logout.
    * 
-   * PATCH /users/logout
+   * GET /users/logout
    */
   @getAction('logout')
   @responseBody(LOGOUT_RESULT_SCHEMA)
@@ -748,16 +743,6 @@ requireRole(roleName?: string | string[]): void;
 ### BaseRoleModel и RoleModel
 
 ```ts
-import {
-  model,
-  property,
-  DataType,
-  PropertyUniqueness,
-} from '@e22m4u/ts-repository';
-
-/**
- * Base role model.
- */
 @model()
 export class BaseRoleModel<IdType = number | string> {
   @property({
@@ -780,9 +765,6 @@ export class BaseRoleModel<IdType = number | string> {
   createdAt?: string;
 }
 
-/**
- * Role model.
- */
 @model()
 export class RoleModel<
   IdType = number | string,
@@ -793,20 +775,6 @@ export class RoleModel<
 ### BaseUserModel и UserModel
 
 ```ts
-import {noInput, noOutput} from '@e22m4u/ts-projection';
-import {RoleModel, BaseRoleModel} from './role-model.js';
-
-import {
-  model,
-  property,
-  relation,
-  DataType,
-  RelationType,
-} from '@e22m4u/ts-repository';
-
-/**
- * Base user model.
- */
 @model()
 export class BaseUserModel<
   IdType = number | string,
@@ -853,9 +821,6 @@ export class BaseUserModel<
   roles?: RoleType[];
 }
 
-/**
- * User model.
- */
 @model()
 export class UserModel<
   IdType = number | string,
@@ -867,19 +832,6 @@ export class UserModel<
 ### BaseAccessTokenModel и AccessTokenModel
 
 ```ts
-import {UserModel, BaseUserModel} from './user-model.js';
-
-import {
-  model,
-  property,
-  relation,
-  DataType,
-  RelationType,
-} from '@e22m4u/ts-repository';
-
-/**
- * Base access token model.
- */
 @model()
 export class BaseAccessTokenModel<
   IdType = number | string,
@@ -911,9 +863,6 @@ export class BaseAccessTokenModel<
   owner?: UserType;
 }
 
-/**
- * Access token model.
- */
 @model()
 export class AccessTokenModel<
   IdType = number | string,

@@ -450,7 +450,6 @@ export class AuthService extends DebuggableService {
         localizer.t(`authService.ensureUserDoesNotExist.duplicateError`),
       );
     }
-    return user;
   }
 
   /**

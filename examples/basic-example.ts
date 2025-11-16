@@ -92,7 +92,11 @@ class UserController extends Service {
     return userRep.find();
   }
 
-  // POST /users
+  /**
+   * Create.
+   * 
+   * POST /users
+   */
   @postAction()
   @responseBodyWithModel(UserModel)
   async create(
@@ -109,7 +113,11 @@ class UserController extends Service {
     return authService.createUser(body);
   }
 
-  // POST /users/login
+  /**
+   * Login.
+   * 
+   * POST /users/login
+   */
   @postAction('login')
   @responseBody(JWT_ISSUE_RESULT_SCHEMA)
   async login(
@@ -133,23 +141,28 @@ class UserController extends Service {
     return {token, expiresAt, user};
   }
 
-  // GET /users/findMe
-  @getAction('findMe')
+  /**
+   * Get me.
+   * 
+   * GET /users/me
+   */
+  @getAction('me')
   @responseBodyWithModel(UserModel)
-  findMe() {
+  getMe() {
     const session = this.getRegisteredService(AuthSession);
     return session.getUser();
   }
 
-  // PATCH /users/profile
-  @patchAction('profile')
+  /**
+   * Patch me.
+   * 
+   * PATCH /users/me
+   */
+  @patchAction('me')
   @responseBodyWithModel(UserModel)
-  async patchProfile(
-    @requestBodyWithModel(UserModel, {
-      required: true,
-      partial: true,
-    })
-    body: WithoutId<UserModel>,
+  async patchMe(
+    @requestBodyWithModel(UserModel, {partial: true, required: true})
+    body: Partial<WithoutId<UserModel>>,
   ) {
     const session = this.getRegisteredService(AuthSession);
     const authService = this.getRegisteredService(AuthService);
@@ -165,7 +178,11 @@ class UserController extends Service {
     return authService.updateUser(userId, body);
   }
 
-  // GET /users/logout
+  /**
+   * Logout.
+   * 
+   * GET /users/logout
+   */
   @getAction('logout')
   @responseBody(LOGOUT_RESULT_SCHEMA)
   async logout() {
@@ -192,10 +209,6 @@ const host = '0.0.0.0';
 server.listen(port, host, function () {
   const cyan = '\x1b[36m%s\x1b[0m';
   console.log(cyan, 'Server listening on', `http://${host}:${port}`);
-  // List users
-  console.log('');
-  console.log(cyan, 'List users:');
-  console.log(`  curl http://${host}:${port}/users | jq`);
   // Create user
   console.log('');
   console.log(cyan, 'Create user:');
@@ -214,17 +227,17 @@ server.listen(port, host, function () {
     `    -d '{"username": "andrew", "password": "andrewPass123"}' \\`,
   );
   console.log(`    | jq;`);
-  // Current user
+  // Get me
   console.log('');
-  console.log(cyan, 'Current user:');
-  console.log(`  curl http://${host}:${port}/users/findMe \\`);
+  console.log(cyan, 'Get me:');
+  console.log(`  curl http://${host}:${port}/users/me \\`);
   console.log(`    -H "content-type: application/json" \\`);
   console.log(`    -H "authorization: JWT_TOKEN_FROM_LOGIN" \\`);
   console.log(`    | jq;`);
-  // Update current user
+  // Patch me
   console.log('');
-  console.log(cyan, 'Update current user:');
-  console.log(`  curl -X PATCH http://${host}:${port}/users/profile \\`);
+  console.log(cyan, 'Patch me:');
+  console.log(`  curl -X PATCH http://${host}:${port}/users/me \\`);
   console.log(`    -H "content-type: application/json" \\`);
   console.log(`    -H "authorization: JWT_TOKEN_FROM_LOGIN" \\`);
   console.log(`    -d '{"firstName": "Andrew", "age": 27}' \\`);
@@ -236,4 +249,9 @@ server.listen(port, host, function () {
   console.log(`    -H "content-type: application/json" \\`);
   console.log(`    -H "authorization: JWT_TOKEN_FROM_LOGIN" \\`);
   console.log(`    | jq`);
+  // List users
+  console.log('');
+  console.log(cyan, 'List users:');
+  console.log(`  curl http://${host}:${port}/users | jq`);
+  console.log('');
 });
