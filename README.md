@@ -739,7 +739,7 @@ router.defineRoute({
 });
 ```
 
-### accessGuard.requireRole
+#### accessGuard.requireRole
 
 Проверяет, аутентифицирован ли пользователь и имеет ли он необходимые
 роли.
@@ -756,7 +756,7 @@ requireRole(roleName?: string | string[]): void;
 
 Ниже приводятся определения базовых моделей.
 
-### BaseRoleModel и RoleModel
+#### BaseRoleModel и RoleModel
 
 ```ts
 @model()
@@ -788,7 +788,7 @@ export class RoleModel<
 
 ```
 
-### BaseUserModel и UserModel
+#### BaseUserModel и UserModel
 
 ```ts
 @model()
@@ -845,7 +845,7 @@ export class UserModel<
 
 ```
 
-### BaseAccessTokenModel и AccessTokenModel
+#### BaseAccessTokenModel и AccessTokenModel
 
 ```ts
 @model()
