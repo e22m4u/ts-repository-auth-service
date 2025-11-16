@@ -119,7 +119,7 @@ import {
 } from '@e22m4u/ts-repository-auth-service';
 
 // определение in-memory источника данных "main"
-// (см. раздел «Источник данных» модуля @e22m4u/ts-repository)
+// (см. раздел «Источник данных» модуля @e22m4u/js-repository)
 dbs.defineDatasource({
   name: 'main',
   adapter: 'memory',
