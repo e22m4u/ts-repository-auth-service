@@ -21,6 +21,7 @@ export function parseCookieHeader(cookieHeader) {
             value = decodeURIComponent(value);
         }
         catch {
+            // non-decodable URI component, fall back to the raw value
             // console.error(`Failed to decode cookie value: "${value}"`, e);
         }
         acc[key] = value;

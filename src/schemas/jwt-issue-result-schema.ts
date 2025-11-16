@@ -12,5 +12,8 @@ export const JWT_ISSUE_RESULT_SCHEMA: DataSchema = {
     expiresAt: {
       type: DataType.STRING,
     },
+    user: {
+      type: DataType.OBJECT,
+    },
   },
 };

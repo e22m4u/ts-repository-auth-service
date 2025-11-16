@@ -7694,6 +7694,7 @@ __export(index_exports, {
   BaseUserModel: () => BaseUserModel,
   EMAIL_FORMAT_REGEX: () => EMAIL_FORMAT_REGEX,
   JWT_ISSUE_RESULT_SCHEMA: () => JWT_ISSUE_RESULT_SCHEMA,
+  LOGOUT_RESULT_SCHEMA: () => LOGOUT_RESULT_SCHEMA,
   RoleModel: () => RoleModel,
   UserDataService: () => UserDataService,
   UserModel: () => UserModel
@@ -8468,7 +8469,7 @@ var AuthService = class extends DebuggableService3 {
     const userRep = dbs.getRepository(UserModel.name);
     const user = await userRep.findOne({ where });
     if (user && user.id !== excludeUserId) {
-      throw createError(import_http_errors3.default.Unauthorized, "USER_NOT_FOUND", localizer.t(`authService.ensureUserDoesNotExist.duplicateError`));
+      throw createError(import_http_errors3.default.Conflict, "DUPLICATE_USER", localizer.t(`authService.ensureUserDoesNotExist.duplicateError`));
     }
     return user;
   }
@@ -8893,6 +8894,16 @@ var import_js_format13 = require("@e22m4u/js-format");
 // node_modules/@e22m4u/ts-data-schema/dist/esm/default-values-applier.js
 init_src();
 
+// dist/esm/schemas/logout-result-schema.js
+var LOGOUT_RESULT_SCHEMA = {
+  type: DataType6.OBJECT,
+  properties: {
+    success: {
+      type: DataType6.BOOLEAN
+    }
+  }
+};
+
 // dist/esm/schemas/jwt-issue-result-schema.js
 var JWT_ISSUE_RESULT_SCHEMA = {
   type: DataType6.OBJECT,
@@ -8902,6 +8913,9 @@ var JWT_ISSUE_RESULT_SCHEMA = {
     },
     expiresAt: {
       type: DataType6.STRING
+    },
+    user: {
+      type: DataType6.OBJECT
     }
   }
 };
@@ -9009,6 +9023,7 @@ var UserDataService = class extends import_js_service42.Service {
   BaseUserModel,
   EMAIL_FORMAT_REGEX,
   JWT_ISSUE_RESULT_SCHEMA,
+  LOGOUT_RESULT_SCHEMA,
   RoleModel,
   UserDataService,
   UserModel

@@ -16,6 +16,7 @@ import {
   requestField,
   restController,
   RestRouter,
+  responseBody,
 } from '@e22m4u/ts-rest-router';
 
 import {
@@ -28,8 +29,10 @@ import {
   AuthSession,
   BaseUserModel,
   BaseRoleModel,
-  BaseAccessTokenModel,
   UserDataService,
+  BaseAccessTokenModel,
+  LOGOUT_RESULT_SCHEMA,
+  JWT_ISSUE_RESULT_SCHEMA,
 } from '../src/index.js'; // @e22m4u/ts-repository-auth-service
 
 // инициализация основных сервисов
@@ -89,8 +92,8 @@ class UserController extends Service {
     return userRep.find();
   }
 
-  // POST /users/create
-  @postAction('create')
+  // POST /users
+  @postAction()
   @responseBodyWithModel(UserModel)
   async create(
     @requestBodyWithModel(UserModel, {required: true})
@@ -108,6 +111,7 @@ class UserController extends Service {
 
   // POST /users/login
   @postAction('login')
+  @responseBody(JWT_ISSUE_RESULT_SCHEMA)
   async login(
     @requestField('username', {
       type: DataType.STRING,
@@ -163,6 +167,7 @@ class UserController extends Service {
 
   // GET /users/logout
   @getAction('logout')
+  @responseBody(LOGOUT_RESULT_SCHEMA)
   async logout() {
     const session = this.getRegisteredService(AuthSession);
     const accessTokenId = session.getAccessTokenId();
@@ -194,7 +199,7 @@ server.listen(port, host, function () {
   // Create user
   console.log('');
   console.log(cyan, 'Create user:');
-  console.log(`  curl -X POST http://${host}:${port}/users/create \\`);
+  console.log(`  curl -X POST http://${host}:${port}/users \\`);
   console.log(`    -H "content-type: application/json" \\`);
   console.log(
     `    -d '{"username": "andrew", "password": "andrewPass123"}' \\`,

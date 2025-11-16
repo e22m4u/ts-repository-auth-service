@@ -125,7 +125,7 @@ export declare class AuthService extends DebuggableService {
      *
      * @param where
      */
-    findUserBeforeLogin<T extends BaseUserModel = BaseUserModel>(where: WhereClause<T>): Promise<{ [k in keyof T]: T[k]; }>;
+    findUserBeforeLogin<T extends BaseUserModel>(where: WhereClause<T>): Promise<{ [k in keyof T]: T[k]; }>;
     /**
      * Find user before login.
      *

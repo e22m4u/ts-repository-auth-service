@@ -415,9 +415,7 @@ export class AuthService extends DebuggableService {
    *
    * @param where
    */
-  async findUserBeforeLogin<T extends BaseUserModel = BaseUserModel>(
-    where: WhereClause<T>,
-  ) {
+  async findUserBeforeLogin<T extends BaseUserModel>(where: WhereClause<T>) {
     const localizer = this.getService(AuthLocalizer);
     const dbs = this.getRegisteredService(DatabaseSchema);
     const userRep = dbs.getRepository<T>(UserModel.name);
@@ -447,8 +445,8 @@ export class AuthService extends DebuggableService {
     const user = await userRep.findOne({where});
     if (user && user.id !== excludeUserId) {
       throw createError(
-        HttpErrors.Unauthorized,
-        'USER_NOT_FOUND',
+        HttpErrors.Conflict,
+        'DUPLICATE_USER',
         localizer.t(`authService.ensureUserDoesNotExist.duplicateError`),
       );
     }

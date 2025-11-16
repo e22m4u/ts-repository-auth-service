@@ -269,7 +269,7 @@ export class AuthService extends DebuggableService {
         const userRep = dbs.getRepository(UserModel.name);
         const user = await userRep.findOne({ where });
         if (user && user.id !== excludeUserId) {
-            throw createError(HttpErrors.Unauthorized, 'USER_NOT_FOUND', localizer.t(`authService.ensureUserDoesNotExist.duplicateError`));
+            throw createError(HttpErrors.Conflict, 'DUPLICATE_USER', localizer.t(`authService.ensureUserDoesNotExist.duplicateError`));
         }
         return user;
     }
