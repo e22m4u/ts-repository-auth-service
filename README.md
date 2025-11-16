@@ -252,9 +252,6 @@ import {
   UserDataService,
 } from '@e22m4u/ts-repository-auth-service';
 
-/**
- * User controller.
- */
 @restController('users')
 class UserController extends Service {
   /**
@@ -299,9 +296,6 @@ import {
   JWT_ISSUE_RESULT_SCHEMA,
 } from '@e22m4u/ts-repository-auth-service';
 
-/**
- * User controller.
- */
 @restController('users')
 class UserController extends Service {
   // ... метод create
@@ -348,9 +342,6 @@ import {getAction, restController} from '@e22m4u/ts-rest-router';
 import {responseBodyWithModel} from '@e22m4u/ts-rest-router-repository';
 import {UserModel, AuthSession} from '@e22m4u/ts-repository-auth-service';
 
-/**
- * User controller.
- */
 @restController('users')
 class UserController extends Service {
   // ... методы create, login
@@ -392,9 +383,6 @@ import {
   UserDataService,
 } from '@e22m4u/ts-repository-auth-service';
 
-/**
- * User controller.
- */
 @restController('users')
 class UserController extends Service {
   // ... методы create, login, getMe
@@ -445,9 +433,6 @@ import {
   LOGOUT_RESULT_SCHEMA,
 } from '@e22m4u/ts-repository-auth-service';
 
-/**
- * User controller.
- */
 @restController('users')
 class UserController extends Service {
   // ... методы create, login, getMe, patchMe
