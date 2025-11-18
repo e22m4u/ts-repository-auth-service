@@ -44,8 +44,8 @@
   "dependencies": {
     "@e22m4u/js-format": "~0.2.1",
     "@e22m4u/js-service": "~0.4.6",
+    "@e22m4u/ts-data-projection": "~0.0.1",
     "@e22m4u/ts-localizer": "~0.2.6",
-    "@e22m4u/ts-projection": "~0.2.2",
     "bcrypt": "~6.0.0",
     "http-errors": "~2.0.0",
     "jsonwebtoken": "~9.0.2",
@@ -59,7 +59,7 @@
     "@commitlint/cli": "~20.1.0",
     "@commitlint/config-conventional": "~20.0.0",
     "@e22m4u/ts-rest-router": "~0.6.11",
-    "@e22m4u/ts-rest-router-repository": "~0.4.7",
+    "@e22m4u/ts-rest-router-repository": "~0.4.8",
     "@eslint/js": "~9.39.1",
     "@types/bcrypt": "~6.0.0",
     "@types/chai": "~5.2.3",
@@ -81,6 +81,6 @@
     "rimraf": "~6.1.0",
     "tsx": "~4.20.6",
     "typescript": "~5.9.3",
-    "typescript-eslint": "~8.46.4"
+    "typescript-eslint": "~8.47.0"
   }
 }

@@ -131,7 +131,7 @@ export declare class AuthService extends DebuggableService {
      *
      * @param where
      */
-    ensureUserDoesNotExist<T extends BaseUserModel>(where: WhereClause<T>, excludeUserId?: T['id']): Promise<{ [k in keyof T]: T[k]; } | undefined>;
+    ensureUserDoesNotExist<T extends BaseUserModel>(where: WhereClause<T>, excludeUserId?: T['id']): Promise<void>;
     /**
      * Create user.
      *

@@ -7,8 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { noInput, noOutput } from '@e22m4u/ts-projection';
 import { RoleModel } from './role-model.js';
+import { noInput, noOutput } from '@e22m4u/ts-data-projection';
 import { model, property, relation, DataType, RelationType, } from '@e22m4u/ts-repository';
 /**
  * Base user model.

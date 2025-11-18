@@ -1,5 +1,5 @@
-import {noInput, noOutput} from '@e22m4u/ts-projection';
 import {RoleModel, BaseRoleModel} from './role-model.js';
+import {noInput, noOutput} from '@e22m4u/ts-data-projection';
 
 import {
   model,

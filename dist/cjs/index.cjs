@@ -8079,7 +8079,7 @@ RoleModel = __decorate([
 ], RoleModel);
 
 // dist/esm/models/user-model.js
-var import_ts_projection = require("@e22m4u/ts-projection");
+var import_ts_data_projection = require("@e22m4u/ts-data-projection");
 var import_ts_repository2 = require("@e22m4u/ts-repository");
 var __decorate2 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -8113,7 +8113,7 @@ __decorate2([
     type: import_ts_repository2.DataType.STRING,
     default: ""
   }),
-  (0, import_ts_projection.noOutput)(),
+  (0, import_ts_data_projection.noOutput)(),
   __metadata2("design:type", String)
 ], BaseUserModel.prototype, "password", void 0);
 __decorate2([
@@ -8121,7 +8121,7 @@ __decorate2([
     type: import_ts_repository2.DataType.STRING,
     default: /* @__PURE__ */ __name(() => (/* @__PURE__ */ new Date()).toISOString(), "default")
   }),
-  (0, import_ts_projection.noInput)(),
+  (0, import_ts_data_projection.noInput)(),
   __metadata2("design:type", String)
 ], BaseUserModel.prototype, "createdAt", void 0);
 __decorate2([
@@ -8471,7 +8471,6 @@ var AuthService = class extends DebuggableService3 {
     if (user && user.id !== excludeUserId) {
       throw createError(import_http_errors3.default.Conflict, "DUPLICATE_USER", localizer.t(`authService.ensureUserDoesNotExist.duplicateError`));
     }
-    return user;
   }
   /**
    * Create user.

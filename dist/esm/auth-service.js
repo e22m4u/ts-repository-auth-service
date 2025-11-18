@@ -271,7 +271,6 @@ export class AuthService extends DebuggableService {
         if (user && user.id !== excludeUserId) {
             throw createError(HttpErrors.Conflict, 'DUPLICATE_USER', localizer.t(`authService.ensureUserDoesNotExist.duplicateError`));
         }
-        return user;
     }
     /**
      * Create user.
